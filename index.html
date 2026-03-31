@@ -3,7 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StudyFlow v7 — Première Générale</title>
+<meta name="theme-color" content="#0b0c10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="StudyFlow">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3406/3406828.png">
+<title>StudyFlow v8 — Première Générale</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
@@ -810,6 +817,59 @@ body {
   min-width: 180px;
 }
 
+
+/* ===== SUPABASE SYNC ===== */
+.sync-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; padding: 3px 8px; border-radius: 20px;
+  font-weight: 600; letter-spacing: 0.5px;
+}
+.sync-badge.synced  { background: rgba(74,222,128,0.1);  color: var(--success); border: 1px solid rgba(74,222,128,0.2); }
+.sync-badge.syncing { background: rgba(96,165,250,0.1);  color: var(--info);    border: 1px solid rgba(96,165,250,0.2); }
+.sync-badge.offline { background: rgba(245,200,66,0.1);  color: var(--gold);    border: 1px solid rgba(245,200,66,0.2); }
+.sync-badge.error   { background: rgba(248,113,113,0.1); color: var(--danger);  border: 1px solid rgba(248,113,113,0.2); }
+.sync-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.sync-dot.pulse { animation: syncpulse 1.2s infinite; }
+@keyframes syncpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+
+/* ===== GOOGLE AUTH BUTTON ===== */
+.btn-google {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 12px 18px; border-radius: var(--r2);
+  background: #fff; color: #1f1f1f; border: none;
+  font-family: 'Instrument Sans', sans-serif; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; margin-bottom: 14px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.3);
+}
+.btn-google:hover { background: #f5f5f5; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+.google-icon { width: 20px; height: 20px; }
+
+.auth-divider {
+  display: flex; align-items: center; gap: 10px;
+  margin: 14px 0; color: var(--muted2); font-size: 12px;
+}
+.auth-divider::before, .auth-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* ===== SUPABASE CONFIG OVERLAY ===== */
+.supabase-setup {
+  background: linear-gradient(135deg, #0d0f1a, #0a1220);
+  border: 1px solid rgba(96,165,250,0.2);
+  border-radius: var(--r); padding: 20px; margin-bottom: 18px;
+}
+.supabase-setup-title { font-family: 'Fraunces', serif; font-size: 17px; margin-bottom: 6px; }
+.supabase-setup-sub { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+
+/* Install banner */
+#install-banner {
+  display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: var(--s1); border: 1px solid var(--border2); border-radius: var(--r);
+  padding: 14px 20px; z-index: 500; box-shadow: var(--shadow);
+  align-items: center; gap: 14px; max-width: 380px; width: calc(100% - 40px);
+}
+#install-banner.show { display: flex; }
+
 /* PDF Export button */
 .btn-pdf { background: rgba(248,113,113,0.1); color: var(--danger); border: 1px solid rgba(248,113,113,0.2); }
 
@@ -955,51 +1015,83 @@ body {
       <div class="auth-logo-sub">Première Générale 2026 · v7</div>
     </div>
 
-    <div id="profiles-section">
-      <div class="section-label">Choisir un profil</div>
-      <div class="profiles-list" id="profiles-list"></div>
-      <button class="btn btn-ghost btn-full" onclick="showAuthForm('register')">+ Créer un nouveau profil</button>
+    <!-- SUPABASE CONFIG (shown if not configured) -->
+    <div id="supabase-setup-panel" style="display:none">
+      <div class="supabase-setup">
+        <div class="supabase-setup-title">⚙️ Configurer Supabase</div>
+        <div class="supabase-setup-sub">
+          Pour synchroniser tes données entre tous tes appareils, entre tes clés Supabase.<br>
+          Tu les trouves dans <strong>Supabase → Settings → API</strong>.
+        </div>
+        <div class="form-group">
+          <label class="form-label">URL du projet</label>
+          <input type="text" class="form-input" id="sb-url-input" placeholder="https://xxxx.supabase.co">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Clé publique (anon key)</label>
+          <input type="text" class="form-input" id="sb-key-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…">
+        </div>
+        <button class="btn btn-primary btn-full" onclick="saveSupabaseConfig()">Sauvegarder et continuer →</button>
+      </div>
     </div>
 
-    <div id="auth-forms" style="display:none">
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Connexion</button>
-        <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Créer un profil</button>
+    <!-- MAIN AUTH (Google + local fallback) -->
+    <div id="main-auth-panel">
+      <div id="supabase-auth-section">
+        <button class="btn-google" onclick="loginWithGoogle()">
+          <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Continuer avec Google
+        </button>
+        <div class="auth-divider">ou connexion locale</div>
       </div>
 
-      <!-- LOGIN -->
-      <div class="auth-form active" id="form-login">
-        <div class="form-group">
-          <label class="form-label">Nom d'utilisateur</label>
-          <input type="text" class="form-input" id="login-username" placeholder="Ton prénom ou pseudo">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Mot de passe</label>
-          <input type="password" class="form-input" id="login-password" placeholder="••••••••">
-        </div>
-        <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="doLogin()">Se connecter →</button>
-        <div style="text-align:center;margin-top:12px">
-          <button class="btn btn-ghost btn-sm" onclick="showProfiles()">← Retour aux profils</button>
-        </div>
+      <div id="profiles-section">
+        <div class="section-label">Choisir un profil local</div>
+        <div class="profiles-list" id="profiles-list"></div>
+        <button class="btn btn-ghost btn-full" onclick="showAuthForm('register')">+ Créer un profil local</button>
       </div>
 
-      <!-- REGISTER -->
-      <div class="auth-form" id="form-register">
-        <div class="form-group">
-          <label class="form-label">Prénom / Pseudo</label>
-          <input type="text" class="form-input" id="reg-username" placeholder="Ex: Alice, Théo…">
+      <div id="auth-forms" style="display:none">
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Connexion</button>
+          <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Créer un profil</button>
         </div>
-        <div class="form-group">
-          <label class="form-label">Mot de passe</label>
-          <input type="password" class="form-input" id="reg-password" placeholder="••••••••">
+        <div class="auth-form active" id="form-login">
+          <div class="form-group">
+            <label class="form-label">Nom d'utilisateur</label>
+            <input type="text" class="form-input" id="login-username" placeholder="Ton prénom ou pseudo">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mot de passe</label>
+            <input type="password" class="form-input" id="login-password" placeholder="••••••••">
+          </div>
+          <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="doLogin()">Se connecter →</button>
+          <div style="text-align:center;margin-top:12px">
+            <button class="btn btn-ghost btn-sm" onclick="showProfiles()">← Retour</button>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Choisis ton avatar</label>
-          <div class="avatar-grid" id="avatar-grid"></div>
-        </div>
-        <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="doRegister()">Créer mon profil →</button>
-        <div style="text-align:center;margin-top:12px">
-          <button class="btn btn-ghost btn-sm" onclick="showProfiles()">← Annuler</button>
+        <div class="auth-form" id="form-register">
+          <div class="form-group">
+            <label class="form-label">Prénom / Pseudo</label>
+            <input type="text" class="form-input" id="reg-username" placeholder="Ex: Alice, Théo…">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mot de passe</label>
+            <input type="password" class="form-input" id="reg-password" placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Avatar</label>
+            <div class="avatar-grid" id="avatar-grid"></div>
+          </div>
+          <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="doRegister()">Créer →</button>
+          <div style="text-align:center;margin-top:12px">
+            <button class="btn btn-ghost btn-sm" onclick="showProfiles()">← Annuler</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1015,7 +1107,13 @@ body {
         <div class="sidebar-user-name" id="sb-name"></div>
         <div class="sidebar-user-sub">Première Générale</div>
       </div>
-      <button class="sidebar-logout" onclick="logout()" title="Déconnexion">⏻</button>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <button class="sidebar-logout" onclick="logout()" title="Déconnexion">⏻</button>
+        <div class="sync-badge offline" id="sync-badge" title="État de la synchronisation">
+          <div class="sync-dot" id="sync-dot"></div>
+          <span id="sync-label">Local</span>
+        </div>
+      </div>
     </div>
 
     <div class="nav-section">
@@ -4813,11 +4911,316 @@ function answerQ(qi, ci) {
   renderQcm();
 }
 
+
+// ============================================================
+// SUPABASE CONFIG & INIT
+// ============================================================
+const GROQ_API_KEY = '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';
+
+let supabase = null;
+let supabaseUser = null;
+let syncTimeout = null;
+let isOnline = navigator.onLine;
+
+function getSbConfig() {
+  return {
+    url: localStorage.getItem('sf_sb_url') || '',
+    key: localStorage.getItem('sf_sb_key') || ''
+  };
+}
+
+function saveSupabaseConfig() {
+  const url = document.getElementById('sb-url-input').value.trim();
+  const key = document.getElementById('sb-key-input').value.trim();
+  if (!url || !key) { toast('⚠️ Les deux champs sont requis'); return; }
+  localStorage.setItem('sf_sb_url', url);
+  localStorage.setItem('sf_sb_key', key);
+  initSupabase(url, key);
+  document.getElementById('supabase-setup-panel').style.display = 'none';
+  document.getElementById('main-auth-panel').style.display = 'block';
+  toast('✅ Supabase configuré !');
+}
+
+function initSupabase(url, key) {
+  try {
+    supabase = window.supabase.createClient(url, key);
+    setupAuthListener();
+    return true;
+  } catch(e) {
+    console.error('Supabase init failed:', e);
+    return false;
+  }
+}
+
+function setupAuthListener() {
+  if (!supabase) return;
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session?.user) {
+      supabaseUser = session.user;
+      await handleSupabaseLogin(session.user);
+    } else if (event === 'SIGNED_OUT') {
+      supabaseUser = null;
+      setSyncStatus('offline', 'Local');
+    }
+  });
+}
+
+async function loginWithGoogle() {
+  if (!supabase) {
+    toast('⚠️ Configure Supabase d\'abord');
+    document.getElementById('supabase-setup-panel').style.display = 'block';
+    return;
+  }
+  setSyncStatus('syncing', 'Connexion…');
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.href
+    }
+  });
+  if (error) { toast('❌ ' + error.message); setSyncStatus('error', 'Erreur'); }
+}
+
+async function handleSupabaseLogin(user) {
+  setSyncStatus('syncing', 'Chargement…');
+  // Create a pseudo "profile" from Google user
+  const p = {
+    id: 'sb_' + user.id,
+    username: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Utilisateur',
+    avatar: user.user_metadata?.avatar_url ? '🌐' : '🦊',
+    isGoogleUser: true,
+    email: user.email,
+    avatarUrl: user.user_metadata?.avatar_url
+  };
+  currentUser = p;
+  // Load data from Supabase
+  userData = await loadFromSupabase(user.id) || getDefaultUserData();
+  // Pre-fill Groq API key if not set
+  if (!userData.apiKey) userData.apiKey = GROQ_API_KEY;
+  finishLogin(p);
+  setSyncStatus('synced', 'Synchronisé');
+}
+
+async function loadFromSupabase(userId) {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('userdata')
+      .select('payload')
+      .eq('user_id', userId)
+      .single();
+    if (error && error.code !== 'PGRST116') throw error;
+    return data?.payload || null;
+  } catch(e) {
+    console.error('Load error:', e);
+    return null;
+  }
+}
+
+async function saveToSupabase() {
+  if (!supabase || !supabaseUser) return;
+  setSyncStatus('syncing', 'Sync…');
+  try {
+    const { error } = await supabase
+      .from('userdata')
+      .upsert({ user_id: supabaseUser.id, payload: userData, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+    if (error) throw error;
+    setSyncStatus('synced', 'Synchronisé');
+  } catch(e) {
+    console.error('Save error:', e);
+    setSyncStatus('error', 'Erreur sync');
+  }
+}
+
+// Debounced sync — waits 2s after last change before saving
+function scheduleSyncToSupabase() {
+  clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(saveToSupabase, 2000);
+}
+
+function setSyncStatus(state, label) {
+  const badge = document.getElementById('sync-badge');
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  if (!badge) return;
+  badge.className = 'sync-badge ' + state;
+  dot.className = 'sync-dot' + (state === 'syncing' ? ' pulse' : '');
+  if (lbl) lbl.textContent = label;
+}
+
+// Override saveUserData to also sync to Supabase
+const _origSaveUserData = window.saveUserData;
+function saveUserData() {
+  if (currentUser) {
+    localStorage.setItem('sf_data_' + currentUser.id, JSON.stringify(userData));
+  }
+  if (supabaseUser) scheduleSyncToSupabase();
+}
+
+// ============================================================
+// UPDATED AUTH FUNCTIONS (with Supabase support)
+// ============================================================
+function getDefaultUserData() {
+  return { fiches:[], cards:[], qcmHistory:[], streak:0, lastActive:null, apiKey: GROQ_API_KEY, aiProvider:'groq' };
+}
+
+function getUserData(uid) {
+  const raw = localStorage.getItem('sf_data_' + uid);
+  const data = raw ? JSON.parse(raw) : getDefaultUserData();
+  // Always ensure Groq key is set
+  if (!data.apiKey) data.apiKey = GROQ_API_KEY;
+  return data;
+}
+
+function finishLogin(p) {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app-screen').classList.add('visible');
+  // Show Google avatar or emoji
+  const avatarEl = document.getElementById('sb-avatar');
+  if (p.avatarUrl) {
+    avatarEl.innerHTML = `<img src="${p.avatarUrl}" style="width:28px;height:28px;border-radius:50%;object-fit:cover" onerror="this.parentElement.textContent='🦊'">`;
+  } else {
+    avatarEl.textContent = p.avatar;
+  }
+  document.getElementById('sb-name').textContent = p.username;
+  buildSelects();
+  buildFilterRow();
+  buildQcmMatSelector();
+  updateStreak();
+  renderDashboard();
+  updatePet();
+  if (userData.apiKey) {
+    const apiBlock = document.getElementById('api-block');
+    if (apiBlock) apiBlock.style.display = 'none';
+  }
+  switchAI(userData.aiProvider || 'groq', true);
+  checkTrophies();
+  // Show Groq key pre-filled info
+  if (userData.apiKey === GROQ_API_KEY) {
+    setTimeout(() => toast('⚡ Clé Groq pré-configurée — IA prête !'), 800);
+  }
+}
+
+// Patch loginAs to use finishLogin
+function loginAs(p) {
+  currentUser = p;
+  userData = getUserData(p.id);
+  if (!userData.apiKey) userData.apiKey = GROQ_API_KEY;
+  finishLogin(p);
+  setSyncStatus('offline', 'Local');
+}
+
+// Patch logout to also sign out from Supabase
+async function logout() {
+  saveUserData();
+  if (supabase && supabaseUser) {
+    await supabase.auth.signOut();
+    supabaseUser = null;
+  }
+  currentUser = null;
+  userData = {};
+  document.getElementById('app-screen').classList.remove('visible');
+  document.getElementById('auth-screen').style.display = 'flex';
+  setSyncStatus('offline', 'Local');
+  showProfiles();
+}
+
+// ============================================================
+// ONLINE/OFFLINE HANDLING
+// ============================================================
+window.addEventListener('online', () => {
+  isOnline = true;
+  if (supabaseUser) {
+    setSyncStatus('syncing', 'Reconnexion…');
+    saveToSupabase();
+  }
+});
+window.addEventListener('offline', () => {
+  isOnline = false;
+  setSyncStatus('offline', 'Hors-ligne');
+});
+
+// ============================================================
+// PWA INSTALL
+// ============================================================
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  setTimeout(() => {
+    document.getElementById('install-banner')?.classList.add('show');
+  }, 3000);
+});
+
+function installPWA() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.then(choice => {
+    if (choice.outcome === 'accepted') toast('🎉 StudyFlow installé !');
+    deferredInstallPrompt = null;
+    document.getElementById('install-banner')?.classList.remove('show');
+  });
+}
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
+// ============================================================
+// SUPABASE STARTUP
+// ============================================================
+(function initOnLoad() {
+  const cfg = getSbConfig();
+  if (cfg.url && cfg.key) {
+    initSupabase(cfg.url, cfg.key);
+    // Check if coming back from OAuth redirect
+    supabase?.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        supabaseUser = session.user;
+        handleSupabaseLogin(session.user);
+      }
+    });
+  }
+})();
+
+function showAuthScreen() {
+  const cfg = getSbConfig();
+  if (!cfg.url || !cfg.key) {
+    document.getElementById('supabase-setup-panel').style.display = 'block';
+    document.getElementById('main-auth-panel').style.display = 'none';
+  } else {
+    document.getElementById('supabase-setup-panel').style.display = 'none';
+    document.getElementById('main-auth-panel').style.display = 'block';
+  }
+}
+
+
 // ============================================================
 // INIT
 // ============================================================
 renderProfiles();
 showProfiles();
+showAuthScreen();
+
+// Pre-fill Groq key in QCM config if empty  
+document.addEventListener('DOMContentLoaded', () => {
+  const apiInput = document.getElementById('api-key-input');
+  if (apiInput && !apiInput.value) apiInput.placeholder = 'Pré-remplie automatiquement ⚡';
+});
 </script>
+<!-- PWA Install Banner -->
+<div id="install-banner">
+  <div style="font-size:22px">📱</div>
+  <div style="flex:1">
+    <div style="font-size:13px;font-weight:600">Installer StudyFlow</div>
+    <div style="font-size:11px;color:var(--muted)">Accès rapide depuis ton écran d'accueil</div>
+  </div>
+  <button class="btn btn-primary btn-sm" onclick="installPWA()">Installer</button>
+  <button class="btn btn-ghost btn-sm" onclick="document.getElementById('install-banner').classList.remove('show')">✕</button>
+</div>
 </body>
 </html>

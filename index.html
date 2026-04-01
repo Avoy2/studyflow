@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0b0c10">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="StudyFlow">
@@ -2187,16 +2188,16 @@ function saveProfiles() {
 
 async function syncProfilesToSupabase() {
   if (!sbClient || !supabaseEnabled) return;
-  // Store public profile info (NO pinHash — stays local only for security)
   const publicProfiles = profiles.map(p => ({
     profile_id: p.id,
     username: p.username,
     avatar: p.avatar
   }));
   for (const pp of publicProfiles) {
-    await sbClient.from('profiles_public')
-      .upsert(pp, { onConflict: 'profile_id' })
-      .catch(() => {});
+    const { error } = await sbClient
+      .from('profiles_public')
+      .upsert(pp, { onConflict: 'profile_id' });
+    if (error) console.warn('syncProfiles error:', error.message);
   }
 }
 
@@ -5282,11 +5283,23 @@ async function loginAs(p) {
   currentUser = p;
   if (supabaseEnabled) {
     setSyncStatus('syncing', 'Chargement…');
-    // Always push this profile to profiles_public so other devices can see it
-    await sbClient.from('profiles_public')
-      .upsert({ profile_id: p.id, username: p.username, avatar: p.avatar }, { onConflict: 'profile_id' })
-      .catch(e => console.warn('profiles_public upsert failed:', e?.message));
-    // Load data
+
+    // Push profile to profiles_public — log the FULL error if it fails
+    const { data: ppData, error: ppError } = await sbClient
+      .from('profiles_public')
+      .upsert(
+        { profile_id: p.id, username: p.username, avatar: p.avatar },
+        { onConflict: 'profile_id' }
+      );
+    if (ppError) {
+      const msg = `profiles_public ERREUR: code=${ppError.code} msg=${ppError.message} details=${ppError.details} hint=${ppError.hint}`;
+      console.error(msg);
+      toast('⚠️ ' + (ppError.message || ppError.code), 5000);
+    } else {
+      console.log('profiles_public ✅ upsert ok');
+    }
+
+    // Load user data
     const remoteData = await loadFromSupabase(p.id);
     if (remoteData) {
       userData = remoteData;

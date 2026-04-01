@@ -2176,133 +2176,8 @@ let userData = {};
 
 function saveProfiles() { localStorage.setItem('sf_profiles', JSON.stringify(profiles)); }
 
-function getUserData(uid) {
-  const raw = localStorage.getItem('sf_data_' + uid);
-  return raw ? JSON.parse(raw) : { fiches:[], cards:[], qcmHistory:[], streak:0, lastActive:null, apiKey:'', aiProvider:'groq' };
-}
-function saveUserData() {
-  localStorage.setItem('sf_data_' + currentUser.id, JSON.stringify(userData));
-}
-
-function hashPw(pw) {
-  // simple deterministic hash for demo purposes
-  let h = 5381;
-  for (let i = 0; i < pw.length; i++) h = (h * 33) ^ pw.charCodeAt(i);
-  return (h >>> 0).toString(36);
-}
-
-// ============================================================
-// AUTH
-// ============================================================
-const AVATARS_GRID = document.getElementById('avatar-grid');
-let selectedAvatar = AVATARS[0];
-
-AVATARS.forEach(a => {
-  const d = document.createElement('div');
-  d.className = 'avatar-opt' + (a === selectedAvatar ? ' selected' : '');
-  d.textContent = a;
-  d.onclick = () => {
-    document.querySelectorAll('.avatar-opt').forEach(x => x.classList.remove('selected'));
-    d.classList.add('selected');
-    selectedAvatar = a;
-  };
-  AVATARS_GRID.appendChild(d);
-});
-
-function renderProfiles() {
-  const list = document.getElementById('profiles-list');
-  if (profiles.length === 0) {
-    list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:12px 0">Aucun profil créé</div>';
-    return;
-  }
-  list.innerHTML = profiles.map(p => `
-    <div class="profile-item" onclick="selectProfile('${p.id}')">
-      <div class="profile-avatar">${p.avatar}</div>
-      <div>
-        <div class="profile-name">${p.username}</div>
-        <div class="profile-info">Première Générale</div>
-      </div>
-      <div class="profile-arrow">→</div>
-    </div>
-  `).join('');
-}
-
-function showProfiles() {
-  document.getElementById('profiles-section').style.display = 'block';
-  document.getElementById('auth-forms').style.display = 'none';
-  renderProfiles();
-}
-
-function selectProfile(id) {
-  const p = profiles.find(x => x.id === id);
-  if (!p) return;
-  document.getElementById('login-username').value = p.username;
-  showAuthForm('login');
-}
-
-function showAuthForm(tab) {
-  document.getElementById('profiles-section').style.display = 'none';
-  document.getElementById('auth-forms').style.display = 'block';
-  switchAuthTab(tab);
-}
-
-function switchAuthTab(tab) {
-  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-  document.getElementById('tab-' + tab).classList.add('active');
-  document.getElementById('form-' + tab).classList.add('active');
-}
-
-function doLogin() {
-  const username = document.getElementById('login-username').value.trim();
-  const password = document.getElementById('login-password').value;
-  if (!username || !password) { toast('⚠️ Remplis tous les champs'); return; }
-  const p = profiles.find(x => x.username.toLowerCase() === username.toLowerCase());
-  if (!p) { toast('❌ Profil introuvable'); return; }
-  if (p.pwHash !== hashPw(password)) { toast('❌ Mot de passe incorrect'); return; }
-  loginAs(p);
-}
-
-function doRegister() {
-  const username = document.getElementById('reg-username').value.trim();
-  const password = document.getElementById('reg-password').value;
-  if (!username || !password) { toast('⚠️ Remplis tous les champs'); return; }
-  if (password.length < 4) { toast('⚠️ Mot de passe trop court (4 min)'); return; }
-  if (profiles.find(p => p.username.toLowerCase() === username.toLowerCase())) {
-    toast('❌ Ce nom est déjà pris'); return;
-  }
-  const p = { id: Date.now().toString(36), username, avatar: selectedAvatar, pwHash: hashPw(password) };
-  profiles.push(p);
-  saveProfiles();
-  loginAs(p);
-}
-
-function loginAs(p) {
-  currentUser = p;
-  userData = getUserData(p.id);
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app-screen').classList.add('visible');
-  document.getElementById('sb-avatar').textContent = p.avatar;
-  document.getElementById('sb-name').textContent = p.username;
-  buildSelects();
-  buildFilterRow();
-  buildQcmMatSelector();
-  updateStreak();
-  renderDashboard();
-  updatePet();
-  if (userData.apiKey) document.getElementById('api-block').style.display = 'none';
-  switchAI(userData.aiProvider || 'groq', true);
-  checkTrophies();
-}
-
-function logout() {
-  saveUserData();
-  currentUser = null;
-  userData = {};
-  document.getElementById('app-screen').classList.remove('visible');
-  document.getElementById('auth-screen').style.display = 'flex';
-  showProfiles();
-}
+// getUserData, saveUserData, renderProfiles, showProfiles, loginAs, logout, doRegister
+// → all defined later in the PIN AUTH SYSTEM section
 
 // ============================================================
 // BUILD DYNAMIC ELEMENTS
@@ -2864,11 +2739,7 @@ function renderQcm() {
   }
 }
 
-function answerQ(qi, ci) {
-  if (qcmAnswered[qi] !== null) return;
-  qcmAnswered[qi] = ci;
-  renderQcm();
-}
+// answerQ defined later with Mur des Erreurs support
 
 // ============================================================
 // STATS
@@ -4965,7 +4836,7 @@ function answerQ(qi, ci) {
 // ============================================================
 // SUPABASE CONFIG & SYNC (no auth — PIN-only)
 // ============================================================
-let supabase = null;
+let sbClient = null;
 let supabaseEnabled = false;
 let supabaseUid = null; // deterministic from profile id
 let syncTimeout = null;
@@ -4978,19 +4849,19 @@ function getSbConfig() {
   };
 }
 
-function saveSupabaseConfig() {
+async function saveSupabaseConfig() {
   const url = document.getElementById('sb-url-input').value.trim();
   const key = document.getElementById('sb-key-input').value.trim();
   if (!url || !key) { toast('⚠️ Les deux champs sont requis'); return; }
   localStorage.setItem('sf_sb_url', url);
   localStorage.setItem('sf_sb_key', key);
-  if (initSupabase(url, key)) {
-    document.getElementById('supabase-setup-panel').style.display = 'none';
-    document.getElementById('main-auth-panel').style.display = 'block';
-    toast('✅ Supabase configuré — synchro activée !');
-  } else {
-    toast('❌ URL ou clé invalide');
-  }
+  if (!initSupabase(url, key)) return;
+  // Test the connection and table existence
+  toast('🔄 Test de connexion…');
+  const ok = await testSupabaseConnection();
+  document.getElementById('supabase-setup-panel').style.display = 'none';
+  document.getElementById('main-auth-panel').style.display = 'block';
+  if (ok) toast('✅ Supabase connecté — synchro activée !');
 }
 
 function skipSupabase() {
@@ -5001,39 +4872,81 @@ function skipSupabase() {
 
 function initSupabase(url, key) {
   try {
-    supabase = window.supabase.createClient(url, key);
+    if (!url.startsWith('https://') || !url.includes('.supabase.co')) {
+      toast('❌ URL Supabase invalide (ex: https://xxxx.supabase.co)');
+      return false;
+    }
+    sbClient = window.supabase.createClient(url, key);
     supabaseEnabled = true;
     return true;
   } catch(e) {
-    console.error('Supabase init failed:', e);
+    console.error('Supabase init failed:', e?.message || e);
     return false;
   }
 }
 
-// We use the profile id as the Supabase row key (no auth — Row Level Security off for this approach)
-// The table uses user_id as text PK (not UUID tied to auth.users)
-// See supabase_setup.sql for the updated schema.
-async function loadFromSupabase(profileId) {
-  if (!supabase || !supabaseEnabled) return null;
+async function testSupabaseConnection() {
+  if (!sbClient) return false;
   try {
-    const { data, error } = await supabase
+    // Lightweight test: query the table (will fail with 42P01 if table missing, not network error)
+    const { error } = await sbClient
+      .from('userdata_pin')
+      .select('profile_id')
+      .limit(1);
+    if (error && error.code === '42P01') {
+      toast('❌ Table introuvable — exécute supabase_setup.sql dans ton projet Supabase', 7000);
+      setSyncStatus('error', 'Table manquante');
+      return false;
+    }
+    if (error && (error.code === 'PGRST301' || error.message?.includes('JWT'))) {
+      toast('❌ Clé API invalide — vérifie ta "anon key" dans Supabase → Settings → API', 7000);
+      setSyncStatus('error', 'Clé invalide');
+      return false;
+    }
+    // Any other error means network/config issue but connection itself is up
+    setSyncStatus('synced', 'Connecté ☁️');
+    return true;
+  } catch(e) {
+    toast('❌ Impossible de joindre Supabase — vérifie l\'URL et ta connexion', 5000);
+    setSyncStatus('error', 'Hors ligne');
+    return false;
+  }
+}
+
+// We use the profile id as the Supabase row key (no auth — Row Level Security off)
+async function loadFromSupabase(profileId) {
+
+  if (!sbClient || !supabaseEnabled) return null;
+  try {
+    const { data, error } = await sbClient
       .from('userdata_pin')
       .select('payload')
       .eq('profile_id', profileId)
       .single();
-    if (error && error.code !== 'PGRST116') throw error;
+
+    // PGRST116 = row not found (first login) — not a real error
+    if (error) {
+      if (error.code === 'PGRST116') return null;
+      const msg = error.message || error.details || JSON.stringify(error);
+      console.error('Supabase load error:', msg, error);
+      setSyncStatus('error', 'Erreur chargement');
+      toast('⚠️ Sync: ' + (error.message || error.code || 'Erreur inconnue'), 4000);
+      return null;
+    }
     return data?.payload || null;
   } catch(e) {
-    console.error('Supabase load error:', e);
+    const msg = e?.message || JSON.stringify(e);
+    console.error('Supabase load exception:', msg);
+    setSyncStatus('error', 'Erreur réseau');
     return null;
   }
 }
 
 async function saveToSupabase() {
-  if (!supabase || !supabaseEnabled || !currentUser) return;
+  if (!sbClient || !supabaseEnabled || !currentUser) return;
   setSyncStatus('syncing', 'Sync…');
   try {
-    const { error } = await supabase
+    const { error } = await sbClient
       .from('userdata_pin')
       .upsert({
         profile_id: currentUser.id,
@@ -5041,13 +4954,30 @@ async function saveToSupabase() {
         payload: userData,
         updated_at: new Date().toISOString()
       }, { onConflict: 'profile_id' });
-    if (error) throw error;
+
+    if (error) {
+      const msg = error.message || error.details || JSON.stringify(error);
+      console.error('Supabase save error:', msg, error);
+      setSyncStatus('error', '⚠️ ' + (error.message || error.code));
+      // Show actionable toast based on error type
+      if (error.code === '42P01') {
+        // Table doesn't exist
+        toast('❌ Table "userdata_pin" introuvable — exécute le fichier supabase_setup.sql', 6000);
+      } else if (error.code === '42501' || error.message?.includes('permission')) {
+        toast('❌ Permission refusée — vérifie que le RLS est désactivé dans Supabase', 6000);
+      } else {
+        toast('⚠️ Erreur sync: ' + (error.message || error.code), 4000);
+      }
+      return;
+    }
     setSyncStatus('synced', 'Synchronisé ☁️');
   } catch(e) {
-    console.error('Supabase save error:', e);
-    setSyncStatus('error', 'Erreur sync');
+    const msg = e?.message || JSON.stringify(e);
+    console.error('Supabase save exception:', msg);
+    setSyncStatus('error', 'Erreur réseau');
   }
 }
+
 
 function scheduleSyncToSupabase() {
   clearTimeout(syncTimeout);
@@ -5087,7 +5017,7 @@ function getUserData(uid) {
 let pinBuffers = { login: '', reg: '' };
 let selectedAvatarForReg = '🦊';
 let profileToLogin = null;
-const AVATARS = ['🦊','🐼','🐬','🦋','🐙','🦁','🐸','🦄','🐺','🐧','🦅','🦈'];
+// (AVATARS already declared above in MULTI-PROFILE STORAGE)
 
 // Simple hash for PIN (not cryptographic — PIN is low-stakes)
 function hashPin(pin) {
@@ -5348,9 +5278,11 @@ if ('serviceWorker' in navigator) {
   const cfg = getSbConfig();
   const skipped = localStorage.getItem('sf_sb_skip');
   if (cfg.url && cfg.key) {
-    initSupabase(cfg.url, cfg.key);
+    const ok = initSupabase(cfg.url, cfg.key);
     document.getElementById('supabase-setup-panel').style.display = 'none';
     document.getElementById('main-auth-panel').style.display = 'block';
+    // Silently test connection in background (don't block UI)
+    if (ok) testSupabaseConnection().catch(() => {});
   } else if (skipped) {
     document.getElementById('supabase-setup-panel').style.display = 'none';
     document.getElementById('main-auth-panel').style.display = 'block';

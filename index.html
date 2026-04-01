@@ -1067,7 +1067,12 @@ body {
 
       <!-- Liste des profils existants -->
       <div id="profiles-section">
-        <div class="section-label">Choisir un profil</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div class="section-label" style="margin:0">Choisir un profil</div>
+          <button id="refresh-profiles-btn" onclick="refreshProfilesFromCloud()" style="display:none;background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:color .15s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
+            ↻ Actualiser
+          </button>
+        </div>
         <div class="profiles-list" id="profiles-list"></div>
         <button class="btn btn-ghost btn-full" style="margin-top:4px" onclick="showRegisterForm()">+ Créer un profil</button>
       </div>
@@ -5187,8 +5192,15 @@ function selectAvatar(a, el) {
 function renderProfiles() {
   const list = document.getElementById('profiles-list');
   if (!list) return;
+
+  // Show refresh button only when Supabase is configured
+  const refreshBtn = document.getElementById('refresh-profiles-btn');
+  if (refreshBtn) refreshBtn.style.display = supabaseEnabled ? 'block' : 'none';
+
   if (profiles.length === 0) {
-    list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px 0">Aucun profil créé</div>';
+    list.innerHTML = supabaseEnabled
+      ? '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px 0">Chargement… <br><span style="font-size:11px">ou clique ↻ Actualiser</span></div>'
+      : '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px 0">Aucun profil créé</div>';
     return;
   }
   list.innerHTML = profiles.map(p => {
@@ -5206,6 +5218,15 @@ function renderProfiles() {
       <div class="profile-arrow">→</div>
     </div>`;
   }).join('');
+}
+
+async function refreshProfilesFromCloud() {
+  const btn = document.getElementById('refresh-profiles-btn');
+  if (btn) btn.textContent = '↻ …';
+  await loadProfilesFromSupabase();
+  renderProfiles();
+  if (btn) btn.textContent = '↻ Actualiser';
+  toast('✅ Profils mis à jour');
 }
 
 function showProfiles() {
@@ -5259,13 +5280,16 @@ function doRegister() {
 // Override loginAs to load from Supabase if available
 async function loginAs(p) {
   currentUser = p;
-  // Try to load from Supabase first
   if (supabaseEnabled) {
     setSyncStatus('syncing', 'Chargement…');
+    // Always push this profile to profiles_public so other devices can see it
+    await sbClient.from('profiles_public')
+      .upsert({ profile_id: p.id, username: p.username, avatar: p.avatar }, { onConflict: 'profile_id' })
+      .catch(e => console.warn('profiles_public upsert failed:', e?.message));
+    // Load data
     const remoteData = await loadFromSupabase(p.id);
     if (remoteData) {
       userData = remoteData;
-      // Also update local cache
       localStorage.setItem('sf_data_' + p.id, JSON.stringify(userData));
     } else {
       userData = getUserData(p.id);

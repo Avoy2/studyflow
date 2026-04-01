@@ -1078,7 +1078,7 @@ body {
           <div style="font-size:36px" id="pin-login-avatar"></div>
           <div style="font-family:'Fraunces',serif;font-size:18px;margin-top:6px" id="pin-login-name"></div>
         </div>
-        <div class="section-label" style="text-align:center;margin-bottom:10px">Ton code PIN (4 chiffres)</div>
+        <div class="section-label" style="text-align:center;margin-bottom:10px" id="pin-login-hint">Ton code PIN (4 chiffres)</div>
         <div class="pin-dots" id="pin-dots-login">
           <div class="pin-dot" id="pdl0"></div>
           <div class="pin-dot" id="pdl1"></div>
@@ -2174,10 +2174,60 @@ let profiles = JSON.parse(localStorage.getItem('sf_profiles') || '[]');
 let currentUser = null;
 let userData = {};
 
-function saveProfiles() { localStorage.setItem('sf_profiles', JSON.stringify(profiles)); }
+function saveProfiles() {
+  localStorage.setItem('sf_profiles', JSON.stringify(profiles));
+  // Also push to Supabase so other devices can discover the profile list
+  if (supabaseEnabled) syncProfilesToSupabase().catch(() => {});
+}
 
-// getUserData, saveUserData, renderProfiles, showProfiles, loginAs, logout, doRegister
-// → all defined later in the PIN AUTH SYSTEM section
+async function syncProfilesToSupabase() {
+  if (!sbClient || !supabaseEnabled) return;
+  // Store public profile info (NO pinHash — stays local only for security)
+  const publicProfiles = profiles.map(p => ({
+    profile_id: p.id,
+    username: p.username,
+    avatar: p.avatar
+  }));
+  for (const pp of publicProfiles) {
+    await sbClient.from('profiles_public')
+      .upsert(pp, { onConflict: 'profile_id' })
+      .catch(() => {});
+  }
+}
+
+async function loadProfilesFromSupabase() {
+  if (!sbClient || !supabaseEnabled) return;
+  try {
+    const { data, error } = await sbClient
+      .from('profiles_public')
+      .select('profile_id, username, avatar');
+    if (error || !data?.length) return;
+
+    // Merge remote profiles into local list
+    // Keep local pinHash, add any profiles we don't have yet (new device)
+    let changed = false;
+    for (const remote of data) {
+      const exists = profiles.find(p => p.id === remote.profile_id);
+      if (!exists) {
+        // Profile exists on Supabase but not locally — add it without pinHash
+        // User will be prompted to confirm their PIN on first login from this device
+        profiles.push({
+          id: remote.profile_id,
+          username: remote.username,
+          avatar: remote.avatar,
+          pinHash: null  // unknown on this device yet
+        });
+        changed = true;
+      }
+    }
+    if (changed) {
+      localStorage.setItem('sf_profiles', JSON.stringify(profiles));
+      renderProfiles();
+    }
+  } catch(e) {
+    // Silent — not critical
+  }
+}
 
 // ============================================================
 // BUILD DYNAMIC ELEMENTS
@@ -5077,6 +5127,22 @@ function pinSuccess(mode) {
 
 function checkPinLogin() {
   if (!profileToLogin) return;
+
+  // New device: pinHash not yet stored locally — treat entered PIN as the new PIN
+  if (!profileToLogin.pinHash) {
+    // Store the PIN they just entered as the local PIN for this device
+    const idx = profiles.findIndex(p => p.id === profileToLogin.id);
+    if (idx !== -1) {
+      profiles[idx].pinHash = hashPin(pinBuffers.login);
+      localStorage.setItem('sf_profiles', JSON.stringify(profiles));
+      profileToLogin = profiles[idx];
+    }
+    pinSuccess('login');
+    toast('✅ PIN enregistré sur cet appareil');
+    setTimeout(() => loginAs(profileToLogin), 300);
+    return;
+  }
+
   if (hashPin(pinBuffers.login) === profileToLogin.pinHash) {
     pinSuccess('login');
     setTimeout(() => loginAs(profileToLogin), 300);
@@ -5125,16 +5191,21 @@ function renderProfiles() {
     list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px 0">Aucun profil créé</div>';
     return;
   }
-  list.innerHTML = profiles.map(p => `
+  list.innerHTML = profiles.map(p => {
+    const isNewDevice = !p.pinHash;
+    const info = isNewDevice
+      ? '<span style="color:var(--accent);font-size:11px">📱 Nouvel appareil — entre ton PIN</span>'
+      : (supabaseEnabled ? '☁️ Sync activée' : '💾 Local');
+    return `
     <div class="profile-item" onclick="startPinLogin('${p.id}')">
       <div class="profile-avatar">${p.avatar}</div>
       <div>
         <div class="profile-name">${p.username}</div>
-        <div class="profile-info">${supabaseEnabled ? '☁️ Sync activée' : '💾 Local'}</div>
+        <div class="profile-info">${info}</div>
       </div>
       <div class="profile-arrow">→</div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function showProfiles() {
@@ -5155,6 +5226,14 @@ function startPinLogin(id) {
   document.getElementById('pin-login-panel').style.display = 'block';
   document.getElementById('pin-login-avatar').textContent = p.avatar;
   document.getElementById('pin-login-name').textContent = p.username;
+  // Show helpful hint for new device
+  const hint = document.getElementById('pin-login-hint');
+  if (hint) {
+    hint.textContent = p.pinHash
+      ? 'Entre ton code PIN'
+      : '📱 Nouvel appareil — entre le PIN que tu avais choisi à la création';
+    hint.style.color = p.pinHash ? '' : 'var(--accent)';
+  }
   updatePinDots('login');
 }
 
@@ -5281,8 +5360,17 @@ if ('serviceWorker' in navigator) {
     const ok = initSupabase(cfg.url, cfg.key);
     document.getElementById('supabase-setup-panel').style.display = 'none';
     document.getElementById('main-auth-panel').style.display = 'block';
-    // Silently test connection in background (don't block UI)
-    if (ok) testSupabaseConnection().catch(() => {});
+    if (ok) {
+      // Load remote profiles first, then show the list
+      setSyncStatus('syncing', 'Chargement…');
+      loadProfilesFromSupabase().then(() => {
+        renderProfiles();
+        setSyncStatus('synced', 'Connecté ☁️');
+      }).catch(() => {
+        setSyncStatus('error', 'Hors ligne');
+      });
+      testSupabaseConnection().catch(() => {});
+    }
   } else if (skipped) {
     document.getElementById('supabase-setup-panel').style.display = 'none';
     document.getElementById('main-auth-panel').style.display = 'block';

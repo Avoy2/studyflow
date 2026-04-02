@@ -1185,56 +1185,87 @@ body {
       </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Menu</div>
-      <button class="nav-btn active" onclick="showPage('dashboard')"><span class="icon">⊞</span> Tableau de bord</button>
-      <button class="nav-btn" onclick="showPage('fiches')"><span class="icon">📄</span> Fiches</button>
-      <button class="nav-btn" onclick="showPage('flashcards')"><span class="icon">🃏</span> Flashcards</button>
-      <button class="nav-btn" onclick="showPage('qcm')"><span class="icon">✦</span> QCM IA</button>
-      <button class="nav-btn" onclick="showPage('notes')"><span class="icon">📊</span> Notes</button>
-      <button class="nav-btn" onclick="showPage('stats')"><span class="icon">◈</span> Statistiques</button>
+    <!-- MENU — toujours ouvert -->
+    <div class="nav-section nav-accordion open" id="acc-menu">
+      <button class="nav-accordion-header" onclick="toggleAccordion('acc-menu')">
+        <span class="nav-label" style="margin:0">Menu</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="nav-accordion-body">
+        <button class="nav-btn active" onclick="showPage('dashboard')"><span class="icon">⊞</span> Tableau de bord</button>
+        <button class="nav-btn" onclick="showPage('fiches')"><span class="icon">📄</span> Fiches</button>
+        <button class="nav-btn" onclick="showPage('flashcards')"><span class="icon">🃏</span> Flashcards</button>
+        <button class="nav-btn" onclick="showPage('qcm')"><span class="icon">✦</span> QCM IA</button>
+        <button class="nav-btn" onclick="showPage('notes')"><span class="icon">📊</span> Notes</button>
+        <button class="nav-btn" onclick="showPage('stats')"><span class="icon">◈</span> Statistiques</button>
+      </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Services</div>
-      <button class="nav-btn" onclick="showPage('pronote')"><span class="icon">🌐</span> Pronote</button>
-      <button class="nav-btn" onclick="showPage('elea')"><span class="icon">📚</span> Éléa</button>
+    <div class="nav-section nav-accordion" id="acc-services">
+      <button class="nav-accordion-header" onclick="toggleAccordion('acc-services')">
+        <span class="nav-label" style="margin:0">Services</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="nav-accordion-body">
+        <button class="nav-btn" onclick="showPage('pronote')"><span class="icon">🌐</span> Pronote</button>
+        <button class="nav-btn" onclick="showPage('elea')"><span class="icon">📚</span> Éléa</button>
+      </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Données</div>
-      <button class="nav-btn" onclick="exportData()"><span class="icon">📤</span> Exporter</button>
-      <button class="nav-btn" onclick="document.getElementById('import-file').click()"><span class="icon">📥</span> Importer</button>
-      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+    <div class="nav-section nav-accordion" id="acc-donnees">
+      <button class="nav-accordion-header" onclick="toggleAccordion('acc-donnees')">
+        <span class="nav-label" style="margin:0">Données</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="nav-accordion-body">
+        <button class="nav-btn" onclick="exportData()"><span class="icon">📤</span> Exporter</button>
+        <button class="nav-btn" onclick="document.getElementById('import-file').click()"><span class="icon">📥</span> Importer</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+      </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Outils</div>
-      <button class="nav-btn" onclick="showPage('pomodoro')"><span class="icon">⏱️</span> Pomodoro</button>
-      <button class="nav-btn" onclick="showPage('calendrier')"><span class="icon">📆</span> Calendrier</button>
-      <button class="nav-btn" onclick="showPage('examen')"><span class="icon">🎮</span> Mode Examen</button>
-      <button class="nav-btn" onclick="showPage('trophees')"><span class="icon">🏆</span> Trophées</button>
-      <button class="nav-btn" onclick="showPage('outils')"><span class="icon">🧮</span> Outils Sci.</button>
-      <button class="nav-btn" onclick="showPage('erreurs')"><span class="icon">🧱</span> Mur des erreurs</button>
-      <button class="nav-btn" onclick="showPage('victoire')"><span class="icon">🌟</span> Victoires</button>
+    <div class="nav-section nav-accordion" id="acc-outils">
+      <button class="nav-accordion-header" onclick="toggleAccordion('acc-outils')">
+        <span class="nav-label" style="margin:0">Outils</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="nav-accordion-body">
+        <button class="nav-btn" onclick="showPage('pomodoro')"><span class="icon">⏱️</span> Pomodoro</button>
+        <button class="nav-btn" onclick="showPage('calendrier')"><span class="icon">📆</span> Calendrier</button>
+        <button class="nav-btn" onclick="showPage('examen')"><span class="icon">🎮</span> Mode Examen</button>
+        <button class="nav-btn" onclick="showPage('trophees')"><span class="icon">🏆</span> Trophées</button>
+        <button class="nav-btn" onclick="showPage('outils')"><span class="icon">🧮</span> Outils Sci.</button>
+        <button class="nav-btn" onclick="showPage('erreurs')"><span class="icon">🧱</span> Mur des erreurs</button>
+        <button class="nav-btn" onclick="showPage('victoire')"><span class="icon">🌟</span> Victoires</button>
+      </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Spécialités</div>
-      <button class="nav-btn" onclick="goFichesMat('math')"><span class="matiere-dot" style="background:var(--math)"></span> Mathématiques</button>
-      <button class="nav-btn" onclick="goFichesMat('pc')"><span class="matiere-dot" style="background:var(--pc)"></span> Physique-Chimie</button>
-      <button class="nav-btn" onclick="goFichesMat('nsi')"><span class="matiere-dot" style="background:var(--nsi)"></span> NSI</button>
+    <div class="nav-section nav-accordion" id="acc-spe">
+      <button class="nav-accordion-header" onclick="toggleAccordion('acc-spe')">
+        <span class="nav-label" style="margin:0">Spécialités</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="nav-accordion-body">
+        <button class="nav-btn" onclick="goFichesMat('math')"><span class="matiere-dot" style="background:var(--math)"></span> Mathématiques</button>
+        <button class="nav-btn" onclick="goFichesMat('pc')"><span class="matiere-dot" style="background:var(--pc)"></span> Physique-Chimie</button>
+        <button class="nav-btn" onclick="goFichesMat('nsi')"><span class="matiere-dot" style="background:var(--nsi)"></span> NSI</button>
+      </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Tronc commun</div>
-      <button class="nav-btn" onclick="goFichesMat('fr')"><span class="matiere-dot" style="background:var(--fr)"></span> Français</button>
-      <button class="nav-btn" onclick="goFichesMat('en')"><span class="matiere-dot" style="background:var(--en)"></span> Anglais</button>
-      <button class="nav-btn" onclick="goFichesMat('es')"><span class="matiere-dot" style="background:var(--es)"></span> Espagnol</button>
-      <button class="nav-btn" onclick="goFichesMat('emc')"><span class="matiere-dot" style="background:var(--emc)"></span> EMC</button>
-      <button class="nav-btn" onclick="goFichesMat('es-sci')"><span class="matiere-dot" style="background:var(--es-sci)"></span> Ens. Scient. PC</button>
-      <button class="nav-btn" onclick="goFichesMat('svt')"><span class="matiere-dot" style="background:var(--svt)"></span> Ens. Scient. SVT</button>
-      <button class="nav-btn" onclick="goFichesMat('hg')"><span class="matiere-dot" style="background:var(--hg)"></span> Histoire-Géo</button>
+    <div class="nav-section nav-accordion" id="acc-tronc">
+      <button class="nav-accordion-header" onclick="toggleAccordion('acc-tronc')">
+        <span class="nav-label" style="margin:0">Tronc commun</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="nav-accordion-body">
+        <button class="nav-btn" onclick="goFichesMat('fr')"><span class="matiere-dot" style="background:var(--fr)"></span> Français</button>
+        <button class="nav-btn" onclick="goFichesMat('en')"><span class="matiere-dot" style="background:var(--en)"></span> Anglais</button>
+        <button class="nav-btn" onclick="goFichesMat('es')"><span class="matiere-dot" style="background:var(--es)"></span> Espagnol</button>
+        <button class="nav-btn" onclick="goFichesMat('emc')"><span class="matiere-dot" style="background:var(--emc)"></span> EMC</button>
+        <button class="nav-btn" onclick="goFichesMat('es-sci')"><span class="matiere-dot" style="background:var(--es-sci)"></span> Ens. Scient. PC</button>
+        <button class="nav-btn" onclick="goFichesMat('svt')"><span class="matiere-dot" style="background:var(--svt)"></span> Ens. Scient. SVT</button>
+        <button class="nav-btn" onclick="goFichesMat('hg')"><span class="matiere-dot" style="background:var(--hg)"></span> Histoire-Géo</button>
+      </div>
     </div>
 
     <div class="sidebar-bottom">
@@ -3145,6 +3176,19 @@ function showPage(id) {
   if (id==='outils') renderOutils();
   if (id==='erreurs') renderErreurs();
   if (id==='victoire') renderVictoires();
+  // Mobile: update bottom nav + topbar title
+  setBottomNav(id);
+  openAccordionForPage(id);
+  const _pageTitles = {
+    dashboard:'StudyFlow', fiches:'Fiches', flashcards:'Flashcards',
+    qcm:'QCM IA', notes:'Notes', stats:'Statistiques',
+    pronote:'Pronote', elea:'Éléa', pomodoro:'Pomodoro',
+    calendrier:'Calendrier', examen:'Mode Examen', trophees:'Trophées',
+    outils:'Outils', erreurs:'Mur des Erreurs', victoire:'Victoires'
+  };
+  const _titleEl = document.querySelector('.mobile-topbar-title');
+  if (_titleEl) _titleEl.textContent = _pageTitles[id] || 'StudyFlow';
+  closeSidebarDrawer();
 }
 
 
@@ -3895,6 +3939,56 @@ function exportFichesPDF() {
   .overlay.open .modal { animation: sheetUp .25s cubic-bezier(.32,.72,0,1); }
 }
 
+
+/* ===== NAV ACCORDION ===== */
+.nav-accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 6px 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--r3);
+  transition: background 0.15s;
+  gap: 6px;
+}
+.nav-accordion-header:hover {
+  background: var(--s2);
+}
+.acc-arrow {
+  font-size: 11px;
+  color: var(--muted2);
+  transition: transform 0.22s cubic-bezier(0.4,0,0.2,1);
+  flex-shrink: 0;
+  line-height: 1;
+}
+.nav-accordion.open .acc-arrow {
+  transform: rotate(0deg);
+}
+.nav-accordion:not(.open) .acc-arrow {
+  transform: rotate(-90deg);
+}
+
+.nav-accordion-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.28s cubic-bezier(0.4,0,0.2,1),
+              opacity 0.22s ease;
+  opacity: 0;
+}
+.nav-accordion.open .nav-accordion-body {
+  max-height: 600px;
+  opacity: 1;
+}
+
+/* Separator line between sections */
+.nav-accordion + .nav-accordion {
+  border-top: 1px solid var(--border);
+  padding-top: 2px;
+  margin-top: 2px;
+}
 </style></head><body>
 <h1>📄 Fiches de révision — StudyFlow</h1>
 <div class="sub">Exporté le ${new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · ${list.length} fiche(s)</div>
@@ -5586,6 +5680,7 @@ function finishLogin(p) {
   updateStreak();
   renderDashboard();
   updatePet();
+  restoreAccordionStates();
   if (userData.apiKey) {
     const apiBlock = document.getElementById('api-block');
     if (apiBlock) apiBlock.style.display = 'none';
@@ -5766,6 +5861,56 @@ function _fixVH() {
 _fixVH();
 window.addEventListener('resize', _fixVH);
 window.addEventListener('orientationchange', () => setTimeout(_fixVH, 120));
+
+
+// ============================================================
+// ACCORDION NAV
+// ============================================================
+function toggleAccordion(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const isOpen = el.classList.contains('open');
+  el.classList.toggle('open', !isOpen);
+  // Save state
+  try {
+    const states = JSON.parse(localStorage.getItem('sf_acc') || '{}');
+    states[id] = !isOpen;
+    localStorage.setItem('sf_acc', JSON.stringify(states));
+  } catch(e) {}
+}
+
+function restoreAccordionStates() {
+  try {
+    const states = JSON.parse(localStorage.getItem('sf_acc') || '{}');
+    // Default: only Menu open
+    const defaults = { 'acc-menu': true, 'acc-services': false,
+      'acc-donnees': false, 'acc-outils': false,
+      'acc-spe': false, 'acc-tronc': false };
+    const merged = { ...defaults, ...states };
+    Object.entries(merged).forEach(([id, open]) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('open', open);
+    });
+  } catch(e) {}
+}
+
+// Auto-open the accordion section that contains the active page
+function openAccordionForPage(pageId) {
+  const pageToAccordion = {
+    dashboard:'acc-menu', fiches:'acc-menu', flashcards:'acc-menu',
+    qcm:'acc-menu', notes:'acc-menu', stats:'acc-menu',
+    pronote:'acc-services', elea:'acc-services',
+    pomodoro:'acc-outils', calendrier:'acc-outils', examen:'acc-outils',
+    trophees:'acc-outils', outils:'acc-outils', erreurs:'acc-outils', victoire:'acc-outils',
+  };
+  const accId = pageToAccordion[pageId];
+  if (accId) {
+    const el = document.getElementById(accId);
+    if (el && !el.classList.contains('open')) {
+      el.classList.add('open');
+    }
+  }
+}
 
 </script>
 <!-- PWA Install Banner -->

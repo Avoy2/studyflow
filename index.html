@@ -1154,18 +1154,21 @@ body {
   </div>
 </div>
 
-<!-- MOBILE OVERLAY for sidebar drawer -->
-<div class="sidebar-drawer-overlay" id="sidebar-overlay" onclick="closeSidebarDrawer()"></div>
 
 <!-- ============================= APP ============================= -->
 <div id="app-screen">
-  <!-- MOBILE TOP BAR -->
-  <div class="mobile-topbar" id="mobile-topbar">
-    <button class="mobile-menu-btn" onclick="openSidebarDrawer()" aria-label="Menu">☰</button>
-    <div class="mobile-topbar-title">StudyFlow</div>
-    <div class="mobile-sync-status" id="mobile-sync-dot" style="color:var(--muted)">●</div>
+
+  <!-- ══ MOBILE TOP BAR ══ -->
+  <div class="mob-bar" id="mob-bar">
+    <button class="mob-menu-btn" id="mob-menu-btn" onclick="drawerOpen()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="mob-bar-title" id="mob-bar-title">StudyFlow</span>
+    <span class="mob-sync" id="mob-sync">●</span>
   </div>
 
+  <!-- ══ SIDEBAR OVERLAY ══ -->
+  <div class="drawer-overlay" id="drawer-overlay" onclick="drawerClose()"></div>
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-avatar" id="sb-avatar"></div>
@@ -1256,23 +1259,14 @@ body {
     </div>
   </aside>
 
-  <!-- MOBILE BOTTOM NAV -->
-  <nav class="bottom-nav" id="bottom-nav">
-    <button class="bottom-nav-item active" id="bn-dashboard" onclick="showPage('dashboard');setBottomNav('dashboard')">
-      <span class="bn-icon">⊞</span><span>Accueil</span>
-    </button>
-    <button class="bottom-nav-item" id="bn-fiches" onclick="showPage('fiches');setBottomNav('fiches')">
-      <span class="bn-icon">📄</span><span>Fiches</span>
-    </button>
-    <button class="bottom-nav-item" id="bn-flashcards" onclick="showPage('flashcards');setBottomNav('flashcards')">
-      <span class="bn-icon">🃏</span><span>Cartes</span>
-    </button>
-    <button class="bottom-nav-item" id="bn-qcm" onclick="showPage('qcm');setBottomNav('qcm')">
-      <span class="bn-icon">✦</span><span>QCM</span>
-    </button>
-    <button class="bottom-nav-item" id="bn-notes" onclick="showPage('notes');setBottomNav('notes')">
-      <span class="bn-icon">📊</span><span>Notes</span>
-    </button>
+
+  <!-- ══ BOTTOM NAV ══ -->
+  <nav class="btm-nav" id="btm-nav">
+    <button class="btm-btn" id="btm-dashboard" onclick="showPage('dashboard')"><span>⊞</span>Accueil</button>
+    <button class="btm-btn" id="btm-fiches"    onclick="showPage('fiches')"><span>📄</span>Fiches</button>
+    <button class="btm-btn" id="btm-flashcards" onclick="showPage('flashcards')"><span>🃏</span>Cartes</button>
+    <button class="btm-btn" id="btm-qcm"       onclick="showPage('qcm')"><span>✦</span>QCM</button>
+    <button class="btm-btn" id="btm-notes"     onclick="showPage('notes')"><span>📊</span>Notes</button>
   </nav>
 
   <main class="main">
@@ -3121,7 +3115,7 @@ function renderResources() {
 // ============================================================
 // SHOW PAGE — updated
 // ============================================================
-function showPageBase(id) {
+function showPage(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   const page = document.getElementById('page-'+id);
@@ -3151,22 +3145,6 @@ function showPageBase(id) {
   if (id==='outils') renderOutils();
   if (id==='erreurs') renderErreurs();
   if (id==='victoire') renderVictoires();
-}
-
-// showPage = wrapper calling showPageBase + mobile updates
-function showPage(id) {
-  showPageBase(id);
-  setBottomNav(id);
-  const pageTitles = {
-    dashboard:'StudyFlow', fiches:'Fiches', flashcards:'Flashcards',
-    qcm:'QCM IA', notes:'Notes', stats:'Statistiques',
-    pronote:'Pronote', elea:'Éléa', pomodoro:'Pomodoro',
-    calendrier:'Calendrier', examen:'Mode Examen', trophees:'Trophées',
-    outils:'Outils', erreurs:'Mur des Erreurs', victoire:'Victoires'
-  };
-  const el = document.querySelector('.mobile-topbar-title');
-  if (el) el.textContent = pageTitles[id] || 'StudyFlow';
-  closeSidebarDrawer();
 }
 
 
@@ -3681,324 +3659,242 @@ function exportFichesPDF() {
   .fiche-meta { margin-top: 6px; font-size: 11px; color: #aaa; }
   @media print { body { padding: 16px; } .fiche { page-break-inside: avoid; } }
 
-/* ============================================================
-   RESPONSIVE — MOBILE FIRST
-   Breakpoints : 
-     < 640px  = mobile
-     640–900  = tablet
-     > 900    = desktop (current layout)
-   ============================================================ */
 
-/* ===== BOTTOM NAV (mobile) ===== */
-.mobile-topbar {
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE — StudyFlow v8
+   Desktop  : > 900 px  → sidebar layout (unchanged)
+   Mobile   : ≤ 900 px  → top bar + bottom nav + drawer
+   ══════════════════════════════════════════════════════════ */
+
+/* ── MOBILE TOP BAR ── */
+.mob-bar {
   display: none;
-  position: fixed; top: 0; left: 0; right: 0; z-index: 80;
-  background: var(--s0); border-bottom: 1px solid var(--border);
-  padding: 0 16px;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
   height: 52px;
-  align-items: center; justify-content: space-between;
-  gap: 10px;
+  background: var(--s0);
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  padding: 0 14px;
+  gap: 12px;
 }
-.mobile-topbar-title {
+.mob-menu-btn {
+  width: 36px; height: 36px;
+  background: none; border: none;
+  display: flex; flex-direction: column;
+  justify-content: center; gap: 5px;
+  cursor: pointer; padding: 4px; flex-shrink: 0;
+}
+.mob-menu-btn span {
+  display: block; width: 20px; height: 2px;
+  background: var(--text); border-radius: 1px;
+  transition: all .25s;
+}
+.mob-bar-title {
+  flex: 1; text-align: center;
   font-family: 'Fraunces', serif;
-  font-size: 18px; font-weight: 500;
-  color: var(--text); flex: 1; text-align: center;
+  font-size: 17px; font-weight: 500;
+  color: var(--text);
 }
-.mobile-menu-btn {
-  width: 36px; height: 36px; border-radius: 8px;
-  background: var(--s2); border: 1px solid var(--border);
-  color: var(--text); font-size: 16px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0;
-}
-.mobile-sync-status {
-  font-size: 10px; display: flex; align-items: center; gap: 4px;
+.mob-sync {
+  font-size: 10px; color: var(--muted);
+  flex-shrink: 0;
 }
 
-.bottom-nav {
+/* ── SIDEBAR DRAWER ── */
+.drawer-overlay {
   display: none;
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 80;
-  background: var(--s0); border-top: 1px solid var(--border);
-  padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
-  gap: 0;
+  position: fixed; inset: 0; z-index: 201;
+  background: rgba(0,0,0,.55);
 }
-.bottom-nav-item {
+.drawer-overlay.open { display: block; }
+
+/* ── BOTTOM NAV ── */
+.btm-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: var(--s0);
+  border-top: 1px solid var(--border);
+  padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+}
+.btm-btn {
   flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 2px;
-  padding: 6px 2px; border-radius: 8px;
+  align-items: center; gap: 2px;
+  padding: 4px 2px;
   border: none; background: none;
-  color: var(--muted); font-family: 'Instrument Sans', sans-serif;
-  font-size: 9px; font-weight: 500; cursor: pointer;
-  transition: all 0.15s; min-width: 0;
+  color: var(--muted);
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 9px; font-weight: 500;
+  cursor: pointer; transition: color .15s;
 }
-.bottom-nav-item .bn-icon { font-size: 20px; line-height: 1; }
-.bottom-nav-item.active { color: var(--accent); }
-.bottom-nav-item.active .bn-icon { transform: scale(1.1); }
+.btm-btn span { font-size: 19px; line-height: 1; }
+.btm-btn.active { color: var(--accent); }
 
-/* Drawer overlay for full nav on mobile */
-.sidebar-drawer-overlay {
-  display: none; position: fixed; inset: 0; z-index: 85;
-  background: rgba(0,0,0,0.6); backdrop-filter: blur(2px);
-}
-.sidebar-drawer-overlay.open { display: block; }
-
+/* ── MOBILE BREAKPOINT ── */
 @media (max-width: 900px) {
-  /* Show mobile topbar and bottom nav */
-  .mobile-topbar { display: flex; }
-  .bottom-nav { display: flex; }
 
-  /* Hide desktop sidebar */
+  /* Show mobile chrome */
+  .mob-bar  { display: flex; }
+  .btm-nav  { display: flex; }
+
+  /* Push sidebar off-screen; it slides in as a drawer */
   .sidebar {
-    position: fixed; left: -260px; top: 0; bottom: 0; z-index: 90;
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    height: 100dvh; width: 260px; min-width: 260px;
-    box-shadow: var(--shadow);
+    position: fixed !important;
+    top: 0; left: -265px; bottom: 0;
+    width: 260px; min-width: 260px;
+    height: 100%; z-index: 202;
+    transition: left .28s cubic-bezier(.4,0,.2,1);
+    overflow-y: auto;
   }
-  .sidebar.drawer-open { left: 0; }
+  .sidebar.open { left: 0; }
 
-  /* App layout */
-  #app-screen.visible { flex-direction: column; }
+  /* App screen: single column */
+  #app-screen.visible { display: block !important; }
 
-  /* Main content adjustments */
+  /* Main: offset for top bar + bottom nav */
   .main {
-    padding-top: 52px;
-    padding-bottom: calc(64px + env(safe-area-inset-bottom));
-    overflow-y: auto; height: 100dvh;
+    padding-top: 52px !important;
+    padding-bottom: calc(60px + env(safe-area-inset-bottom)) !important;
+    height: auto !important;
+    overflow-y: auto;
+    min-height: 100dvh;
   }
 
-  /* Page header smaller on mobile */
-  .page-header { padding: 20px 16px 0; margin-bottom: 16px; }
-  .page-title { font-size: 22px; }
-  .content { padding: 0 16px 24px; }
+  /* Page chrome */
+  .page-header { padding: 18px 16px 0 !important; margin-bottom: 14px !important; }
+  .page-title  { font-size: 21px !important; }
+  .content     { padding: 0 14px 28px !important; }
 
-  /* KPI grid 2x2 */
-  .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
-  .kpi { padding: 14px; }
-  .kpi-val { font-size: 26px; }
+  /* KPIs: 2×2 */
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important; margin-bottom: 14px !important;
+  }
+  .kpi { padding: 13px !important; }
+  .kpi-val { font-size: 24px !important; }
 
-  /* Stats grid 1 col */
-  .stats-grid3 { grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
-  .two-col { grid-template-columns: 1fr; gap: 12px; }
+  /* Grids: 1 col */
+  .fiches-grid  { grid-template-columns: 1fr !important; }
+  .stats-grid3  { grid-template-columns: 1fr !important; }
+  .two-col      { grid-template-columns: 1fr !important; }
+  .trophy-grid  { grid-template-columns: 1fr 1fr !important; }
 
-  /* Fiches grid 1 col */
-  .fiches-grid { grid-template-columns: 1fr; gap: 10px; }
+  /* Flashcard */
+  .card-scene { height: 240px !important; }
+  .card-q     { font-size: 17px !important; }
+  .rating-row { gap: 6px !important; }
+  .rating-btn { padding: 11px 10px !important; flex: 1; font-size: 13px !important; }
 
-  /* Modal full-screen on mobile */
-  .overlay { padding: 0; align-items: flex-end; }
+  /* QCM */
+  .qcm-q        { padding: 14px !important; }
+  .qcm-question { font-size: 15px !important; }
+  .qcm-choice   { padding: 12px 12px !important; }
+
+  /* Modals → bottom sheet */
+  .overlay {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
   .modal {
-    border-radius: 20px 20px 0 0; max-width: 100%;
-    max-height: 92dvh; width: 100%;
-    border-bottom: none;
+    width: 100% !important; max-width: 100% !important;
+    max-height: 90dvh !important;
+    border-radius: 18px 18px 0 0 !important;
+    border-bottom: none !important;
   }
-  .modal-head { border-radius: 20px 20px 0 0; padding: 18px 20px 14px; }
-  .modal-body { padding: 16px 20px; }
-
-  /* Flashcard scene fills width */
-  .card-scene { height: 260px; }
-
-  /* Rating buttons bigger touch targets */
-  .rating-btn { padding: 13px 18px; font-size: 14px; flex: 1; justify-content: center; }
-  .rating-row { gap: 8px; width: 100%; max-width: 360px; }
-
-  /* QCM padding */
-  .qcm-q { padding: 16px; }
-  .qcm-question { font-size: 16px; }
-  .qcm-choice { padding: 13px 14px; }
-
-  /* Bottom nav toast offset */
-  .toast { bottom: calc(72px + env(safe-area-inset-bottom)); right: 16px; left: 16px; text-align: center; }
-
-  /* Auth card full width */
-  .auth-card { padding: 28px 20px; border-radius: 16px; }
-
-  /* Install banner */
-  #install-banner { bottom: calc(72px + env(safe-area-inset-bottom)); }
-
-  /* Matieres chips smaller */
-  .matiere-chip { min-width: 120px; padding: 12px 14px; }
-
-  /* Calendar 1 col layout */
-  .cal-layout { grid-template-columns: 1fr !important; }
-
-  /* Pomodoro centered */
-  .pomo-layout { grid-template-columns: 1fr !important; }
-  .pomo-circle { width: 180px; height: 180px; }
-  .pomo-inner { width: 144px; height: 144px; }
-  .pomo-time { font-size: 36px; }
-
-  /* Tools grid 1 col */
-  .tools-grid { grid-template-columns: 1fr !important; }
-
-  /* Calc buttons bigger */
-  .calc-btn { padding: 14px 6px; font-size: 14px; }
-  .calc-result { font-size: 26px; }
-
-  /* Notes KPI 2x2 */
-  .notes-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
-  .notes-charts { grid-template-columns: 1fr !important; }
-
-  /* Trophy grid 2 col */
-  .trophy-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .trophy-ico { font-size: 28px; }
-
-  /* Exam timer */
-  .exam-timer-display { font-size: 22px; }
-
-  /* Due items */
-  .due-item { flex-wrap: wrap; gap: 8px; }
-
-  /* Filter row scroll */
-  .filter-row { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
-  .filter-row::-webkit-scrollbar { display: none; }
-
-  /* Form inputs bigger touch targets */
-  .form-input, .form-select, .form-textarea {
-    padding: 13px 14px; font-size: 16px; /* prevents zoom on iOS */
+  .modal-head {
+    border-radius: 18px 18px 0 0 !important;
+    padding: 14px 18px 12px !important;
   }
-  .form-textarea { font-size: 14px; }
-
-  /* Sidebar sync badge */
-  #sync-badge { display: none; }
-
-  /* Page sub smaller */
-  .page-sub { font-size: 12px; }
-
-  /* Search input */
-  .search-input { font-size: 16px; padding: 12px 14px 12px 38px; }
-
-  /* Hide hover effects (performance) */
-  .fiche-card:hover { transform: none; box-shadow: none; }
-  .matiere-chip:hover { transform: none; }
-
-  /* Toolbar wrap */
-  .toolbar { gap: 8px; }
-
-  /* Periodic table stays scrollable */
-  .pt-grid { min-width: 700px; }
-
-  /* Result score smaller */
-  .result-score { font-size: 44px; }
-
-  /* Nav btn in drawer bigger */
-  .nav-btn { padding: 11px 12px; font-size: 14px; }
-  .nav-btn .icon { font-size: 17px; width: 22px; }
-
-  /* AI provider tabs full width */
-  .ai-provider-tabs { width: 100%; }
-  .ai-tab { flex: 1; text-align: center; }
-}
-
-@media (max-width: 480px) {
-  /* Extra small phones */
-  .kpi-val { font-size: 22px; }
-  .page-title { font-size: 20px; }
-  .modal-title { font-size: 18px; }
-  .card-scene { height: 230px; }
-  .card-q { font-size: 17px; }
-  .trophy-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .trophy-card { padding: 12px; }
-
-  /* Auth */
-  .auth-card { padding: 22px 16px; }
-  .auth-logo-name { font-size: 28px; }
-  .btn-google { font-size: 13px; }
-}
-
-@media (min-width: 640px) and (max-width: 900px) {
-  /* Tablet: 2-col where it makes sense */
-  .fiches-grid { grid-template-columns: repeat(2, 1fr); }
-  .kpi-grid { grid-template-columns: repeat(4, 1fr); }
-  .stats-grid3 { grid-template-columns: repeat(3, 1fr); }
-  .trophy-grid { grid-template-columns: repeat(3, 1fr); }
-  .notes-kpi-grid { grid-template-columns: repeat(4, 1fr) !important; }
-}
-
-/* ===== SAFE AREA (iPhone notch/home bar) ===== */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .main {
-    padding-bottom: calc(64px + env(safe-area-inset-bottom));
-  }
-}
-
-/* ===== HOVER only on devices that support it ===== */
-@media (hover: hover) {
-  .fiche-card:hover { transform: translateY(-2px); box-shadow: var(--shadow2); }
-  .matiere-chip:hover { transform: translateY(-2px); }
-  .trophy-card.unlocked:hover { transform: translateY(-2px); }
-}
-
-
-/* Mobile modal slide-up animation */
-@media (max-width: 900px) {
-  @keyframes slideUp {
-    from { transform: translateY(100%); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
-  }
-  .overlay.open .modal {
-    animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
-  }
-  /* Drag handle on mobile modals */
   .modal-head::before {
     content: '';
     display: block;
-    width: 36px; height: 4px;
+    width: 32px; height: 4px;
     background: var(--border2);
     border-radius: 2px;
-    margin: 0 auto 14px;
+    margin: 0 auto 12px;
   }
-  /* Full-width buttons in modal actions on mobile */
-  .modal-actions { flex-direction: column; }
-  .modal-actions .btn { width: 100%; justify-content: center; }
-}
+  .modal-body { padding: 14px 18px !important; }
+  .modal-actions { flex-direction: column !important; }
+  .modal-actions .btn { width: 100% !important; justify-content: center !important; }
 
-@media (max-width: 900px) {
-  .cal-layout > * { width: 100% !important; flex: none !important; min-width: 0 !important; }
-  .cal-layout { flex-direction: column !important; }
-}
+  /* Forms: no zoom on iOS */
+  .form-input,
+  .form-select {
+    font-size: 16px !important;
+    padding: 12px 13px !important;
+  }
+  .search-input { font-size: 16px !important; }
 
-/* ===== DVH / iOS height fix ===== */
-@media (max-width: 900px) {
-  #app-screen.visible { min-height: 100dvh; }
-  .main { height: 100dvh; }
-  .sidebar { height: 100dvh; }
-
-  /* Auth screen scrollable on small phones */
-  #auth-screen { align-items: flex-start; overflow-y: auto; padding: 20px 16px 40px; }
-  .auth-card { margin: auto; max-width: 420px; width: 100%; }
-
-  /* QCM setup stacks on mobile */
-  .qcm-setup { padding: 14px; }
-  .mat-selector { gap: 6px; }
-  .mat-pill { font-size: 11px; padding: 5px 10px; }
-
-  /* Page header flex wraps */
-  .page-header > div { flex-wrap: wrap; gap: 8px; }
-  .page-header .btn { width: auto; }
-
-  /* Sidebar header compact */
-  .sidebar-header { padding: 0 14px 14px; }
-  .sidebar-user-name { font-size: 15px; }
-
-  /* Streak pill in sidebar bottom */
-  .streak-pill { padding: 10px 12px; }
-  .streak-val { font-size: 20px; }
+  /* Filter row: horizontal scroll */
+  .filter-row {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .filter-row::-webkit-scrollbar { display: none; }
 
   /* Toast above bottom nav */
-  .toast { bottom: calc(70px + env(safe-area-inset-bottom)); }
+  .toast {
+    bottom: calc(68px + env(safe-area-inset-bottom)) !important;
+    left: 14px !important; right: 14px !important;
+    text-align: center;
+  }
 
-  /* Focus overlay z-index above bottom nav */
-  .focus-overlay { z-index: 200; }
+  /* Auth screen */
+  #auth-screen { align-items: flex-start; overflow-y: auto; padding: 20px 16px 40px; }
+  .auth-card   { width: 100%; margin: auto; }
 
-  /* Pomo settings grid */
-  .pomo-layout { grid-template-columns: 1fr !important; }
-  .pomo-layout > * { width: 100%; }
+  /* Matieres chips */
+  .matiere-chip { min-width: 110px !important; padding: 11px 12px !important; }
+
+  /* Pomo */
+  .pomo-circle { width: 180px !important; height: 180px !important; }
+  .pomo-inner  { width: 144px !important; height: 144px !important; }
+  .pomo-time   { font-size: 34px !important; }
+
+  /* Result card */
+  .result-score { font-size: 46px !important; }
+
+  /* Calc buttons */
+  .calc-btn    { padding: 13px 4px !important; font-size: 13px !important; }
+  .calc-result { font-size: 24px !important; }
+
+  /* Periodic table stays horizontally scrollable */
+  .periodic-wrap { overflow-x: auto; }
+
+  /* Focus overlay above bottom nav */
+  .focus-overlay { z-index: 300 !important; }
+
+  /* Install banner */
+  #install-banner { bottom: calc(68px + env(safe-area-inset-bottom)) !important; }
 }
 
-/* Fix 100vh on iOS Safari */
-@supports (height: 100dvh) {
-  .main { height: 100dvh; }
-  .sidebar { height: 100dvh; }
+@media (max-width: 480px) {
+  .kpi-val    { font-size: 20px !important; }
+  .page-title { font-size: 18px !important; }
+  .modal-title { font-size: 17px !important; }
+  .trophy-grid { grid-template-columns: 1fr 1fr !important; }
+  .trophy-card { padding: 12px !important; }
+  .trophy-ico  { font-size: 26px !important; }
 }
+
+/* Tablet tweaks (640-900) */
+@media (min-width: 640px) and (max-width: 900px) {
+  .fiches-grid { grid-template-columns: 1fr 1fr !important; }
+  .trophy-grid { grid-template-columns: repeat(3, 1fr) !important; }
+  .kpi-grid    { grid-template-columns: repeat(4, 1fr) !important; }
+  .stats-grid3 { grid-template-columns: repeat(3, 1fr) !important; }
+}
+
+/* Slide-up animation for bottom-sheet modals */
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@media (max-width: 900px) {
+  .overlay.open .modal { animation: sheetUp .25s cubic-bezier(.32,.72,0,1); }
+}
+
 </style></head><body>
 <h1>📄 Fiches de révision — StudyFlow</h1>
 <div class="sub">Exporté le ${new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · ${list.length} fiche(s)</div>
@@ -5787,95 +5683,89 @@ if ('serviceWorker' in navigator) {
 // (startup handled in initOnLoad above)
 
 
-// ============================================================
-// MOBILE / RESPONSIVE JS
-// ============================================================
 
-function openSidebarDrawer() {
-  document.querySelector('.sidebar').classList.add('drawer-open');
-  document.getElementById('sidebar-overlay').classList.add('open');
+// ══════════════════════════════════════════════════════════
+// MOBILE — drawer + bottom nav + swipe
+// ══════════════════════════════════════════════════════════
+
+function drawerOpen() {
+  document.querySelector('.sidebar').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
-
-function closeSidebarDrawer() {
-  document.querySelector('.sidebar').classList.remove('drawer-open');
-  document.getElementById('sidebar-overlay').classList.remove('open');
+function drawerClose() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
   document.body.style.overflow = '';
 }
 
-// Close drawer when a nav button is clicked on mobile
+// Close drawer when any nav button is tapped
 document.addEventListener('click', e => {
-  const navBtn = e.target.closest('.nav-btn');
-  if (navBtn && window.innerWidth <= 900) {
-    closeSidebarDrawer();
-  }
+  if (e.target.closest('.nav-btn') && window.innerWidth <= 900) drawerClose();
 });
 
-// Bottom nav active state
-function setBottomNav(pageId) {
-  document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
-  const map = {
-    dashboard: 'bn-dashboard', fiches: 'bn-fiches',
-    flashcards: 'bn-flashcards', qcm: 'bn-qcm', notes: 'bn-notes'
-  };
-  const btnId = map[pageId];
-  if (btnId) document.getElementById(btnId)?.classList.add('active');
+// Bottom nav highlight
+function btmNav(id) {
+  document.querySelectorAll('.btm-btn').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById('btm-' + id);
+  if (el) el.classList.add('active');
 }
 
-// Update mobile page title in topbar
-function setMobileTitle(title) {
-  const el = document.getElementById('mobile-topbar-title') || document.querySelector('.mobile-topbar-title');
-  if (el) el.textContent = title || 'StudyFlow';
+// Top bar title
+const PAGE_TITLES = {
+  dashboard:'StudyFlow', fiches:'Fiches', flashcards:'Flashcards',
+  qcm:'QCM IA', notes:'Notes', stats:'Statistiques',
+  pronote:'Pronote', elea:'Éléa', pomodoro:'Pomodoro',
+  calendrier:'Calendrier', examen:'Mode Examen', trophees:'Trophées',
+  outils:'Outils', erreurs:'Mur des Erreurs', victoire:'Victoires'
+};
+function setTopTitle(id) {
+  const el = document.getElementById('mob-bar-title');
+  if (el) el.textContent = PAGE_TITLES[id] || 'StudyFlow';
 }
 
-// showPage defined above
+// Patch showPage to update mobile chrome
+const _origShowPage = showPage;
+window.showPage = function(id) {
+  _origShowPage(id);
+  btmNav(id);
+  setTopTitle(id);
+  drawerClose();
+};
 
-// Sync status in mobile topbar - extends base setSyncStatus
-function setSyncStatus(state, label) {
-  // update sync badge (original logic inline)
-  const badge = document.getElementById('sync-badge');
-  const dot2 = document.getElementById('sync-dot');
-  const lbl = document.getElementById('sync-label');
-  if (badge) { badge.className = 'sync-badge ' + state; }
-  if (dot2) { dot2.className = 'sync-dot' + (state==='syncing'?' pulse':''); }
-  if (lbl) lbl.textContent = label;
-  const dot = document.getElementById('mobile-sync-dot');
+// Sync dot in top bar
+const _origSync = window.setSyncStatus;
+window.setSyncStatus = function(state, label) {
+  if (_origSync) _origSync(state, label);
+  const dot = document.getElementById('mob-sync');
   if (!dot) return;
-  const colors = { synced: '#4ade80', syncing: '#60a5fa', offline: '#6b7080', error: '#f87171' };
-  dot.style.color = colors[state] || '#6b7080';
-  dot.title = label;
-}
+  const cols = { synced:'#4ade80', syncing:'#60a5fa', offline:'#6b7080', error:'#f87171' };
+  dot.style.color = cols[state] || '#6b7080';
+  dot.title = label || '';
+};
 
-// Handle viewport height for iOS (100vh issue)
-function setVH() {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
-}
-setVH();
-window.addEventListener('resize', setVH);
-window.addEventListener('orientationchange', () => setTimeout(setVH, 100));
-
-// Swipe to open/close sidebar on mobile
-let touchStartX = 0, touchStartY = 0;
+// Edge swipe: drag right from left edge to open drawer
+let _tx = 0, _ty = 0;
 document.addEventListener('touchstart', e => {
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY;
+  _tx = e.touches[0].clientX;
+  _ty = e.touches[0].clientY;
 }, { passive: true });
-
 document.addEventListener('touchend', e => {
   if (window.innerWidth > 900) return;
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-  if (dy > 60) return; // mostly vertical swipe, ignore
-  if (dx > 60 && touchStartX < 30) openSidebarDrawer();  // swipe right from edge
-  if (dx < -60) closeSidebarDrawer(); // swipe left closes
+  const dx = e.changedTouches[0].clientX - _tx;
+  const dy = Math.abs(e.changedTouches[0].clientY - _ty);
+  if (dy > 60) return;
+  if (dx > 55 && _tx < 28) drawerOpen();
+  if (dx < -55) drawerClose();
 }, { passive: true });
 
-// Improve touch scroll behavior
-document.querySelectorAll('.filter-row, .matieres-scroll').forEach(el => {
-  el.style.webkitOverflowScrolling = 'touch';
-});
-
+// iOS 100vh fix
+function _fixVH() {
+  document.documentElement.style.setProperty('--real-vh', window.innerHeight * .01 + 'px');
+}
+_fixVH();
+window.addEventListener('resize', _fixVH);
+window.addEventListener('orientationchange', () => setTimeout(_fixVH, 120));
 
 </script>
 <!-- PWA Install Banner -->

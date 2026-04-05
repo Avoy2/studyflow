@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="StudyFlow">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3406/3406828.png">
-<title>StudyFlow v8.2.1 — Première Générale</title>
+<title>StudyFlow v8.3 — Première Générale</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
@@ -1301,7 +1301,7 @@ body {
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-name">StudyFlow</div>
-      <div class="auth-logo-sub">Première Générale 2026 · v8.2.1</div>
+      <div class="auth-logo-sub">Première Générale 2026 · v8.3</div>
     </div>
 
     <!-- ÉTAPE 1 : Config Supabase (première ouverture seulement) -->
@@ -1849,12 +1849,12 @@ document.querySelector('.main').insertAdjacentHTML('beforeend', `
             <option value="all">Toutes matières</option>
           </select>
         </div>
-        <canvas id="notes-chart" height="180"></canvas>
+        <div style="position:relative;height:200px"><canvas id="notes-chart"></canvas></div>
       </div>
       <!-- Radar par matière -->
       <div class="card card-p">
         <div class="section-label" style="margin-bottom:14px">🎯 Moyennes par matière</div>
-        <canvas id="notes-radar" height="180"></canvas>
+        <div style="position:relative;height:200px"><canvas id="notes-radar"></canvas></div>
       </div>
     </div>
 
@@ -4344,21 +4344,26 @@ let notesLineChart = null, notesRadarChart = null;
 function renderNotesChart() {
   const canvas = document.getElementById('notes-chart');
   if (!canvas) return;
+
+  // Détruire l'instance précédente proprement
+  if (notesLineChart) { notesLineChart.destroy(); notesLineChart = null; }
+
   const matFilter = document.getElementById('notes-chart-mat')?.value || 'all';
   let notes = [...(userData.notes || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
   if (matFilter !== 'all') notes = notes.filter(n => n.mat === matFilter);
-  if (!notes.length) { canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height); return; }
 
-  const labels = notes.map(n => n.date ? new Date(n.date + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : '?');
+  if (!notes.length) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+
+  const labels = notes.map(n => n.date
+    ? new Date(n.date + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+    : '?');
   const vals = notes.map(n => n.val);
+  const avgs = notes.map((_, i) => calcMoyenne(notes.slice(0, i + 1)));
 
-  // Rolling weighted average
-  const avgs = notes.map((_, i) => {
-    const slice = notes.slice(0, i + 1);
-    return calcMoyenne(slice);
-  });
-
-  if (notesLineChart) { notesLineChart.destroy(); notesLineChart = null; }
   notesLineChart = new Chart(canvas, {
     type: 'line',
     data: {
@@ -4386,7 +4391,9 @@ function renderNotesChart() {
       ]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
       plugins: { legend: { labels: { color: '#6b7080', font: { size: 11 } } } },
       scales: {
         x: { ticks: { color: '#6b7080', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
@@ -4399,16 +4406,21 @@ function renderNotesChart() {
 function renderNotesRadar() {
   const canvas = document.getElementById('notes-radar');
   if (!canvas) return;
+
+  // Détruire l'instance précédente proprement
+  if (notesRadarChart) { notesRadarChart.destroy(); notesRadarChart = null; }
+
   const notes = userData.notes || [];
   const matieres = MATIERES.filter(m => notes.some(n => n.mat === m.id));
-  if (matieres.length < 2) { canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height); return; }
 
-  const avgs = matieres.map(m => {
-    const mn = notes.filter(n => n.mat === m.id);
-    return calcMoyenne(mn) || 0;
-  });
+  if (matieres.length < 2) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
 
-  if (notesRadarChart) { notesRadarChart.destroy(); notesRadarChart = null; }
+  const avgs = matieres.map(m => calcMoyenne(notes.filter(n => n.mat === m.id)) || 0);
+
   notesRadarChart = new Chart(canvas, {
     type: 'radar',
     data: {
@@ -4423,7 +4435,9 @@ function renderNotesRadar() {
       }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
       plugins: { legend: { display: false } },
       scales: {
         r: {

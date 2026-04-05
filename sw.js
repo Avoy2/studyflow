@@ -1,5 +1,5 @@
 // ── Bump this version every time you deploy ──────────────────
-const CACHE_VERSION = 'studyflow-v9';
+const CACHE_VERSION = 'studyflow-v10';
 // ─────────────────────────────────────────────────────────────
 
 const STATIC_ASSETS = [
@@ -18,6 +18,7 @@ const BYPASS_HOSTS = [
   'anthropic.com',
   'generativelanguage.googleapis.com',
   'accounts.google.com', 'oauth2.googleapis.com',
+  'jsdelivr.net',  // supabase-js CDN — ne pas intercepter
 ];
 
 function shouldBypass(url) {

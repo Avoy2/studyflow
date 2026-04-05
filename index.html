@@ -5704,7 +5704,26 @@ function installPWA() {
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      // Si un nouveau SW est en attente, le forcer à prendre le contrôle immédiatement
+      if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        if (!newSW) return;
+        newSW.addEventListener('statechange', () => {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            // Nouveau SW prêt — forcer l'activation sans attendre fermeture de l'onglet
+            newSW.postMessage('SKIP_WAITING');
+          }
+        });
+      });
+    }).catch(() => {});
+
+    // Recharger la page quand un nouveau SW prend le contrôle
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) { refreshing = true; window.location.reload(); }
+    });
   });
 }
 

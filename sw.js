@@ -1,6 +1,8 @@
-const CACHE_NAME = 'studyflow-v8';
+// ── Bump this version every time you deploy ──────────────────
+const CACHE_VERSION = 'studyflow-v9';
+// ─────────────────────────────────────────────────────────────
+
 const STATIC_ASSETS = [
-  'index.html',
   'manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js',
@@ -10,70 +12,86 @@ const STATIC_ASSETS = [
   'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap',
 ];
 
-// These hosts must NEVER be intercepted — Supabase uses non-clonable Headers
-// (apikey, Authorization) which cause DataCloneError if the SW touches them.
 const BYPASS_HOSTS = [
-  'supabase.co',
-  'supabase.io',
-  'groq.com',
-  'api.groq.com',
+  'supabase.co', 'supabase.io',
+  'groq.com', 'api.groq.com',
   'anthropic.com',
   'generativelanguage.googleapis.com',
+  'accounts.google.com', 'oauth2.googleapis.com',
 ];
 
 function shouldBypass(url) {
   return BYPASS_HOSTS.some(h => url.hostname.includes(h));
 }
 
-// Install
+function isHTMLNavigation(request) {
+  return request.mode === 'navigate' ||
+         (request.headers.get('accept') || '').includes('text/html');
+}
+
+// INSTALL: cache static assets (NOT index.html — always fetch fresh)
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache =>
-      Promise.allSettled(STATIC_ASSETS.map(url => cache.add(url).catch(() => {})))
+    caches.open(CACHE_VERSION).then(cache =>
+      Promise.allSettled(
+        STATIC_ASSETS.map(url => cache.add(url).catch(() => {}))
+      )
     )
   );
 });
 
-// Activate: clear old caches
+// ACTIVATE: delete ALL old caches, claim all tabs immediately
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+        keys.filter(k => k !== CACHE_VERSION).map(k => caches.delete(k))
       ))
       .then(() => self.clients.claim())
   );
 });
 
-// Fetch
+// FETCH
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Don't call event.respondWith() at all for API calls.
-  // Returning without respondWith lets the browser handle it natively,
-  // completely avoiding the DataCloneError.
+  // Never intercept API / auth calls
   if (shouldBypass(url)) return;
   if (event.request.method !== 'GET') return;
 
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request)
+  // HTML navigation → NETWORK FIRST (always get latest index.html)
+  if (isHTMLNavigation(event.request)) {
+    event.respondWith(
+      fetch(event.request)
         .then(response => {
-          if (response.ok && response.type !== 'opaque') {
-            const clone = response.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => cache.put(event.request, clone))
+          if (response.ok) {
+            caches.open(CACHE_VERSION)
+              .then(cache => cache.put(event.request, response.clone()))
               .catch(() => {});
           }
           return response;
         })
-        .catch(() => {
-          if (event.request.mode === 'navigate') {
-            return caches.match('index.html');
-          }
-        });
+        .catch(() =>
+          caches.match(event.request)
+            .then(cached => cached || caches.match('index.html'))
+        )
+    );
+    return;
+  }
+
+  // Static assets → cache first
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      return fetch(event.request).then(response => {
+        if (response.ok && response.type !== 'opaque') {
+          caches.open(CACHE_VERSION)
+            .then(cache => cache.put(event.request, response.clone()))
+            .catch(() => {});
+        }
+        return response;
+      }).catch(() => undefined);
     })
   );
 });

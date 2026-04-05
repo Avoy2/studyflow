@@ -1,17 +1,31 @@
 {
-  "name": "StudyFlow v8",
+  "name": "StudyFlow",
   "short_name": "StudyFlow",
-  "description": "Ton assistant d'étude personnel",
-  "start_url": "index.html",
+  "description": "Ton assistant d'étude personnel — Première Générale",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#0b0c10",
   "theme_color": "#0b0c10",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3406/3406828.png",
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" type="image/png" href="icon.png">
-<title>StudyFlow v9 — Première Générale</title>
+<title>StudyFlow v10 — Première Générale</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
@@ -899,6 +899,116 @@ body {
 /* PDF Export button */
 .btn-pdf { background: rgba(248,113,113,0.1); color: var(--danger); border: 1px solid rgba(248,113,113,0.2); }
 
+/* ===== V10 SOCIAL ===== */
+
+/* StudyCoins */
+.coins-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  background:linear-gradient(135deg,#2a1f06,#1e1a08);
+  border:1px solid rgba(245,200,66,0.3); border-radius:20px;
+  padding:4px 12px; font-size:13px; font-weight:600; color:var(--gold);
+}
+.coin-icon { font-size:16px; }
+
+/* Leaderboard */
+.lb-row {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px;
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:var(--r2); margin-bottom:8px;
+  transition:all .15s;
+}
+.lb-row:hover { border-color:var(--border2); }
+.lb-row.me { border-color:rgba(124,109,250,.4); background:rgba(124,109,250,.05); }
+.lb-rank {
+  font-family:'Fraunces',serif; font-size:20px; font-weight:500;
+  width:32px; text-align:center; flex-shrink:0;
+}
+.lb-rank.gold   { color:var(--gold); }
+.lb-rank.silver { color:#b0bec5; }
+.lb-rank.bronze { color:#a0785a; }
+.lb-avatar { font-size:24px; flex-shrink:0; }
+.lb-name  { font-size:14px; font-weight:500; flex:1; }
+.lb-score { font-family:'Fraunces',serif; font-size:18px; font-weight:500; color:var(--accent); }
+.lb-sub   { font-size:11px; color:var(--muted); }
+.lb-tabs  { display:flex; background:var(--s2); border-radius:var(--r2); padding:3px; margin-bottom:16px; }
+.lb-tab   { flex:1; padding:8px; border:none; border-radius:7px; background:none; color:var(--muted); font-family:'Instrument Sans',sans-serif; font-size:12px; font-weight:500; cursor:pointer; transition:all .2s; }
+.lb-tab.active { background:var(--s3); color:var(--text); }
+
+/* Shop */
+.shop-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+.shop-item {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:var(--r); padding:16px; text-align:center;
+  cursor:pointer; transition:all .15s;
+}
+.shop-item:hover { border-color:var(--border2); transform:translateY(-2px); }
+.shop-item.owned { border-color:rgba(74,222,128,.3); background:rgba(74,222,128,.04); }
+.shop-item.equipped { border-color:var(--accent); background:rgba(124,109,250,.08); }
+.shop-ico   { font-size:36px; margin-bottom:8px; }
+.shop-name  { font-size:13px; font-weight:600; margin-bottom:4px; }
+.shop-price { font-size:12px; color:var(--gold); font-weight:600; }
+.shop-owned { font-size:11px; color:var(--success); }
+
+/* Group */
+.group-card {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:var(--r); padding:18px; margin-bottom:12px;
+}
+.group-name { font-family:'Fraunces',serif; font-size:18px; margin-bottom:4px; }
+.group-meta { font-size:12px; color:var(--muted); margin-bottom:12px; }
+.group-members { display:flex; gap:6px; flex-wrap:wrap; }
+.member-chip {
+  display:inline-flex; align-items:center; gap:5px;
+  background:var(--s2); border:1px solid var(--border);
+  border-radius:20px; padding:4px 10px; font-size:12px;
+}
+
+/* Marketplace */
+.market-card {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:var(--r); padding:16px;
+  cursor:pointer; transition:all .15s; position:relative;
+}
+.market-card:hover { border-color:var(--border2); transform:translateY(-2px); box-shadow:var(--shadow2); }
+.market-likes {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:12px; color:var(--muted); cursor:pointer;
+  padding:4px 8px; border-radius:20px; background:var(--s2);
+  border:1px solid var(--border); transition:all .15s;
+}
+.market-likes:hover, .market-likes.liked { color:var(--danger); border-color:rgba(248,113,113,.3); background:rgba(248,113,113,.07); }
+
+/* Duel */
+.duel-arena {
+  background:linear-gradient(135deg,#0d0f1a,#13080d);
+  border:1px solid rgba(248,113,113,.2);
+  border-radius:var(--r); padding:24px; text-align:center;
+}
+.duel-vs { font-family:'Fraunces',serif; font-size:28px; font-weight:500; color:var(--danger); margin:12px 0; }
+.duel-prog-row { display:flex; align-items:center; gap:10px; margin:8px 0; }
+.duel-prog-bar { flex:1; height:10px; background:var(--s3); border-radius:5px; overflow:hidden; }
+.duel-prog-fill { height:100%; border-radius:5px; transition:width .4s ease; }
+.duel-me    { background:var(--accent); }
+.duel-them  { background:var(--danger); }
+.duel-label { font-size:12px; color:var(--muted); width:60px; flex-shrink:0; }
+
+/* Pulse animation for live duel */
+@keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+.live-dot {
+  width:8px; height:8px; border-radius:50%;
+  background:var(--danger); animation:livePulse 1s infinite;
+  display:inline-block;
+}
+
+/* Challenge / bet */
+.challenge-card {
+  background:linear-gradient(135deg,#120d1e,#0d1220);
+  border:1px solid rgba(124,109,250,.25);
+  border-radius:var(--r); padding:18px; margin-bottom:12px;
+}
+
+
 /* ===== MARKDOWN RENDERED FICHES ===== */
 .md-body { font-size: 14px; line-height: 1.8; color: var(--text); }
 .md-body h1 { font-family:'Fraunces',serif; font-size:22px; font-weight:500; margin:16px 0 10px; color:var(--text); }
@@ -1334,7 +1444,7 @@ body {
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-name">StudyFlow</div>
-      <div class="auth-logo-sub">Première Générale 2026 · v9</div>
+      <div class="auth-logo-sub">Première Générale 2026 · v10</div>
     </div>
 
     <!-- ÉTAPE 1 : Config Supabase (première ouverture seulement) -->
@@ -1510,6 +1620,7 @@ body {
         <button class="nav-btn" onclick="showPage('correction')"><span class="icon">📝</span> Correction copie</button>
         <button class="nav-btn" onclick="showPage('bac')"><span class="icon">🎓</span> Prédiction Bac</button>
         <button class="nav-btn" onclick="showPage('temps')"><span class="icon">⏱️</span> Temps de révision</button>
+        <button class="nav-btn" onclick="showPage('social')"><span class="icon">🌐</span> Social Hub</button>
       </div>
     </div>
 
@@ -1608,7 +1719,7 @@ body {
     <button class="btm-btn" id="btm-dashboard"  onclick="showPage('dashboard')"><span>⊞</span>Accueil</button>
     <button class="btm-btn" id="btm-fiches"     onclick="showPage('fiches')"><span>📄</span>Fiches</button>
     <button class="btm-btn" id="btm-flashcards" onclick="showPage('flashcards')"><span>🃏</span>Cartes</button>
-    <button class="btm-btn" id="btm-qcm"        onclick="showPage('qcm')"><span>✦</span>QCM</button>
+    <button class="btm-btn" id="btm-social"     onclick="showPage('social')"><span>🌐</span>Social</button>
     <button class="btm-btn" id="btm-ia"         onclick="showPage('defi')"><span>⚡</span>IA</button>
   </nav>
 
@@ -2523,6 +2634,111 @@ document.querySelector('.main').insertAdjacentHTML('beforeend', `
   </div>
 </div>
 
+<!-- PAGE SOCIAL HUB -->
+<div class="page" id="page-social">
+  <div class="page-header">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+      <div>
+        <div class="page-title">🌐 Social Hub</div>
+        <div class="page-sub">Classements · Groupes · Marketplace · Défis</div>
+      </div>
+      <div class="coins-badge"><span class="coin-icon">🪙</span><span id="coins-display">0</span> StudyCoins</div>
+    </div>
+  </div>
+  <div class="content">
+    <!-- Quick stats row -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px" class="kpi-grid">
+      <div class="kpi" style="cursor:pointer" onclick="showSocialTab('leaderboard')">
+        <div class="kpi-val" id="soc-rank" style="color:var(--gold)">—</div>
+        <div class="kpi-label">Ton classement</div>
+      </div>
+      <div class="kpi" style="cursor:pointer" onclick="showSocialTab('shop')">
+        <div class="kpi-val" id="soc-coins" style="color:var(--gold)">0</div>
+        <div class="kpi-label">StudyCoins</div>
+      </div>
+      <div class="kpi" style="cursor:pointer" onclick="showSocialTab('groups')">
+        <div class="kpi-val" id="soc-groups" style="color:var(--pc)">0</div>
+        <div class="kpi-label">Groupes</div>
+      </div>
+      <div class="kpi" style="cursor:pointer" onclick="showSocialTab('marketplace')">
+        <div class="kpi-val" id="soc-market" style="color:var(--nsi)">0</div>
+        <div class="kpi-label">Fiches partagées</div>
+      </div>
+    </div>
+
+    <!-- Tab nav -->
+    <div class="lb-tabs" style="margin-bottom:20px">
+      <button class="lb-tab active" id="st-leaderboard" onclick="showSocialTab('leaderboard')">🏆 Classements</button>
+      <button class="lb-tab" id="st-marketplace"  onclick="showSocialTab('marketplace')">📚 Fiches</button>
+      <button class="lb-tab" id="st-groups"        onclick="showSocialTab('groups')">👥 Groupes</button>
+      <button class="lb-tab" id="st-duel"          onclick="showSocialTab('duel')">⚔️ Duel</button>
+      <button class="lb-tab" id="st-shop"          onclick="showSocialTab('shop')">🛒 Boutique</button>
+    </div>
+
+    <!-- LEADERBOARD TAB -->
+    <div id="social-tab-leaderboard">
+      <div class="lb-tabs">
+        <button class="lb-tab active" id="lbt-grind"  onclick="showLbType('grind')">💪 Grind</button>
+        <button class="lb-tab" id="lbt-genius"        onclick="showLbType('genius')">🧠 Génie</button>
+        <button class="lb-tab" id="lbt-streak"        onclick="showLbType('streak')">🔥 Séries</button>
+      </div>
+      <div id="lb-list"></div>
+      <div style="text-align:center;margin-top:12px;font-size:12px;color:var(--muted)">
+        Le classement se met à jour toutes les heures · Basé sur tous les utilisateurs StudyFlow
+      </div>
+    </div>
+
+    <!-- MARKETPLACE TAB -->
+    <div id="social-tab-marketplace" style="display:none">
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <div class="search-wrap" style="flex:1">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="market-search" placeholder="Chercher une fiche partagée…" oninput="renderMarketplace()">
+        </div>
+        <select class="form-select" id="market-filter-mat" style="width:auto" onchange="renderMarketplace()">
+          <option value="all">Toutes matières</option>
+        </select>
+        <button class="btn btn-primary" onclick="openPublishFiche()">📤 Partager une fiche</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px" id="market-grid"></div>
+    </div>
+
+    <!-- GROUPS TAB -->
+    <div id="social-tab-groups" style="display:none">
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="openCreateGroup()">+ Créer un groupe</button>
+        <button class="btn btn-ghost" onclick="openJoinGroup()">🔑 Rejoindre avec un code</button>
+      </div>
+      <div id="groups-list"></div>
+    </div>
+
+    <!-- DUEL TAB -->
+    <div id="social-tab-duel" style="display:none">
+      <div id="duel-content"></div>
+    </div>
+
+    <!-- SHOP TAB -->
+    <div id="social-tab-shop" style="display:none">
+      <div class="card card-p" style="margin-bottom:16px;background:linear-gradient(135deg,#1a1408,#12100a)">
+        <div style="display:flex;align-items:center;gap:14px">
+          <span style="font-size:36px">🪙</span>
+          <div>
+            <div style="font-family:'Fraunces',serif;font-size:28px;color:var(--gold)" id="shop-coins">0</div>
+            <div style="font-size:12px;color:var(--muted)">StudyCoins disponibles</div>
+          </div>
+          <div style="margin-left:auto;font-size:12px;color:var(--muted);text-align:right">
+            <div>+5 coins / Pomodoro</div>
+            <div>+10 coins / QCM</div>
+            <div>+20 coins / Défi du jour</div>
+          </div>
+        </div>
+      </div>
+      <div class="section-label" style="margin-bottom:12px">Skins pour ton compagnon</div>
+      <div class="shop-grid" id="shop-grid"></div>
+    </div>
+  </div>
+</div>
+
 <!-- FOCUS OVERLAY -->
 <div class="focus-overlay" id="focus-overlay">
   <div style="font-size:12px;color:var(--muted2);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px">Mode Focus</div>
@@ -2661,6 +2877,93 @@ document.querySelector('.main').insertAdjacentHTML('beforeend', `
       <div style="display:flex;gap:8px;justify-content:flex-end">
         <button class="btn btn-ghost" onclick="closeOv('ov-new-card')">Annuler</button>
         <button class="btn btn-primary" onclick="saveCard()">Ajouter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal publish fiche -->
+<div class="overlay" id="ov-publish-fiche">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-head"><div class="modal-title">📤 Partager une fiche</div><button class="modal-close" onclick="closeOv('ov-publish-fiche')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Choisir la fiche à partager</label>
+        <select class="form-select" id="pub-fiche-select"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description courte (optionnel)</label>
+        <input type="text" class="form-input" id="pub-fiche-desc" placeholder="Ex: Résumé complet chapitre dérivation">
+      </div>
+      <div style="background:var(--s2);border-radius:var(--r2);padding:12px;font-size:12px;color:var(--muted);margin-bottom:14px">
+        ℹ️ La fiche sera visible par tous les utilisateurs StudyFlow. Tu recevras des <strong style="color:var(--gold)">StudyCoins</strong> pour chaque like reçu.
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-ghost" onclick="closeOv('ov-publish-fiche')">Annuler</button>
+        <button class="btn btn-primary" onclick="publishFiche()">📤 Publier</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal create group -->
+<div class="overlay" id="ov-create-group">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-head"><div class="modal-title">👥 Créer un groupe</div><button class="modal-close" onclick="closeOv('ov-create-group')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Nom du groupe</label>
+        <input type="text" class="form-input" id="grp-name" placeholder="Ex: Spé Maths - Terminale A" maxlength="40">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description (optionnel)</label>
+        <input type="text" class="form-input" id="grp-desc" placeholder="Ex: Groupe de révision lycée Pasteur">
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-ghost" onclick="closeOv('ov-create-group')">Annuler</button>
+        <button class="btn btn-primary" onclick="createGroup()">Créer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal join group -->
+<div class="overlay" id="ov-join-group">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-head"><div class="modal-title">🔑 Rejoindre un groupe</div><button class="modal-close" onclick="closeOv('ov-join-group')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Code du groupe (6 caractères)</label>
+        <input type="text" class="form-input" id="grp-join-code" placeholder="Ex: SF-A3B7" maxlength="8" style="font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:2px;text-align:center" oninput="this.value=this.value.toUpperCase()">
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-ghost" onclick="closeOv('ov-join-group')">Annuler</button>
+        <button class="btn btn-primary" onclick="joinGroup()">Rejoindre</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal challenge -->
+<div class="overlay" id="ov-challenge">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-head"><div class="modal-title">⚔️ Lancer un défi</div><button class="modal-close" onclick="closeOv('ov-challenge')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Défi</label>
+        <input type="text" class="form-input" id="chal-title" placeholder="Ex: Premier à finir le chapitre NSI">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mise (StudyCoins)</label>
+        <input type="number" class="form-input" id="chal-coins" min="10" max="500" step="10" value="50">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Joueur (profile_id ou nom d'utilisateur)</label>
+        <input type="text" class="form-input" id="chal-opponent" placeholder="Nom de ton adversaire">
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-ghost" onclick="closeOv('ov-challenge')">Annuler</button>
+        <button class="btn btn-primary" onclick="sendChallenge()">⚔️ Défier</button>
       </div>
     </div>
   </div>
@@ -3666,7 +3969,8 @@ function showPage(id) {
   // Bottom nav highlight
   document.querySelectorAll('.btm-btn').forEach(b=>b.classList.remove('active'));
   const btmMap = { dashboard:'btm-dashboard', fiches:'btm-fiches', flashcards:'btm-flashcards',
-    qcm:'btm-qcm', defi:'btm-ia', photo:'btm-ia', prof:'btm-ia', correction:'btm-ia',
+    social:'btm-social',
+    defi:'btm-ia', photo:'btm-ia', prof:'btm-ia', correction:'btm-ia',
     bac:'btm-ia', temps:'btm-ia' };
   if (btmMap[id]) document.getElementById(btmMap[id])?.classList.add('active');
 
@@ -3687,6 +3991,7 @@ function showPage(id) {
   if (id==='temps') renderTemps();
   if (id==='bac') renderBac();
   if (id==='prof') initProf();
+  if (id==='social') renderSocial();
   // Accordion: auto-open section for this page
   openAccordionForPage(id);
 }
@@ -6059,7 +6364,8 @@ const PAGE_TITLES = {
   calendrier:'Calendrier', examen:'Mode Examen', trophees:'Trophées',
   outils:'Outils', erreurs:'Mur des Erreurs', victoire:'Victoires',
   defi:'Défi du jour', photo:'Photo → Fiche', prof:'Prof virtuel',
-  correction:'Correction', bac:'Prédiction Bac', temps:'Temps de révision'
+  correction:'Correction', bac:'Prédiction Bac', temps:'Temps de révision',
+  social:'Social Hub'
 };
 function setTopTitle(id) {
   const el = document.getElementById('mob-bar-title');
@@ -6150,7 +6456,7 @@ function openAccordionForPage(pageId) {
     pomodoro:'acc-outils', calendrier:'acc-outils', examen:'acc-outils',
     trophees:'acc-outils', outils:'acc-outils', erreurs:'acc-outils', victoire:'acc-outils',
     defi:'acc-ia', photo:'acc-ia', prof:'acc-ia', correction:'acc-ia',
-    bac:'acc-ia', temps:'acc-ia',
+    bac:'acc-ia', temps:'acc-ia', social:'acc-ia',
   };
   const accId = pageToAccordion[pageId];
   if (accId) {
@@ -6885,6 +7191,874 @@ function openFiche(id) {
       }
     }
   }, 50);
+}
+
+// ============================================================
+// V10 — STUDYCOINS ENGINE
+// ============================================================
+const COIN_REWARDS = {
+  pomodoro: 5,
+  qcm_done: 10,
+  qcm_perfect: 25,
+  defi_done: 20,
+  fiche_created: 3,
+  card_created: 1,
+  fiche_liked: 5,   // received when someone likes your shared fiche
+  streak_7: 50,
+  streak_30: 200,
+};
+
+const SHOP_ITEMS = [
+  { id:'hat_graduate', name:'Chapeau diplômé', icon:'🎓', price:100, type:'hat', desc:'Pour les studieux' },
+  { id:'hat_cowboy',   name:'Cowboy du bac',   icon:'🤠', price:80,  type:'hat', desc:'Ambiance western' },
+  { id:'hat_crown',    name:'Couronne royale', icon:'👑', price:200, type:'hat', desc:'Pour les meilleurs' },
+  { id:'aura_fire',    name:'Aura de feu',     icon:'🔥', price:150, type:'aura', desc:'Tu es en feu !' },
+  { id:'aura_star',    name:'Aura étoilée',    icon:'⭐', price:120, type:'aura', desc:'Brillant' },
+  { id:'aura_lightning',name:'Éclair',         icon:'⚡', price:130, type:'aura', desc:'Ultrarapide' },
+  { id:'bg_space',     name:'Fond spatial',    icon:'🌌', price:180, type:'bg',   desc:'Parmi les étoiles' },
+  { id:'bg_forest',    name:'Fond forêt',      icon:'🌲', price:160, type:'bg',   desc:'Zen et concentré' },
+  { id:'pet_dragon',   name:'Skin Dragon',     icon:'🐲', price:300, type:'pet',  desc:'Déblocage skin ultime' },
+  { id:'pet_robot',    name:'Skin Robot',      icon:'🤖', price:250, type:'pet',  desc:'NSI vibes' },
+  { id:'pet_wizard',   name:'Skin Sorcier',    icon:'🧙', price:220, type:'pet',  desc:'Magie des révisions' },
+  { id:'pet_astronaut',name:'Astronaute',      icon:'👨‍🚀', price:280, type:'pet', desc:'Vise la lune' },
+];
+
+function getCoins() { return userData.coins || 0; }
+
+function addCoins(type, qty) {
+  const amount = qty !== undefined ? qty : (COIN_REWARDS[type] || 0);
+  if (!amount) return;
+  userData.coins = (userData.coins || 0) + amount;
+  saveUserData();
+  // Update badge in header
+  updateCoinsBadge();
+  // Flash toast for big rewards
+  if (amount >= 20) toast(`🪙 +${amount} StudyCoins !`);
+}
+
+function updateCoinsBadge() {
+  const c = getCoins();
+  document.getElementById('coins-display')?.textContent !== undefined &&
+    (document.getElementById('coins-display').textContent = c);
+  document.getElementById('soc-coins')?.textContent !== undefined &&
+    (document.getElementById('soc-coins').textContent = c);
+  document.getElementById('shop-coins')?.textContent !== undefined &&
+    (document.getElementById('shop-coins').textContent = c);
+}
+
+// Hook into existing actions to grant coins
+const _origSaveFiche_coins = saveFiche;
+function saveFiche() { _origSaveFiche_coins(); addCoins('fiche_created'); }
+
+const _origRateCard_coins = rateCard;
+function rateCard(q) {
+  _origRateCard_coins(q);
+  addCoins('card_created');
+}
+
+// ============================================================
+// V10 — LEADERBOARD (Supabase public table)
+// ============================================================
+let currentLbType = 'grind';
+
+function showSocialTab(tab) {
+  ['leaderboard','marketplace','groups','duel','shop'].forEach(t => {
+    const el = document.getElementById('social-tab-' + t);
+    const btn = document.getElementById('st-' + t);
+    if (el) el.style.display = t === tab ? '' : 'none';
+    if (btn) btn.classList.toggle('active', t === tab);
+  });
+  if (tab === 'leaderboard') renderLeaderboard(currentLbType);
+  if (tab === 'marketplace') renderMarketplace();
+  if (tab === 'groups') renderGroups();
+  if (tab === 'duel') renderDuelTab();
+  if (tab === 'shop') renderShop();
+}
+
+function showLbType(type) {
+  currentLbType = type;
+  ['grind','genius','streak'].forEach(t => {
+    document.getElementById('lbt-' + t)?.classList.toggle('active', t === type);
+  });
+  renderLeaderboard(type);
+}
+
+async function renderSocial() {
+  updateCoinsBadge();
+  document.getElementById('soc-rank').textContent = '—';
+  document.getElementById('soc-groups').textContent = (userData.groups||[]).length;
+  const pubCount = (userData.publishedFiches||[]).length;
+  document.getElementById('soc-market').textContent = pubCount;
+  // Default tab
+  showSocialTab('leaderboard');
+}
+
+async function renderLeaderboard(type) {
+  const el = document.getElementById('lb-list');
+  if (!el) return;
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Chargement…</div>';
+
+  if (!sbClient || !supabaseEnabled) {
+    el.innerHTML = renderLbFallback(type);
+    return;
+  }
+
+  try {
+    // Fetch all public profiles with their scores
+    const { data, error } = await sbClient
+      .from('leaderboard_scores')
+      .select('*')
+      .eq('score_type', type)
+      .order('score', { ascending: false })
+      .limit(20);
+
+    if (error) {
+      el.innerHTML = renderLbFallback(type);
+      return;
+    }
+
+    // Push current user score
+    await pushMyScore(type);
+
+    const myId = currentUser?.id;
+    const rows = (data || []);
+    let myRank = rows.findIndex(r => r.profile_id === myId) + 1;
+    document.getElementById('soc-rank').textContent = myRank > 0 ? '#' + myRank : '—';
+
+    el.innerHTML = rows.length ? rows.map((r, i) => {
+      const rank = i + 1;
+      const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+      const rankDisplay = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '#' + rank;
+      const isMe = r.profile_id === myId;
+      const scoreLabel = type === 'grind' ? `${r.score} sessions` :
+                         type === 'genius' ? `${r.score}% moy.` : `${r.score} jours`;
+      return `<div class="lb-row ${isMe ? 'me' : ''}">
+        <div class="lb-rank ${rankClass}">${rankDisplay}</div>
+        <div class="lb-avatar">${r.avatar || '🦊'}</div>
+        <div style="flex:1">
+          <div class="lb-name">${r.username || 'Anonyme'}${isMe ? ' <span style="color:var(--accent);font-size:11px">(toi)</span>' : ''}</div>
+          <div class="lb-sub">${scoreLabel}</div>
+        </div>
+        <div class="lb-score">${r.score}</div>
+      </div>`;
+    }).join('') : '<div class="empty"><div class="empty-ico">🏆</div><div class="empty-title">Pas encore de classement</div><div class="empty-sub">Sois le premier à apparaître !</div></div>';
+  } catch(e) {
+    el.innerHTML = renderLbFallback(type);
+  }
+}
+
+function renderLbFallback(type) {
+  // Show local-only stats when no Supabase
+  const score = getMyScore(type);
+  const label = { grind:'sessions Pomodoro ce mois', genius:'% score moyen QCM', streak:'jours de série' }[type];
+  return `<div class="card card-p" style="text-align:center;margin-bottom:14px">
+    <div style="font-size:40px;margin-bottom:8px">🏆</div>
+    <div style="font-family:'Fraunces',serif;font-size:36px;color:var(--gold)">${score}</div>
+    <div style="font-size:13px;color:var(--muted);margin-top:4px">${label}</div>
+  </div>
+  <div style="text-align:center;font-size:13px;color:var(--muted);padding:20px">
+    Configure Supabase pour voir le classement mondial 🌍
+  </div>`;
+}
+
+function getMyScore(type) {
+  if (type === 'grind') {
+    const now = Date.now();
+    const monthAgo = now - 30 * 24 * 3600 * 1000;
+    return (userData.pomodoroLog||[]).filter(p => p.date >= monthAgo).length;
+  }
+  if (type === 'genius') {
+    const done = (userData.qcmHistory||[]).filter(q=>q.done);
+    return done.length ? Math.round(done.reduce((a,q)=>a+q.score,0)/done.length) : 0;
+  }
+  if (type === 'streak') return userData.streak || 0;
+  return 0;
+}
+
+async function pushMyScore(type) {
+  if (!sbClient || !supabaseEnabled || !currentUser) return;
+  const score = getMyScore(type);
+  await sbClient.from('leaderboard_scores').upsert({
+    profile_id: currentUser.id,
+    username: currentUser.username,
+    avatar: currentUser.avatar,
+    score_type: type,
+    score,
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'profile_id,score_type' });
+}
+
+// Push all scores periodically
+async function pushAllScores() {
+  for (const t of ['grind','genius','streak']) await pushMyScore(t);
+}
+
+// ============================================================
+// V10 — MARKETPLACE DE FICHES
+// ============================================================
+async function renderMarketplace() {
+  const grid = document.getElementById('market-grid');
+  if (!grid) return;
+
+  // Build matiere filter if not built
+  const matSel = document.getElementById('market-filter-mat');
+  if (matSel && matSel.options.length === 1) {
+    MATIERES.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m.id; opt.textContent = m.emoji + ' ' + m.label;
+      matSel.appendChild(opt);
+    });
+  }
+
+  grid.innerHTML = '<div style="grid-column:1/-1" class="loading"><div class="spinner"></div></div>';
+
+  const q = document.getElementById('market-search')?.value.toLowerCase() || '';
+  const matFilter = document.getElementById('market-filter-mat')?.value || 'all';
+
+  if (!sbClient || !supabaseEnabled) {
+    // Show only locally published fiches
+    renderMarketLocal(q, matFilter);
+    return;
+  }
+
+  try {
+    let query = sbClient.from('market_fiches').select('*').order('likes', { ascending: false }).limit(50);
+    if (matFilter !== 'all') query = query.eq('matiere', matFilter);
+    const { data, error } = await query;
+    if (error) { renderMarketLocal(q, matFilter); return; }
+
+    let items = (data || []);
+    if (q) items = items.filter(f =>
+      f.title?.toLowerCase().includes(q) ||
+      f.content?.toLowerCase().includes(q) ||
+      f.tags?.some(t => t.toLowerCase().includes(q))
+    );
+
+    grid.innerHTML = items.length ? items.map(f => renderMarketCard(f)).join('') :
+      '<div class="empty" style="grid-column:1/-1"><div class="empty-ico">📚</div><div class="empty-title">Aucune fiche trouvée</div></div>';
+  } catch(e) {
+    renderMarketLocal(q, matFilter);
+  }
+}
+
+function renderMarketLocal(q, matFilter) {
+  const grid = document.getElementById('market-grid');
+  // Show fiches published from THIS user that are stored locally
+  let items = (userData.publishedFiches || []);
+  if (q) items = items.filter(f => f.title?.toLowerCase().includes(q));
+  if (matFilter !== 'all') items = items.filter(f => f.matiere === matFilter);
+  grid.innerHTML = items.length ? items.map(f => renderMarketCard(f, true)).join('') :
+    `<div class="empty" style="grid-column:1/-1">
+      <div class="empty-ico">📚</div>
+      <div class="empty-title">Aucune fiche partagée</div>
+      <div class="empty-sub">Configure Supabase pour voir les fiches de la communauté, ou partage la tienne !</div>
+    </div>`;
+}
+
+function renderMarketCard(f, isOwn = false) {
+  const m = getM(f.matiere || 'math');
+  const myLikes = userData.likedFiches || [];
+  const liked = myLikes.includes(f.id);
+  return `<div class="market-card">
+    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${m.color};border-radius:var(--r) var(--r) 0 0"></div>
+    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:${m.color};margin-bottom:6px">${m.emoji} ${m.label}</div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.3">${f.title || 'Sans titre'}</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">${(f.description || f.content?.slice(0,80) || '').replace(/\n/g,' ')}…</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)">
+        <span>${f.author_avatar || '🦊'}</span><span>${f.author_name || 'Anonyme'}</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        ${!isOwn ? `<button class="market-likes ${liked?'liked':''}" onclick="likeMarketFiche('${f.id}',this)">
+          ❤️ ${f.likes || 0}
+        </button>` : '<span style="font-size:11px;color:var(--success)">✅ Ta fiche</span>'}
+        <button class="btn btn-ghost btn-sm" style="font-size:11px;padding:4px 10px" onclick="importMarketFiche(${JSON.stringify(f).replace(/"/g,'&quot;')})">
+          + Importer
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openPublishFiche() {
+  const sel = document.getElementById('pub-fiche-select');
+  if (!sel) return;
+  sel.innerHTML = (userData.fiches||[]).map(f =>
+    `<option value="${f.id}">${getM(f.matiere).emoji} ${f.title.slice(0,50)}</option>`
+  ).join('');
+  if (!sel.options.length) { toast('⚠️ Crée d\'abord une fiche !'); return; }
+  document.getElementById('ov-publish-fiche').classList.add('open');
+}
+
+async function publishFiche() {
+  const ficheId = document.getElementById('pub-fiche-select').value;
+  const desc = document.getElementById('pub-fiche-desc').value.trim();
+  const fiche = (userData.fiches||[]).find(f=>f.id===ficheId);
+  if (!fiche) return;
+
+  const pub = {
+    id: ficheId,
+    profile_id: currentUser?.id,
+    author_name: currentUser?.username,
+    author_avatar: currentUser?.avatar,
+    title: fiche.title,
+    description: desc || fiche.content?.slice(0,120),
+    content: fiche.content,
+    matiere: fiche.matiere,
+    tags: fiche.tags || [],
+    likes: 0,
+    published_at: new Date().toISOString()
+  };
+
+  if (sbClient && supabaseEnabled) {
+    const { error } = await sbClient.from('market_fiches').upsert(pub, { onConflict: 'id' });
+    if (error) { toast('❌ ' + error.message); return; }
+  }
+
+  if (!userData.publishedFiches) userData.publishedFiches = [];
+  const idx = userData.publishedFiches.findIndex(f=>f.id===ficheId);
+  if (idx>=0) userData.publishedFiches[idx] = pub;
+  else userData.publishedFiches.push(pub);
+  saveUserData();
+
+  closeOv('ov-publish-fiche');
+  toast('📤 Fiche publiée dans le Marketplace !');
+  renderMarketplace();
+  document.getElementById('soc-market').textContent = userData.publishedFiches.length;
+}
+
+async function likeMarketFiche(ficheId, btn) {
+  if (!userData.likedFiches) userData.likedFiches = [];
+  if (userData.likedFiches.includes(ficheId)) {
+    toast('Tu as déjà aimé cette fiche');
+    return;
+  }
+  userData.likedFiches.push(ficheId);
+  saveUserData();
+  btn.classList.add('liked');
+  const countEl = btn;
+  const cur = parseInt(countEl.textContent.replace(/\D/g,'')) || 0;
+  countEl.textContent = '❤️ ' + (cur + 1);
+
+  if (sbClient && supabaseEnabled) {
+    await sbClient.from('market_fiches').update({ likes: cur + 1 }).eq('id', ficheId);
+  }
+  toast('❤️ Fiche aimée !');
+}
+
+function importMarketFiche(f) {
+  if (!userData.fiches) userData.fiches = [];
+  const newFiche = {
+    id: getId(),
+    title: f.title + ' (importée)',
+    content: f.content || '',
+    matiere: f.matiere || 'math',
+    tags: [...(f.tags||[]), 'importée', f.author_name||''],
+    chapitre: '', maitrise: '', difficulte: '',
+    createdAt: Date.now()
+  };
+  userData.fiches.unshift(newFiche);
+  saveUserData();
+  toast('✅ Fiche importée dans tes révisions !');
+}
+
+// ============================================================
+// V10 — GROUPES
+// ============================================================
+function generateGroupCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return 'SF-' + Array.from({length:4}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+}
+
+async function renderGroups() {
+  const el = document.getElementById('groups-list');
+  if (!el) return;
+  const myGroups = userData.groups || [];
+  if (!myGroups.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-ico">👥</div>
+      <div class="empty-title">Aucun groupe</div>
+      <div class="empty-sub">Crée ou rejoins un groupe pour réviser avec tes amis</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = myGroups.map(g => `
+    <div class="group-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="group-name">${g.name}</div>
+          <div class="group-meta">${g.desc||''} · Code: <span style="font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:600">${g.code}</span></div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick="copyGroupCode('${g.code}')">📋 Code</button>
+          <button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="leaveGroup('${g.id}')">Quitter</button>
+        </div>
+      </div>
+      <div class="group-members" style="margin-top:10px">
+        ${(g.members||[{name:currentUser?.username,avatar:currentUser?.avatar}])}
+        ${g.members ? g.members.map(m=>`<div class="member-chip"><span>${m.avatar||'🦊'}</span>${m.name}</div>`).join('') :
+          `<div class="member-chip"><span>${currentUser?.avatar||'🦊'}</span>${currentUser?.username}</div>`}
+      </div>
+      ${g.sharedCalendar?.length ? `
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border)">
+          <div class="section-label" style="margin-bottom:6px">📅 Prochains DS du groupe</div>
+          ${g.sharedCalendar.slice(0,3).map(e=>`<div style="font-size:12px;color:var(--muted);margin-bottom:3px">• ${e.date} — ${e.title}</div>`).join('')}
+        </div>` : ''}
+    </div>`).join('');
+}
+
+function openCreateGroup() { document.getElementById('ov-create-group').classList.add('open'); }
+function openJoinGroup()   { document.getElementById('ov-join-group').classList.add('open'); }
+
+async function createGroup() {
+  const name = document.getElementById('grp-name').value.trim();
+  const desc = document.getElementById('grp-desc').value.trim();
+  if (!name) { toast('⚠️ Donne un nom au groupe'); return; }
+  const code = generateGroupCode();
+  const group = {
+    id: getId(), name, desc, code,
+    ownerId: currentUser?.id,
+    members: [{ id:currentUser?.id, name:currentUser?.username, avatar:currentUser?.avatar }],
+    sharedCalendar: [],
+    createdAt: Date.now()
+  };
+  if (!userData.groups) userData.groups = [];
+  userData.groups.push(group);
+
+  if (sbClient && supabaseEnabled) {
+    await sbClient.from('study_groups').upsert({
+      id: group.id, name, desc, code,
+      owner_id: currentUser?.id, created_at: new Date().toISOString()
+    }, { onConflict:'id' });
+    await sbClient.from('group_members').upsert({
+      group_id: group.id, profile_id: currentUser?.id,
+      username: currentUser?.username, avatar: currentUser?.avatar
+    }, { onConflict:'group_id,profile_id' });
+  }
+
+  saveUserData();
+  closeOv('ov-create-group');
+  document.getElementById('grp-name').value = '';
+  document.getElementById('grp-desc').value = '';
+  toast(`✅ Groupe créé ! Code: ${code}`);
+  renderGroups();
+  document.getElementById('soc-groups').textContent = userData.groups.length;
+}
+
+async function joinGroup() {
+  const code = document.getElementById('grp-join-code').value.trim().toUpperCase();
+  if (code.length < 5) { toast('⚠️ Code invalide'); return; }
+
+  // Check locally first
+  const existing = (userData.groups||[]).find(g=>g.code===code);
+  if (existing) { toast('Tu es déjà dans ce groupe !'); return; }
+
+  if (!sbClient || !supabaseEnabled) {
+    toast('⚠️ Supabase requis pour rejoindre un groupe');
+    return;
+  }
+
+  const { data, error } = await sbClient.from('study_groups').select('*').eq('code', code).single();
+  if (error || !data) { toast('❌ Groupe introuvable — vérifie le code'); return; }
+
+  const group = { id:data.id, name:data.name, desc:data.desc||'', code, members:[], sharedCalendar:[] };
+  if (!userData.groups) userData.groups = [];
+  userData.groups.push(group);
+
+  await sbClient.from('group_members').upsert({
+    group_id: data.id, profile_id: currentUser?.id,
+    username: currentUser?.username, avatar: currentUser?.avatar
+  }, { onConflict:'group_id,profile_id' });
+
+  saveUserData();
+  closeOv('ov-join-group');
+  document.getElementById('grp-join-code').value = '';
+  toast(`✅ Tu as rejoint "${data.name}" !`);
+  renderGroups();
+  document.getElementById('soc-groups').textContent = userData.groups.length;
+}
+
+function leaveGroup(groupId) {
+  if (!confirm('Quitter ce groupe ?')) return;
+  userData.groups = (userData.groups||[]).filter(g=>g.id!==groupId);
+  saveUserData();
+  renderGroups();
+  toast('👋 Groupe quitté');
+  document.getElementById('soc-groups').textContent = (userData.groups||[]).length;
+}
+
+function copyGroupCode(code) {
+  navigator.clipboard.writeText(code).then(() => toast(`📋 Code copié : ${code}`));
+}
+
+// ============================================================
+// V10 — DUEL EN TEMPS RÉEL
+// ============================================================
+let duelState = null;
+let duelChannel = null;
+
+function renderDuelTab() {
+  const el = document.getElementById('duel-content');
+  if (!el) return;
+
+  if (duelState?.active) {
+    renderActiveDuel();
+    return;
+  }
+
+  const pendingChallenges = (userData.challenges||[]).filter(c=>c.status==='pending'&&c.toId===currentUser?.id);
+
+  el.innerHTML = `
+    <div class="duel-arena" style="margin-bottom:16px">
+      <div style="font-size:36px;margin-bottom:6px">⚔️</div>
+      <div style="font-size:18px;font-weight:600;margin-bottom:4px">Mode Duel</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Affronte un ami sur un QCM en temps réel</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="openChallenge()">⚔️ Défier quelqu'un</button>
+        <button class="btn btn-ghost" onclick="startSoloDuel()">🤖 Duel solo (IA)</button>
+      </div>
+    </div>
+
+    ${pendingChallenges.length ? `
+    <div class="section-label" style="margin-bottom:10px">🔔 Défis reçus</div>
+    ${pendingChallenges.map(c=>`
+      <div class="challenge-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:14px;font-weight:500">${c.fromName} te défie !</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">${c.title} · Mise: ${c.coins} 🪙</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-primary btn-sm" onclick="acceptChallenge('${c.id}')">✅ Accepter</button>
+            <button class="btn btn-ghost btn-sm" onclick="declineChallenge('${c.id}')">❌</button>
+          </div>
+        </div>
+      </div>`).join('')}` : ''}
+
+    <div class="section-label" style="margin-bottom:10px;margin-top:16px">📊 Historique des duels</div>
+    <div id="duel-history">${renderDuelHistory()}</div>`;
+}
+
+function renderDuelHistory() {
+  const hist = (userData.duelHistory||[]).slice(-5).reverse();
+  if (!hist.length) return '<div style="color:var(--muted);font-size:13px">Aucun duel joué</div>';
+  return hist.map(d=>`
+    <div class="due-item" style="margin-bottom:6px">
+      <div class="due-item-left">
+        <div class="due-dot" style="background:${d.won?'var(--success)':'var(--danger)'}"></div>
+        <div><div class="due-title">${d.won?'🏆 Victoire':'💔 Défaite'} contre ${d.opponent}</div>
+          <div class="due-mat">${d.score}% · ${d.matiere} · ${formatDate(d.date)}</div>
+        </div>
+      </div>
+      <span class="badge" style="color:${d.won?'var(--success)':'var(--danger)'}">${d.won?'+':'-'}${d.coins||10} 🪙</span>
+    </div>`).join('');
+}
+
+function openChallenge() {
+  if (!(userData.groups||[]).length) {
+    toast('⚠️ Rejoins un groupe pour défier tes amis !'); return;
+  }
+  document.getElementById('ov-challenge').classList.add('open');
+}
+
+async function sendChallenge() {
+  const title = document.getElementById('chal-title').value.trim();
+  const coins = parseInt(document.getElementById('chal-coins').value)||50;
+  const opName = document.getElementById('chal-opponent').value.trim();
+  if (!title||!opName) { toast('⚠️ Remplis tous les champs'); return; }
+  if (getCoins() < coins) { toast(`⚠️ Pas assez de coins (tu as ${getCoins()} 🪙)`); return; }
+
+  const challenge = {
+    id: getId(), title, coins,
+    fromId: currentUser?.id, fromName: currentUser?.username,
+    toName: opName, toId: null,
+    status: 'pending', createdAt: Date.now()
+  };
+
+  if (!userData.challenges) userData.challenges = [];
+  userData.challenges.push(challenge);
+  userData.coins = (userData.coins||0) - coins; // Escrow
+  saveUserData();
+
+  if (sbClient && supabaseEnabled) {
+    // Look up opponent profile_id
+    const { data } = await sbClient.from('profiles_public')
+      .select('profile_id').eq('username', opName).single();
+    if (data) {
+      challenge.toId = data.profile_id;
+      await sbClient.from('challenges').upsert({
+        id: challenge.id, title, coins,
+        from_id: currentUser?.id, from_name: currentUser?.username,
+        to_id: data.profile_id, status:'pending',
+        created_at: new Date().toISOString()
+      }, { onConflict:'id' });
+    }
+  }
+
+  closeOv('ov-challenge');
+  document.getElementById('chal-title').value='';
+  document.getElementById('chal-opponent').value='';
+  toast(`⚔️ Défi envoyé à ${opName} ! (${coins} 🪙 mis en jeu)`);
+  renderDuelTab();
+  updateCoinsBadge();
+}
+
+function acceptChallenge(id) {
+  const c = (userData.challenges||[]).find(x=>x.id===id);
+  if (!c) return;
+  c.status = 'accepted';
+  saveUserData();
+  toast(`⚔️ Défi accepté ! Lance le duel !`);
+  startDuel(c.fromName, c);
+}
+
+function declineChallenge(id) {
+  const c = (userData.challenges||[]).find(x=>x.id===id);
+  if (c) c.status = 'declined';
+  saveUserData();
+  toast('Défi refusé');
+  renderDuelTab();
+}
+
+async function startSoloDuel() {
+  if (!userData.apiKey) { toast('⚠️ Configure ta clé API'); return; }
+  toast('🤖 Préparation du duel solo…');
+  duelState = { active:true, solo:true, myScore:0, theirScore:0, opponent:'🤖 IA', total:5, answered:0 };
+  renderActiveDuel();
+  // Generate 5 quick questions
+  const matId = MATIERES[Math.floor(Math.random()*3)].id;
+  const m = getM(matId);
+  const prompt = `Génère 5 questions QCM rapides de ${m.label} pour un duel en temps réel.
+JSON uniquement: [{"q":"question courte","a":["A","B","C","D"],"c":0}]`;
+  try {
+    const raw = await callAI(prompt);
+    duelState.questions = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    duelState.matiere = m.label;
+    duelState.currentQ = 0;
+    renderActiveDuel();
+  } catch(e) {
+    toast('❌ Erreur génération duel'); duelState = null; renderDuelTab();
+  }
+}
+
+function startDuel(opponentName, challenge) {
+  duelState = { active:true, myScore:0, theirScore:0, opponent:opponentName, total:5, answered:0, challenge };
+  startSoloDuel();
+}
+
+function renderActiveDuel() {
+  const el = document.getElementById('duel-content');
+  if (!el || !duelState) return;
+  const q = duelState.questions?.[duelState.currentQ];
+  if (!q) { endDuel(); return; }
+
+  const letters = ['A','B','C','D'];
+  el.innerHTML = `
+    <div class="duel-arena">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:12px;color:var(--muted)">
+        <div><span class="live-dot"></span> DUEL EN COURS</div>
+        <div>Q${duelState.currentQ+1}/${duelState.total}</div>
+      </div>
+      <div class="duel-prog-row">
+        <div class="duel-label" style="text-align:right">${currentUser?.username||'Toi'}</div>
+        <div class="duel-prog-bar"><div class="duel-prog-fill duel-me" style="width:${duelState.myScore/duelState.total*100}%"></div></div>
+        <div style="font-family:'Fraunces',serif;font-size:18px;color:var(--accent)">${duelState.myScore}</div>
+      </div>
+      <div class="duel-vs">VS</div>
+      <div class="duel-prog-row">
+        <div class="duel-label" style="text-align:right">${duelState.opponent}</div>
+        <div class="duel-prog-bar"><div class="duel-prog-fill duel-them" style="width:${duelState.theirScore/duelState.total*100}%"></div></div>
+        <div style="font-family:'Fraunces',serif;font-size:18px;color:var(--danger)">${duelState.theirScore}</div>
+      </div>
+      <div style="margin:20px 0;font-size:16px;font-weight:500;line-height:1.45">${q.q}</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${(q.a||q.choices||[]).map((a,i)=>`
+          <button class="qcm-choice" id="duel-btn-${i}" onclick="answerDuel(${i},${q.c||q.correct||0})" style="text-align:left">
+            <span class="choice-letter">${letters[i]}</span>${a.replace(/^[A-D]\.\s*/,'')}
+          </button>`).join('')}
+      </div>
+    </div>`;
+
+  // Solo mode: simulate opponent with delay
+  if (duelState.solo) {
+    const oppDelay = 2000 + Math.random() * 3000;
+    setTimeout(() => {
+      const oppCorrect = Math.random() > 0.4;
+      if (oppCorrect) duelState.theirScore++;
+      const progEl = document.querySelector('.duel-prog-fill.duel-them');
+      if (progEl) progEl.style.width = duelState.theirScore/duelState.total*100 + '%';
+      const scoreEl = document.querySelector('.duel-arena div:last-child');
+    }, oppDelay);
+  }
+}
+
+function answerDuel(idx, correct) {
+  if (!duelState) return;
+  const won = idx === correct;
+  if (won) duelState.myScore++;
+  // Highlight answer
+  document.querySelectorAll('#duel-content .qcm-choice').forEach((b,i) => {
+    b.disabled = true;
+    if (i === correct) b.classList.add('correct');
+    else if (i === idx && !won) b.classList.add('wrong');
+  });
+  duelState.answered++;
+  duelState.currentQ = (duelState.currentQ||0) + 1;
+  setTimeout(() => {
+    if (duelState.currentQ >= duelState.total) endDuel();
+    else renderActiveDuel();
+  }, 1000);
+}
+
+function endDuel() {
+  if (!duelState) return;
+  const won = duelState.myScore > duelState.theirScore;
+  const tied = duelState.myScore === duelState.theirScore;
+  const coins = won ? (duelState.challenge?.coins||10) * 2 : tied ? (duelState.challenge?.coins||10) : 0;
+
+  if (won && coins) addCoins(undefined, coins);
+  else if (!won && duelState.challenge?.coins) {
+    // Opponent gets the coins (simulated)
+  }
+
+  if (!userData.duelHistory) userData.duelHistory = [];
+  userData.duelHistory.push({
+    date: Date.now(), won, tied,
+    score: Math.round(duelState.myScore/duelState.total*100),
+    opponent: duelState.opponent,
+    matiere: duelState.matiere||'QCM',
+    coins: duelState.challenge?.coins||10
+  });
+  saveUserData();
+
+  const el = document.getElementById('duel-content');
+  if (!el) return;
+  const result = won ? '🏆 Victoire !' : tied ? '🤝 Égalité !' : '💔 Défaite…';
+  const color = won ? 'var(--success)' : tied ? 'var(--gold)' : 'var(--danger)';
+  el.innerHTML = `
+    <div class="duel-arena" style="border-color:${color}44">
+      <div style="font-size:48px;margin-bottom:8px">${won?'🏆':tied?'🤝':'💔'}</div>
+      <div style="font-family:'Fraunces',serif;font-size:28px;color:${color};margin-bottom:6px">${result}</div>
+      <div style="font-size:16px;margin-bottom:4px">${duelState.myScore} – ${duelState.theirScore} vs ${duelState.opponent}</div>
+      ${coins ? `<div style="font-size:14px;color:var(--gold);margin:8px 0">+${coins} 🪙 StudyCoins</div>` : ''}
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="startSoloDuel()">🔄 Rejouer</button>
+        <button class="btn btn-ghost" onclick="duelState=null;renderDuelTab()">← Retour</button>
+      </div>
+    </div>`;
+  duelState = null;
+  checkTrophies();
+}
+
+// ============================================================
+// V10 — BOUTIQUE
+// ============================================================
+function renderShop() {
+  updateCoinsBadge();
+  const owned = userData.shopOwned || [];
+  const equipped = userData.shopEquipped || {};
+  document.getElementById('shop-grid').innerHTML = SHOP_ITEMS.map(item => {
+    const isOwned = owned.includes(item.id);
+    const isEquipped = equipped[item.type] === item.id;
+    return `<div class="shop-item ${isOwned?'owned':''} ${isEquipped?'equipped':''}" onclick="buyOrEquip('${item.id}')">
+      <div class="shop-ico">${item.icon}</div>
+      <div class="shop-name">${item.name}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px">${item.desc}</div>
+      ${isEquipped ? '<div class="shop-owned">✅ Équipé</div>' :
+        isOwned    ? '<div class="shop-owned" style="color:var(--muted)">Possédé · Cliquer pour équiper</div>' :
+        `<div class="shop-price">🪙 ${item.price}</div>`}
+    </div>`;
+  }).join('');
+}
+
+function buyOrEquip(itemId) {
+  const item = SHOP_ITEMS.find(i=>i.id===itemId);
+  if (!item) return;
+  if (!userData.shopOwned) userData.shopOwned = [];
+  if (!userData.shopEquipped) userData.shopEquipped = {};
+
+  if (userData.shopOwned.includes(itemId)) {
+    // Equip/unequip
+    if (userData.shopEquipped[item.type] === itemId) {
+      delete userData.shopEquipped[item.type];
+      toast(`${item.icon} ${item.name} déséquipé`);
+    } else {
+      userData.shopEquipped[item.type] = itemId;
+      toast(`${item.icon} ${item.name} équipé !`);
+      applyEquipment();
+    }
+  } else {
+    // Buy
+    if (getCoins() < item.price) {
+      toast(`⚠️ Pas assez de coins (${getCoins()} / ${item.price} 🪙)`);
+      return;
+    }
+    userData.coins = (userData.coins||0) - item.price;
+    userData.shopOwned.push(itemId);
+    userData.shopEquipped[item.type] = itemId;
+    toast(`🎉 ${item.icon} ${item.name} acheté et équipé !`);
+    applyEquipment();
+    updateCoinsBadge();
+  }
+  saveUserData();
+  renderShop();
+  updatePet();
+}
+
+function applyEquipment() {
+  const equipped = userData.shopEquipped || {};
+  const hatItem = SHOP_ITEMS.find(i=>i.id===equipped.hat);
+  const auraItem = SHOP_ITEMS.find(i=>i.id===equipped.aura);
+  // Update pet display in sidebar
+  const petEl = document.getElementById('sb-pet');
+  if (petEl) {
+    const base = PET_STAGES.find(s => getPetXp() >= s.minXp) || PET_STAGES[0];
+    const petOverride = SHOP_ITEMS.find(i=>i.id===equipped.pet);
+    petEl.textContent = (auraItem?.icon||'') + (petOverride?.icon || base.sprite) + (hatItem?.icon||'');
+  }
+}
+
+// ============================================================
+// V10 — HOOK COINS INTO EXISTING ACTIONS
+// ============================================================
+// Grant coins when Pomodoro completes
+const _origPomoComplete = window.pomoComplete;
+window.addEventListener('pomodoroComplete', () => addCoins('pomodoro'));
+
+// Patch pomodoro done handler
+const _origPomoSession = typeof pomoSessionDone !== 'undefined' ? pomoSessionDone : null;
+
+// Grant coins when QCM is done
+const _origRenderQcm = renderQcm;
+function renderQcm() {
+  _origRenderQcm();
+  const answered = (typeof qcmAnswered !== 'undefined') ? qcmAnswered.filter(a=>a!==null).length : 0;
+  if (answered === (typeof currentQcm !== 'undefined' ? currentQcm.length : 0) && answered > 0) {
+    const correct = (typeof qcmAnswered !== 'undefined') ?
+      qcmAnswered.filter((a,i)=>a===currentQcm[i]?.correct).length : 0;
+    const score = Math.round(correct/answered*100);
+    addCoins('qcm_done');
+    if (score === 100) addCoins('qcm_perfect');
+    pushAllScores(); // Update leaderboard
+  }
+}
+
+// Patch updateStreak to push streak leaderboard
+const _origUpdateStreak = updateStreak;
+function updateStreak() {
+  _origUpdateStreak();
+  if ((userData.streak||0) === 7) addCoins('streak_7');
+  if ((userData.streak||0) === 30) addCoins('streak_30');
+  if (supabaseEnabled) pushMyScore('streak');
+}
+
+// Apply equipment on login
+const _origFinishLogin = finishLogin;
+function finishLogin(p) {
+  _origFinishLogin(p);
+  setTimeout(applyEquipment, 200);
+  setTimeout(updateCoinsBadge, 300);
+  // Push scores after login
+  if (supabaseEnabled) setTimeout(pushAllScores, 2000);
 }
 
 </script>

@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" type="image/png" href="icon.png">
-<title>StudyFlow v8.4 — Première Générale</title>
+<title>StudyFlow v9 — Première Générale</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
@@ -1287,10 +1287,49 @@ body {
   .notes-kpi-grid { grid-template-columns: repeat(4,1fr) !important; }
 }
 
-/* iOS safe area & dvh */
+/* iOS safe area & dvh — v9 fix */
+/* Full-height sidebar and main on desktop */
 @supports (height: 100dvh) {
   .main    { height: 100dvh; }
   .sidebar { height: 100dvh; }
+}
+
+/* ── BOTTOM NAV fix: sits exactly at bottom with safe area ── */
+.btm-nav {
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  height: calc(56px + env(safe-area-inset-bottom));
+}
+/* ── MAIN scroll fix: never overlaps bottom nav or top bar ── */
+@media (max-width: 900px) {
+  .main {
+    /* top bar ~52px + bottom nav ~56px + safe areas */
+    padding-top: max(52px, calc(48px + env(safe-area-inset-top))) !important;
+    padding-bottom: calc(60px + env(safe-area-inset-bottom)) !important;
+    height: 100dvh !important;
+    /* scroll goes edge to edge — no gap at top or bottom */
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-padding-top: 8px;
+    scroll-padding-bottom: 8px;
+    /* smooth momentum scroll on iOS */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+  /* Scrollbar hidden on mobile */
+  .main::-webkit-scrollbar { display: none; }
+  .main { scrollbar-width: none; }
+
+  /* Auth screen: full viewport, scrollable, no overflow */
+  #auth-screen {
+    min-height: 100dvh;
+    padding: max(20px, env(safe-area-inset-top)) 16px
+             max(20px, env(safe-area-inset-bottom)) 16px;
+  }
+
+  /* Toast above bottom nav */
+  .toast {
+    bottom: calc(64px + env(safe-area-inset-bottom) + 8px) !important;
+  }
 }
 
 </style>
@@ -1302,7 +1341,7 @@ body {
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-name">StudyFlow</div>
-      <div class="auth-logo-sub">Première Générale 2026 · v8.4</div>
+      <div class="auth-logo-sub">Première Générale 2026 · v9</div>
     </div>
 
     <!-- ÉTAPE 1 : Config Supabase (première ouverture seulement) -->
@@ -1466,6 +1505,21 @@ body {
       </div>
     </div>
 
+    <div class="nav-section nav-accordion open" id="acc-ia">
+      <button class="nav-accordion-header" onclick="toggleAccordion('acc-ia')">
+        <span class="nav-label" style="margin:0">IA &amp; Outils</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="nav-accordion-body">
+        <button class="nav-btn" onclick="showPage('defi')"><span class="icon">⚡</span> Défi du jour</button>
+        <button class="nav-btn" onclick="showPage('photo')"><span class="icon">📸</span> Photo → Fiche</button>
+        <button class="nav-btn" onclick="showPage('prof')"><span class="icon">🧑‍🏫</span> Prof virtuel</button>
+        <button class="nav-btn" onclick="showPage('correction')"><span class="icon">📝</span> Correction copie</button>
+        <button class="nav-btn" onclick="showPage('bac')"><span class="icon">🎓</span> Prédiction Bac</button>
+        <button class="nav-btn" onclick="showPage('temps')"><span class="icon">⏱️</span> Temps de révision</button>
+      </div>
+    </div>
+
     <div class="nav-section nav-accordion" id="acc-services">
       <button class="nav-accordion-header" onclick="toggleAccordion('acc-services')">
         <span class="nav-label" style="margin:0">Services</span>
@@ -1558,11 +1612,11 @@ body {
 
   <!-- ══ BOTTOM NAV ══ -->
   <nav class="btm-nav" id="btm-nav">
-    <button class="btm-btn" id="btm-dashboard" onclick="showPage('dashboard')"><span>⊞</span>Accueil</button>
-    <button class="btm-btn" id="btm-fiches"    onclick="showPage('fiches')"><span>📄</span>Fiches</button>
+    <button class="btm-btn" id="btm-dashboard"  onclick="showPage('dashboard')"><span>⊞</span>Accueil</button>
+    <button class="btm-btn" id="btm-fiches"     onclick="showPage('fiches')"><span>📄</span>Fiches</button>
     <button class="btm-btn" id="btm-flashcards" onclick="showPage('flashcards')"><span>🃏</span>Cartes</button>
-    <button class="btm-btn" id="btm-qcm"       onclick="showPage('qcm')"><span>✦</span>QCM</button>
-    <button class="btm-btn" id="btm-notes"     onclick="showPage('notes')"><span>📊</span>Notes</button>
+    <button class="btm-btn" id="btm-qcm"        onclick="showPage('qcm')"><span>✦</span>QCM</button>
+    <button class="btm-btn" id="btm-ia"         onclick="showPage('defi')"><span>⚡</span>IA</button>
   </nav>
 
   <main class="main">
@@ -1602,7 +1656,7 @@ body {
         <div class="toolbar">
           <div class="search-wrap">
             <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" id="search-input" placeholder="Chercher une fiche…" oninput="renderFiches()">
+            <input type="text" class="search-input" id="search-input" placeholder="🔍 Chercher par titre, contenu, tag, chapitre…" oninput="renderFiches()" onkeydown="if(event.key==='Escape')this.value=''&&renderFiches()">
           </div>
         </div>
         <div class="filter-row" id="filter-row" style="margin-bottom:16px"></div>
@@ -2296,6 +2350,186 @@ document.querySelector('.main').insertAdjacentHTML('beforeend', `
   </div>
 </div>
 
+<!-- PAGE PHOTO IA -->
+<div class="page" id="page-photo">
+  <div class="page-header">
+    <div class="page-title">📸 Photo → Fiche</div>
+    <div class="page-sub">Prends en photo ton cours et l'IA le retranscrit proprement</div>
+  </div>
+  <div class="content">
+    <div class="card card-p" style="margin-bottom:16px">
+      <div class="section-label" style="margin-bottom:12px">Importer une photo</div>
+      <div id="photo-drop-zone" style="border:2px dashed var(--border2);border-radius:var(--r);padding:40px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px" onclick="document.getElementById('photo-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondrop="handlePhotoDrop(event)">
+        <div style="font-size:40px;margin-bottom:8px">📷</div>
+        <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px">Clique ou glisse une photo ici</div>
+        <div style="font-size:12px;color:var(--muted)">JPG, PNG, WEBP — cours, exercices, tableau…</div>
+      </div>
+      <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoSelect(event)">
+      <div id="photo-preview" style="display:none;margin-bottom:14px">
+        <img id="photo-img" style="max-width:100%;max-height:300px;border-radius:var(--r2);object-fit:contain;display:block;margin:0 auto">
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <select class="form-select" id="photo-mat" style="flex:1;min-width:140px"></select>
+        <button class="btn btn-primary" id="photo-btn" onclick="transcribePhoto()" disabled>✨ Transcrire avec l'IA</button>
+      </div>
+    </div>
+    <div id="photo-result" style="display:none">
+      <div class="card card-p">
+        <div class="section-label" style="margin-bottom:12px">Résultat — vérifie et sauvegarde</div>
+        <input type="text" class="form-input" id="photo-title" placeholder="Titre de la fiche" style="margin-bottom:10px">
+        <div class="md-body" id="photo-output" style="padding:14px;background:var(--s2);border-radius:var(--r2);min-height:100px;font-size:13px;line-height:1.8;white-space:pre-wrap"></div>
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="savePhotoAsFiche()">📄 Sauvegarder comme fiche</button>
+          <button class="btn btn-ghost" onclick="copyPhotoResult()">📋 Copier</button>
+          <button class="btn btn-ghost" onclick="retakePhoto()">🔄 Nouvelle photo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE PROFESSEUR VIRTUEL -->
+<div class="page" id="page-prof">
+  <div class="page-header">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+      <div>
+        <div class="page-title">🧑‍🏫 Professeur virtuel</div>
+        <div class="page-sub">Pose tes questions, l'IA répond avec le contexte de ta matière</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select class="form-select" id="prof-mat" style="width:auto" onchange="updateProfContext()"></select>
+        <button class="btn btn-ghost btn-sm" onclick="clearProfChat()">🗑️ Effacer</button>
+      </div>
+    </div>
+  </div>
+  <div class="content" style="display:flex;flex-direction:column;height:calc(100vh - 180px);min-height:400px">
+    <div id="prof-chat" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-bottom:12px;min-height:200px"></div>
+    <div style="margin-top:auto;padding-top:12px;border-top:1px solid var(--border)">
+      <div style="display:flex;gap:8px">
+        <input type="text" class="form-input" id="prof-input" placeholder="Pose ta question…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendProfMessage()}" style="flex:1">
+        <button class="btn btn-primary" onclick="sendProfMessage()" style="flex-shrink:0">↑</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap" id="prof-suggestions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE CORRECTION DE COPIE -->
+<div class="page" id="page-correction">
+  <div class="page-header">
+    <div class="page-title">📝 Correction de copie</div>
+    <div class="page-sub">L'IA corrige ton texte et te donne une note sur 20</div>
+  </div>
+  <div class="content">
+    <div class="card card-p" style="margin-bottom:16px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Matière</label>
+          <select class="form-select" id="corr-mat"></select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Type</label>
+          <select class="form-select" id="corr-type">
+            <option value="dissertation">Dissertation</option>
+            <option value="exercice">Exercice</option>
+            <option value="commentaire">Commentaire</option>
+            <option value="synthese">Synthèse</option>
+            <option value="oral">Oral (transcription)</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Niveau exigence</label>
+          <select class="form-select" id="corr-niveau">
+            <option value="brevet">Brevet</option>
+            <option value="premiere" selected>Première</option>
+            <option value="terminale">Terminale</option>
+            <option value="bac">Bac blanc</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:10px">
+        <label class="form-label">Sujet / Consigne (optionnel)</label>
+        <input type="text" class="form-input" id="corr-sujet" placeholder="Ex: Analysez l'impact de la Révolution industrielle…">
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Ton texte</label>
+        <textarea class="form-textarea" id="corr-texte" style="min-height:200px" placeholder="Colle ta dissertation, ton exercice, ta réponse…"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="correctCopie()">📝 Corriger</button>
+    </div>
+    <div id="corr-result"></div>
+  </div>
+</div>
+
+<!-- PAGE TEMPS DE RÉVISION -->
+<div class="page" id="page-temps">
+  <div class="page-header">
+    <div class="page-title">⏱️ Temps de révision</div>
+    <div class="page-sub">Combien d'heures tu as bossé, par matière et par semaine</div>
+  </div>
+  <div class="content">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px" class="stats-grid3">
+      <div class="stat-big"><div class="stat-big-val" id="tps-total" style="color:var(--accent)">0h</div><div class="stat-big-label">Total cette semaine</div></div>
+      <div class="stat-big"><div class="stat-big-val" id="tps-today" style="color:var(--math)">0h</div><div class="stat-big-label">Aujourd'hui</div></div>
+      <div class="stat-big"><div class="stat-big-val" id="tps-sessions" style="color:var(--gold)">0</div><div class="stat-big-label">Sessions Pomodoro</div></div>
+    </div>
+    <div class="two-col" style="margin-bottom:24px">
+      <div class="card card-p">
+        <div class="section-label" style="margin-bottom:12px">Par matière (7 derniers jours)</div>
+        <div id="tps-by-mat"></div>
+      </div>
+      <div class="card card-p">
+        <div class="section-label" style="margin-bottom:12px">Par jour (14 derniers jours)</div>
+        <div id="tps-by-day"></div>
+      </div>
+    </div>
+    <div class="card card-p">
+      <div class="section-label" style="margin-bottom:12px">Historique des sessions</div>
+      <div id="tps-history"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE PRÉDICTION BAC -->
+<div class="page" id="page-bac">
+  <div class="page-header">
+    <div class="page-title">🎓 Prédiction Bac</div>
+    <div class="page-sub">Estimation de ta moyenne finale avec les coefficients officiels 2026</div>
+  </div>
+  <div class="content">
+    <div id="bac-result-banner" style="display:none;margin-bottom:20px"></div>
+    <div class="two-col" style="margin-bottom:20px">
+      <div class="card card-p">
+        <div class="section-label" style="margin-bottom:14px">Coefficients officiels Bac 2026</div>
+        <div id="bac-coefs-table"></div>
+      </div>
+      <div class="card card-p">
+        <div class="section-label" style="margin-bottom:14px">Tes moyennes actuelles</div>
+        <div id="bac-moyennes-table"></div>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Saisie manuelle (si pas de notes enregistrées)</div>
+          <div id="bac-manual-inputs"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card card-p" id="bac-mentions-card">
+      <div class="section-label" style="margin-bottom:14px">Mentions selon scénarios</div>
+      <div id="bac-scenarios"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE DÉFI DU JOUR -->
+<div class="page" id="page-defi">
+  <div class="page-header">
+    <div class="page-title">⚡ Défi du jour</div>
+    <div class="page-sub">Une question surprise chaque matin pour booster ta mémoire</div>
+  </div>
+  <div class="content">
+    <div id="defi-content"></div>
+  </div>
+</div>
+
 <!-- FOCUS OVERLAY -->
 <div class="focus-overlay" id="focus-overlay">
   <div style="font-size:12px;color:var(--muted2);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px">Mode Focus</div>
@@ -2332,6 +2566,7 @@ document.querySelector('.main').insertAdjacentHTML('beforeend', `
         <button class="btn btn-ghost btn-sm" onclick="editFiche()">✏️ Modifier</button>
         <button class="btn btn-danger btn-sm" onclick="deleteFiche()">🗑️ Supprimer</button>
         <button class="btn btn-ghost btn-sm" onclick="ficheToCard()">🃏 → Flashcard</button>
+        <button class="btn btn-ghost btn-sm" onclick="autoGenerateCards()">✨ Générer flashcards IA</button>
         <button class="btn btn-ghost btn-sm" id="audio-fiche-btn" onclick="toggleFicheAudio()">🔊 Lire à voix haute</button>
         <button class="btn btn-ghost btn-sm" onclick="toggleArdoise()">🪄 Ardoise magique</button>
       </div>
@@ -2559,7 +2794,8 @@ async function loadProfilesFromSupabase() {
 // ============================================================
 function buildSelects() {
   const opts = MATIERES.map(m => `<option value="${m.id}">${m.emoji} ${m.label}</option>`).join('');
-  ['nf-m','nc-m','hw-mat','res-mat','victoire-mat','pomo-mat','ne-mat'].forEach(id => {
+  ['nf-m','nc-m','hw-mat','res-mat','victoire-mat','pomo-mat','ne-mat',
+   'photo-mat','prof-mat','corr-mat'].forEach(id => {
     const el = document.getElementById(id); if(el) el.innerHTML = opts;
   });
   const today = new Date().toISOString().split('T')[0];
@@ -3425,9 +3661,19 @@ function showPage(id) {
         (id==='elea'&&t.includes('éléa'))||(id==='pomodoro'&&t.includes('pomodoro'))||
         (id==='calendrier'&&t.includes('calendrier'))||(id==='examen'&&t.includes('examen'))||
         (id==='trophees'&&t.includes('troph'))||(id==='outils'&&t.includes('outils'))||
-        (id==='erreurs'&&t.includes('erreur'))||(id==='victoire'&&t.includes('victoire')))
+        (id==='erreurs'&&t.includes('erreur'))||(id==='victoire'&&t.includes('victoire'))||
+        (id==='photo'&&t.includes('photo'))||(id==='prof'&&t.includes('prof virtuel'))||
+        (id==='correction'&&t.includes('correction'))||(id==='bac'&&t.includes('bac'))||
+        (id==='temps'&&t.includes('temps'))||(id==='defi'&&t.includes('défi')))
       b.classList.add('active');
   });
+  // Bottom nav highlight
+  document.querySelectorAll('.btm-btn').forEach(b=>b.classList.remove('active'));
+  const btmMap = { dashboard:'btm-dashboard', fiches:'btm-fiches', flashcards:'btm-flashcards',
+    qcm:'btm-qcm', defi:'btm-ia', photo:'btm-ia', prof:'btm-ia', correction:'btm-ia',
+    bac:'btm-ia', temps:'btm-ia' };
+  if (btmMap[id]) document.getElementById(btmMap[id])?.classList.add('active');
+
   if (id==='dashboard') renderDashboard();
   if (id==='fiches') renderFiches();
   if (id==='flashcards') renderFlashcards();
@@ -3441,6 +3687,10 @@ function showPage(id) {
   if (id==='outils') renderOutils();
   if (id==='erreurs') renderErreurs();
   if (id==='victoire') renderVictoires();
+  if (id==='defi') renderDefi();
+  if (id==='temps') renderTemps();
+  if (id==='bac') renderBac();
+  if (id==='prof') initProf();
   // Accordion: auto-open section for this page
   openAccordionForPage(id);
 }
@@ -5901,7 +6151,745 @@ function openAccordionForPage(pageId) {
     pronote:'acc-services', elea:'acc-services',
     pomodoro:'acc-outils', calendrier:'acc-outils', examen:'acc-outils',
     trophees:'acc-outils', outils:'acc-outils', erreurs:'acc-outils', victoire:'acc-outils',
+    defi:'acc-ia', photo:'acc-ia', prof:'acc-ia', correction:'acc-ia',
+    bac:'acc-ia', temps:'acc-ia',
   };
+  const accId = pageToAccordion[pageId];
+  if (accId) {
+    const el = document.getElementById(accId);
+    if (el && !el.classList.contains('open')) el.classList.add('open');
+  }
+}
+
+// ============================================================
+// V9 — KEYWORD HIGHLIGHT in search
+// ============================================================
+function highlight(text, q) {
+  if (!q) return escHtml(text);
+  const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return escHtml(text).replace(new RegExp(safe, 'gi'),
+    m => `<mark style="background:rgba(124,109,250,0.3);color:var(--text);border-radius:2px;padding:0 2px">${m}</mark>`);
+}
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Override renderFiches to add highlight
+const _origRenderFiches = renderFiches;
+function renderFiches() {
+  // call original — it already handles search filtering
+  _origRenderFiches();
+  // now apply keyword highlighting on rendered cards
+  const q = (document.getElementById('search-input')?.value||'').trim().toLowerCase();
+  if (!q) return;
+  document.querySelectorAll('.fiche-preview,.fiche-title').forEach(el => {
+    const orig = el.textContent;
+    el.innerHTML = highlight(orig, q);
+  });
+}
+
+// ============================================================
+// V9 — AUTO-GENERATE FLASHCARDS FROM FICHE (IA)
+// ============================================================
+async function autoGenerateCards() {
+  const f = (userData.fiches||[]).find(f => f.id === currentFicheId);
+  if (!f) return;
+  if (!userData.apiKey) { toast('⚠️ Configure ta clé API dans QCM IA'); return; }
+  closeOv('ov-fiche');
+  toast('✨ Génération des flashcards…');
+  const prompt = `Tu es un professeur de ${getM(f.matiere).label} en Première Générale.
+Voici une fiche de révision :
+Titre : ${f.title}
+Contenu :
+${f.content.slice(0,3000)}
+
+Génère entre 5 et 10 flashcards pertinentes issues de cette fiche.
+Réponds UNIQUEMENT en JSON, sans texte avant ni après :
+[{"front":"Question ou terme à définir","back":"Réponse ou définition complète"}]`;
+  try {
+    const raw = await callAI(prompt);
+    const cards = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    if (!userData.cards) userData.cards = [];
+    cards.forEach(c => {
+      userData.cards.push({ id:getId(), front:c.front, back:c.back,
+        matiere:f.matiere, chapitre:f.chapitre||'', createdAt:Date.now() });
+    });
+    saveUserData(); renderDashboard();
+    toast(`🃏 ${cards.length} flashcards créées depuis "${f.title}" !`, 3500);
+  } catch(e) {
+    toast('❌ Erreur : ' + (e.message||'vérifier la clé API'), 4000);
+  }
+}
+
+// ============================================================
+// V9 — PHOTO → FICHE
+// ============================================================
+let photoFile = null;
+
+function handlePhotoSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  photoFile = file;
+  showPhotoPreview(file);
+}
+
+function handlePhotoDrop(e) {
+  e.preventDefault();
+  document.getElementById('photo-drop-zone').style.borderColor = '';
+  const file = e.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) { toast('⚠️ Fichier image requis'); return; }
+  photoFile = file;
+  showPhotoPreview(file);
+}
+
+function showPhotoPreview(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('photo-img').src = ev.target.result;
+    document.getElementById('photo-preview').style.display = 'block';
+    document.getElementById('photo-btn').disabled = false;
+    document.getElementById('photo-drop-zone').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function retakePhoto() {
+  photoFile = null;
+  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('photo-drop-zone').style.display = 'block';
+  document.getElementById('photo-btn').disabled = true;
+  document.getElementById('photo-result').style.display = 'none';
+  document.getElementById('photo-input').value = '';
+}
+
+async function transcribePhoto() {
+  if (!photoFile) return;
+  if (!userData.apiKey) { toast('⚠️ Configure ta clé API dans QCM IA'); return; }
+  const btn = document.getElementById('photo-btn');
+  btn.disabled = true; btn.textContent = '⏳ Analyse…';
+
+  // Convert to base64
+  const b64 = await new Promise(res => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.readAsDataURL(photoFile);
+  });
+  const matiere = document.getElementById('photo-mat')?.value || 'math';
+  const m = getM(matiere);
+
+  try {
+    // Claude supports vision — use it regardless of provider choice for photo
+    if (!userData.apiKey.startsWith('sk-ant-')) {
+      toast('⚠️ La photo nécessite une clé Claude (Anthropic). Groq ne supporte pas les images.', 5000);
+      btn.disabled = false; btn.textContent = '✨ Transcrire avec l\'IA';
+      return;
+    }
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'x-api-key':userData.apiKey, 'anthropic-version':'2023-06-01' },
+      body: JSON.stringify({
+        model: 'claude-opus-4-5',
+        max_tokens: 2000,
+        messages: [{
+          role: 'user',
+          content: [
+            { type:'image', source:{ type:'base64', media_type:photoFile.type, data:b64 } },
+            { type:'text', text:`Tu es un assistant scolaire. Voici une photo d'un cours de ${m.label} pour un élève de Première Générale en France.
+Retranscris fidèlement et proprement le contenu en :
+- Utilisant du Markdown (# titres, **gras**, *italique*, - listes)
+- Structurant clairement (si le cours a des sections, garde-les)
+- Pour les formules mathématiques, utilise la notation LaTeX entre $$ ou $
+- Corrigeant les fautes évidentes d'orthographe
+Réponds directement avec la transcription, sans commentaire préalable.` }
+          ]
+        }]
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const result = data.content[0].text;
+    document.getElementById('photo-output').textContent = result;
+    document.getElementById('photo-title').value = `Cours ${m.label} — ${new Date().toLocaleDateString('fr-FR')}`;
+    document.getElementById('photo-result').style.display = 'block';
+    // Render markdown
+    if (typeof marked !== 'undefined') {
+      document.getElementById('photo-output').innerHTML = marked.parse(result);
+    }
+  } catch(e) {
+    toast('❌ ' + (e.message||'Erreur API'), 4000);
+  }
+  btn.disabled = false; btn.textContent = '✨ Transcrire avec l\'IA';
+}
+
+function savePhotoAsFiche() {
+  const title = document.getElementById('photo-title').value.trim() || 'Fiche photo';
+  const content = document.getElementById('photo-output').textContent || document.getElementById('photo-output').innerText;
+  const matiere = document.getElementById('photo-mat')?.value || 'math';
+  if (!content) { toast('⚠️ Aucun contenu'); return; }
+  if (!userData.fiches) userData.fiches = [];
+  userData.fiches.unshift({ id:getId(), title, content, matiere, tags:['photo','IA'],
+    chapitre:'', maitrise:'', difficulte:'', createdAt:Date.now() });
+  saveUserData(); renderDashboard();
+  toast('✅ Fiche sauvegardée !');
+  retakePhoto();
+  showPage('fiches');
+}
+
+function copyPhotoResult() {
+  const text = document.getElementById('photo-output').textContent;
+  navigator.clipboard.writeText(text).then(() => toast('📋 Copié !'));
+}
+
+// ============================================================
+// V9 — PROFESSEUR VIRTUEL
+// ============================================================
+let profHistory = [];
+const PROF_SUGGESTIONS = {
+  math: ['Explique-moi la dérivation', 'C\'est quoi une limite ?', 'Comment résoudre une équation du 2nd degré ?'],
+  pc:   ['Explique la loi d\'Ohm', 'C\'est quoi la mole ?', 'Comment marche un condensateur ?'],
+  nsi:  ['Explique la récursivité', 'C\'est quoi un algorithme de tri ?', 'Comment fonctionne une liste en Python ?'],
+  fr:   ['Comment analyser un texte littéraire ?', 'Structure d\'une dissertation', 'C\'est quoi le point de vue narratif ?'],
+  hg:   ['Explique la Première Guerre mondiale', 'C\'est quoi la mondialisation ?', 'Résume la Révolution française'],
+  default: ['Explique ce concept simplement', 'Donne-moi un exemple concret', 'Fais un résumé de ce chapitre']
+};
+
+function initProf() {
+  const matEl = document.getElementById('prof-mat');
+  if (matEl && !matEl.innerHTML) matEl.innerHTML = MATIERES.map(m=>`<option value="${m.id}">${m.emoji} ${m.label}</option>`).join('');
+  updateProfContext();
+  if (profHistory.length === 0) renderProfWelcome();
+}
+
+function updateProfContext() {
+  const mat = document.getElementById('prof-mat')?.value || 'math';
+  const suggestions = PROF_SUGGESTIONS[mat] || PROF_SUGGESTIONS.default;
+  const el = document.getElementById('prof-suggestions');
+  if (el) el.innerHTML = suggestions.map(s =>
+    `<button class="filter-btn" style="font-size:11px" onclick="sendProfWithText('${s.replace(/'/g,"\\'")}')">${s}</button>`
+  ).join('');
+}
+
+function renderProfWelcome() {
+  const chat = document.getElementById('prof-chat');
+  if (!chat) return;
+  const mat = document.getElementById('prof-mat')?.value || 'math';
+  const m = getM(mat);
+  addProfMessage('assistant', `Bonjour ! Je suis ton prof de ${m.label} ${m.emoji}\n\nPose-moi n'importe quelle question sur ton cours. Je suis là pour t'expliquer, donner des exemples et t'aider à comprendre. 😊`);
+}
+
+function addProfMessage(role, text) {
+  const chat = document.getElementById('prof-chat');
+  if (!chat) return;
+  const isUser = role === 'user';
+  const div = document.createElement('div');
+  div.style.cssText = `display:flex;gap:10px;align-items:flex-start;${isUser?'flex-direction:row-reverse':''}`;
+  const avatar = document.createElement('div');
+  avatar.style.cssText = 'font-size:20px;flex-shrink:0;margin-top:2px';
+  avatar.textContent = isUser ? (currentUser?.avatar||'🙂') : '🧑‍🏫';
+  const bubble = document.createElement('div');
+  bubble.style.cssText = `max-width:80%;padding:12px 16px;border-radius:${isUser?'18px 18px 4px 18px':'18px 18px 18px 4px'};font-size:13px;line-height:1.7;${isUser?'background:var(--accent);color:#fff':'background:var(--s2);color:var(--text)'}`;
+  if (typeof marked !== 'undefined' && role==='assistant') {
+    bubble.innerHTML = marked.parse(text);
+  } else {
+    bubble.textContent = text;
+  }
+  div.appendChild(avatar); div.appendChild(bubble);
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+async function sendProfMessage() {
+  const input = document.getElementById('prof-input');
+  const text = input?.value.trim();
+  if (!text) return;
+  input.value = '';
+  sendProfWithText(text);
+}
+
+async function sendProfWithText(text) {
+  if (!userData.apiKey) { toast('⚠️ Configure ta clé API dans QCM IA'); return; }
+  const mat = document.getElementById('prof-mat')?.value || 'math';
+  const m = getM(mat);
+  addProfMessage('user', text);
+  profHistory.push({ role:'user', content: text });
+
+  // Thinking indicator
+  const chat = document.getElementById('prof-chat');
+  const thinking = document.createElement('div');
+  thinking.id = 'prof-thinking';
+  thinking.style.cssText = 'display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px';
+  thinking.innerHTML = '🧑‍🏫 <span style="animation:pulse 1s infinite">En train de réfléchir…</span>';
+  chat.appendChild(thinking); chat.scrollTop = chat.scrollHeight;
+
+  const systemPrompt = `Tu es un excellent professeur de ${m.label} pour un élève de Première Générale en France (programme 2026). 
+Tu expliques clairement, avec des exemples concrets et des analogies. 
+Tu utilises le Markdown pour structurer tes réponses (gras, listes, formules LaTeX si besoin).
+Sois pédagogue, bienveillant et encourageant. Maximum 300 mots par réponse.`;
+
+  // Build messages with history (max last 10 exchanges)
+  const recentHistory = profHistory.slice(-20);
+  try {
+    let response;
+    if (userData.aiProvider === 'groq') {
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+userData.apiKey },
+        body: JSON.stringify({ model:'llama-3.3-70b-versatile', max_tokens:600,
+          messages:[{ role:'system', content:systemPrompt }, ...recentHistory] })
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      response = data.choices[0].message.content;
+    } else {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json','x-api-key':userData.apiKey,'anthropic-version':'2023-06-01' },
+        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:600,
+          system: systemPrompt, messages: recentHistory })
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      response = data.content[0].text;
+    }
+    document.getElementById('prof-thinking')?.remove();
+    profHistory.push({ role:'assistant', content: response });
+    addProfMessage('assistant', response);
+  } catch(e) {
+    document.getElementById('prof-thinking')?.remove();
+    addProfMessage('assistant', '❌ Erreur : ' + (e.message||'vérifier la clé API'));
+  }
+}
+
+function clearProfChat() {
+  profHistory = [];
+  const chat = document.getElementById('prof-chat');
+  if (chat) chat.innerHTML = '';
+  renderProfWelcome();
+}
+
+// ============================================================
+// V9 — CORRECTION DE COPIE
+// ============================================================
+async function correctCopie() {
+  const texte = document.getElementById('corr-texte')?.value.trim();
+  if (!texte) { toast('⚠️ Colle ton texte'); return; }
+  if (!userData.apiKey) { toast('⚠️ Configure ta clé API dans QCM IA'); return; }
+  const mat = document.getElementById('corr-mat')?.value || 'fr';
+  const type = document.getElementById('corr-type')?.value || 'dissertation';
+  const niveau = document.getElementById('corr-niveau')?.value || 'premiere';
+  const sujet = document.getElementById('corr-sujet')?.value.trim();
+  const m = getM(mat);
+  const result = document.getElementById('corr-result');
+  result.innerHTML = '<div class="loading"><div class="spinner"></div>Correction en cours…</div>';
+
+  const prompt = `Tu es un correcteur exigeant en ${m.label} pour le niveau ${niveau} en France.
+${sujet ? `Sujet : "${sujet}"\n` : ''}
+Voici le texte d'un élève (${type}) :
+---
+${texte.slice(0, 4000)}
+---
+
+Donne une correction détaillée en JSON avec ce format exact :
+{
+  "note": 14,
+  "appreciation": "Mention courte (Insuffisant/Passable/Assez bien/Bien/Très bien)",
+  "points_forts": ["point 1", "point 2", "point 3"],
+  "points_ameliorer": ["point 1", "point 2", "point 3"],
+  "remarques_detaillees": "Paragraphe de 5-8 lignes avec analyse approfondie",
+  "conseils": ["conseil concret 1", "conseil concret 2"]
+}
+Sois précis, constructif et bienveillant. Note sur 20.`;
+
+  try {
+    const raw = await callAI(prompt);
+    const data = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    const noteColor = data.note >= 16 ? 'var(--success)' : data.note >= 12 ? 'var(--gold)' : data.note >= 10 ? 'var(--pc)' : 'var(--danger)';
+    result.innerHTML = `
+      <div class="card card-p" style="margin-bottom:14px;background:linear-gradient(135deg,var(--s1),#13121a)">
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+          <div style="text-align:center">
+            <div style="font-family:'Fraunces',serif;font-size:52px;font-weight:500;color:${noteColor};line-height:1">${data.note}</div>
+            <div style="font-size:12px;color:var(--muted)">/20</div>
+          </div>
+          <div>
+            <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px">${data.appreciation}</div>
+            <div style="font-size:12px;color:var(--muted)">${m.emoji} ${m.label} · ${type}</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <div class="card card-p" style="border-color:rgba(74,222,128,0.2)">
+          <div class="section-label" style="color:var(--success);margin-bottom:8px">✅ Points forts</div>
+          ${data.points_forts.map(p=>`<div style="font-size:13px;margin-bottom:5px;padding-left:8px;border-left:2px solid var(--success)">• ${p}</div>`).join('')}
+        </div>
+        <div class="card card-p" style="border-color:rgba(248,113,113,0.2)">
+          <div class="section-label" style="color:var(--danger);margin-bottom:8px">📈 À améliorer</div>
+          ${data.points_ameliorer.map(p=>`<div style="font-size:13px;margin-bottom:5px;padding-left:8px;border-left:2px solid var(--danger)">• ${p}</div>`).join('')}
+        </div>
+      </div>
+      <div class="card card-p" style="margin-bottom:12px">
+        <div class="section-label" style="margin-bottom:8px">📋 Remarques détaillées</div>
+        <div style="font-size:13px;line-height:1.8;color:var(--text)">${data.remarques_detaillees}</div>
+      </div>
+      <div class="card card-p">
+        <div class="section-label" style="margin-bottom:8px">💡 Conseils pour progresser</div>
+        ${data.conseils.map((c,i)=>`<div style="font-size:13px;margin-bottom:7px;display:flex;gap:8px"><span style="color:var(--accent);font-weight:600">${i+1}.</span>${c}</div>`).join('')}
+      </div>`;
+  } catch(e) {
+    result.innerHTML = `<div class="loading"><div style="color:var(--danger)">❌ ${e.message}</div></div>`;
+  }
+}
+
+// ============================================================
+// V9 — TEMPS DE RÉVISION
+// ============================================================
+function renderTemps() {
+  const log = userData.pomodoroLog || [];
+  const now = Date.now();
+  const weekAgo = now - 7*24*3600*1000;
+  const todayStr = new Date().toDateString();
+
+  const weekLog = log.filter(p => p.date >= weekAgo);
+  const todayLog = log.filter(p => new Date(p.date).toDateString() === todayStr);
+
+  const toH = mins => mins >= 60 ? `${Math.floor(mins/60)}h${mins%60>0?String(mins%60).padStart(2,'0'):''}` : `${mins}min`;
+
+  const weekTotal = weekLog.reduce((a,p) => a+(p.dur||25), 0);
+  const todayTotal = todayLog.reduce((a,p) => a+(p.dur||25), 0);
+
+  document.getElementById('tps-total').textContent = toH(weekTotal);
+  document.getElementById('tps-today').textContent = toH(todayTotal);
+  document.getElementById('tps-sessions').textContent = log.length;
+
+  // By matiere (7 days)
+  const byMat = {};
+  weekLog.forEach(p => { byMat[p.mat] = (byMat[p.mat]||0) + (p.dur||25); });
+  const maxM = Math.max(...Object.values(byMat), 1);
+  document.getElementById('tps-by-mat').innerHTML = MATIERES
+    .filter(m => byMat[m.id])
+    .sort((a,b) => (byMat[b.id]||0)-(byMat[a.id]||0))
+    .map(m => `<div class="bar-row">
+      <div class="bar-label">${m.short}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.max(5,(byMat[m.id]||0)/maxM*100)}%;background:${m.color};color:var(--bg)">
+        ${toH(byMat[m.id]||0)}
+      </div></div>
+    </div>`).join('') || '<div style="color:var(--muted);font-size:13px">Aucune session cette semaine</div>';
+
+  // By day (14 days)
+  const byDay = {};
+  for (let i=13; i>=0; i--) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const k = d.toDateString();
+    byDay[k] = log.filter(p=>new Date(p.date).toDateString()===k).reduce((a,p)=>a+(p.dur||25),0);
+  }
+  const maxD = Math.max(...Object.values(byDay), 1);
+  document.getElementById('tps-by-day').innerHTML = Object.entries(byDay).map(([day,mins]) => {
+    const d = new Date(day);
+    const label = d.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric'});
+    return `<div class="bar-row">
+      <div class="bar-label" style="font-size:10px">${label}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${mins>0?Math.max(4,mins/maxD*100):0}%;background:var(--accent);color:#fff">
+        ${mins>0?toH(mins):''}
+      </div></div>
+    </div>`;
+  }).join('');
+
+  // History
+  const hist = [...log].reverse().slice(0,20);
+  document.getElementById('tps-history').innerHTML = hist.length ? hist.map(p => {
+    const m = getM(p.mat);
+    return `<div class="due-item" style="margin-bottom:6px">
+      <div class="due-item-left">
+        <div class="due-dot" style="background:${m.color}"></div>
+        <div><div class="due-title">${m.emoji} ${m.label}</div><div class="due-mat">${new Date(p.date).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div></div>
+      </div>
+      <span class="badge">${p.dur||25} min</span>
+    </div>`;
+  }).join('') : '<div style="color:var(--muted);font-size:13px">Aucune session enregistrée</div>';
+}
+
+// ============================================================
+// V9 — PRÉDICTION BAC
+// ============================================================
+const BAC_COEFS = {
+  math:   { label:'Maths', coef:16, type:'spe' },
+  pc:     { label:'Physique-Chimie', coef:16, type:'spe' },
+  nsi:    { label:'NSI', coef:16, type:'spe' },
+  fr:     { label:'Français (écrit)', coef:5, type:'commun' },
+  fr_o:   { label:'Français (oral)', coef:5, type:'commun' },
+  hg:     { label:'Histoire-Géo', coef:3, type:'commun' },
+  en:     { label:'Anglais LV1', coef:3, type:'commun' },
+  es:     { label:'LV2', coef:3, type:'commun' },
+  emc:    { label:'EMC', coef:1, type:'commun' },
+  eps:    { label:'EPS', coef:6, type:'commun' },
+  'es-sci': { label:'Ens. Scient.', coef:3, type:'commun' },
+  philo:  { label:'Philosophie', coef:8, type:'commun' },
+  tpe:    { label:'TPE', coef:1, type:'commun' },
+};
+let bacManual = {};
+
+function renderBac() {
+  // Table coefficients
+  document.getElementById('bac-coefs-table').innerHTML =
+    `<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Programme Bac 2026 — coefficients officiels</div>` +
+    Object.entries(BAC_COEFS).map(([id,b]) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <span>${b.type==='spe'?'⭐ ':''}${b.label}</span>
+      <span class="badge" style="${b.type==='spe'?'color:var(--accent)':''}">${b.coef}</span>
+    </div>`).join('');
+
+  // Moyennes from notes
+  const notes = userData.notes || [];
+  document.getElementById('bac-moyennes-table').innerHTML = Object.entries(BAC_COEFS).map(([id,b]) => {
+    const matNotes = notes.filter(n=>n.mat===id);
+    const moy = matNotes.length ? calcMoyenne(matNotes) : null;
+    const color = moy ? (moy>=16?'var(--success)':moy>=14?'var(--math)':moy>=10?'var(--gold)':'var(--danger)') : 'var(--muted2)';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <span style="color:var(--muted)">${b.label}</span>
+      <span style="font-family:'Fraunces',serif;font-size:16px;font-weight:500;color:${color}">${moy?moy.toFixed(1):'—'}</span>
+    </div>`;
+  }).join('');
+
+  // Manual inputs for missing matieres
+  document.getElementById('bac-manual-inputs').innerHTML = Object.entries(BAC_COEFS).map(([id,b]) => {
+    const matNotes = notes.filter(n=>n.mat===id);
+    if (matNotes.length > 0) return ''; // already have notes
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <label style="font-size:12px;color:var(--muted);width:140px;flex-shrink:0">${b.label}</label>
+      <input type="number" min="0" max="20" step="0.5"
+        style="width:70px;background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:5px 8px;color:var(--text);font-size:13px;outline:none"
+        placeholder="—"
+        oninput="bacManual['${id}']=parseFloat(this.value)||null;computeBac()"
+        value="${bacManual[id]||''}">
+    </div>`;
+  }).join('');
+
+  computeBac();
+}
+
+function computeBac() {
+  const notes = userData.notes || [];
+  let totalPts = 0, totalCoef = 0;
+  const lines = [];
+
+  Object.entries(BAC_COEFS).forEach(([id,b]) => {
+    const matNotes = notes.filter(n=>n.mat===id);
+    const moy = matNotes.length ? calcMoyenne(matNotes) : (bacManual[id]||null);
+    if (moy !== null) {
+      totalPts += moy * b.coef;
+      totalCoef += b.coef;
+      lines.push({ label:b.label, moy, coef:b.coef, pts: moy*b.coef });
+    }
+  });
+
+  if (totalCoef === 0) {
+    document.getElementById('bac-result-banner').style.display = 'none';
+    document.getElementById('bac-scenarios').innerHTML = '<div style="color:var(--muted);font-size:13px">Entre tes moyennes pour calculer la prédiction</div>';
+    return;
+  }
+
+  const avg = totalPts / totalCoef;
+  const mention = avg>=18?'🏆 Mention Très Bien avec félicitations':avg>=16?'🥇 Mention Très Bien':avg>=14?'🥈 Mention Bien':avg>=12?'🥉 Mention Assez Bien':avg>=10?'✅ Admis':avg>=8?'⚠️ Rattrapages possibles':'❌ Risque d\'échec';
+  const color = avg>=16?'var(--success)':avg>=14?'var(--math)':avg>=12?'var(--gold)':avg>=10?'var(--pc)':'var(--danger)';
+
+  document.getElementById('bac-result-banner').style.display = 'block';
+  document.getElementById('bac-result-banner').innerHTML = `
+    <div class="card card-p" style="background:linear-gradient(135deg,var(--s1),#13121a);border-color:${color}44;text-align:center">
+      <div style="font-family:'Fraunces',serif;font-size:56px;font-weight:500;color:${color};line-height:1">${avg.toFixed(2)}</div>
+      <div style="font-size:14px;color:var(--muted);margin:4px 0 8px">/20 · Moyenne bac estimée (${totalCoef}/${Object.values(BAC_COEFS).reduce((a,b)=>a+b.coef,0)} coefs renseignés)</div>
+      <div style="font-size:16px;font-weight:600;color:${color}">${mention}</div>
+    </div>`;
+
+  // Scenarios: what if I improve by 1pt in best matière
+  const scenarios = [
+    { label:'Scénario actuel', delta:0 },
+    { label:'+1pt en spé principale', delta: BAC_COEFS.math.coef/totalCoef },
+    { label:'+2pts en spé principale', delta: 2*BAC_COEFS.math.coef/totalCoef },
+    { label:'Toutes mes notes +1pt', delta: 1 },
+  ];
+  document.getElementById('bac-scenarios').innerHTML = scenarios.map(s => {
+    const proj = Math.min(20, avg + s.delta);
+    const m2 = proj>=16?'Très Bien':proj>=14?'Bien':proj>=12?'Assez Bien':proj>=10?'Admis':'Insuffisant';
+    const c2 = proj>=16?'var(--success)':proj>=14?'var(--math)':proj>=12?'var(--gold)':proj>=10?'var(--pc)':'var(--danger)';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:13px;color:var(--muted)">${s.label}</span>
+      <div style="text-align:right">
+        <span style="font-family:'Fraunces',serif;font-size:18px;color:${c2}">${proj.toFixed(2)}</span>
+        <span style="font-size:11px;color:${c2};margin-left:6px">${m2}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// V9 — DÉFI DU JOUR
+// ============================================================
+async function renderDefi() {
+  const el = document.getElementById('defi-content');
+  // Check if already done today
+  const todayStr = new Date().toDateString();
+  const last = userData.lastDefi;
+  if (last && last.date === todayStr) {
+    renderDefiResult(last);
+    return;
+  }
+  // If no API key yet
+  if (!userData.apiKey) {
+    el.innerHTML = `<div class="card card-p" style="text-align:center;padding:40px">
+      <div style="font-size:40px;margin-bottom:12px">⚡</div>
+      <div style="font-size:16px;font-weight:500;margin-bottom:6px">Configure ta clé API pour le défi !</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Le défi du jour nécessite l'IA (Groq ou Claude)</div>
+      <button class="btn btn-primary" onclick="showPage('qcm')">Configurer →</button>
+    </div>`;
+    return;
+  }
+  // Generate new defi
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Génération du défi…</div>';
+  // Pick a random matiere from user's fiches/cards or random
+  const mats = [...new Set([...(userData.fiches||[]).map(f=>f.matiere), ...(userData.cards||[]).map(c=>c.matiere)])];
+  const matId = mats.length ? mats[Math.floor(Math.random()*mats.length)] : 'math';
+  const m = getM(matId);
+  const prompt = `Tu es un professeur de ${m.label} pour Première Générale en France.
+Génère UN défi/question du jour stimulant pour un élève.
+Réponds UNIQUEMENT en JSON :
+{"question":"La question ou défi","type":"qcm|ouvert|calcul","choices":["A. ...","B. ...","C. ...","D. ..."],"correct":0,"explanation":"Explication en 2-3 phrases","matiere":"${m.label}","emoji":"${m.emoji}"}
+Pour type "ouvert" ou "calcul", omets choices et correct.`;
+  try {
+    const raw = await callAI(prompt);
+    const defi = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    defi.date = todayStr; defi.matId = matId; defi.answered = false;
+    userData.lastDefi = defi; saveUserData();
+    renderDefiCard(defi);
+  } catch(e) {
+    el.innerHTML = `<div class="loading"><div style="color:var(--danger)">❌ ${e.message}</div><button class="btn btn-ghost" style="margin-top:12px" onclick="renderDefi()">Réessayer</button></div>`;
+  }
+}
+
+function renderDefiCard(defi) {
+  const el = document.getElementById('defi-content');
+  const m = getM(defi.matId||'math');
+  const letters = ['A','B','C','D'];
+  el.innerHTML = `
+    <div class="card card-p" style="margin-bottom:16px;background:linear-gradient(135deg,var(--s1),#13121a)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <div style="font-size:32px">${defi.emoji||m.emoji}</div>
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:${m.color}">${defi.matiere||m.label}</div>
+          <div style="font-size:12px;color:var(--muted)">Défi du ${new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}</div>
+        </div>
+      </div>
+      <div style="font-family:'Fraunces',serif;font-size:20px;line-height:1.45;margin-bottom:20px">${defi.question}</div>
+      ${defi.type==='qcm'&&defi.choices ? `
+        <div id="defi-choices" style="display:flex;flex-direction:column;gap:8px">
+          ${defi.choices.map((c,i)=>`
+            <button class="qcm-choice" onclick="answerDefi(${i})" id="defi-choice-${i}">
+              <span class="choice-letter">${letters[i]}</span>
+              ${c.replace(/^[A-D]\.\s*/,'')}
+            </button>`).join('')}
+        </div>` : `
+        <div style="margin-bottom:12px">
+          <textarea class="form-textarea" id="defi-open-answer" style="min-height:100px" placeholder="Écris ta réponse…"></textarea>
+          <button class="btn btn-primary" style="margin-top:8px" onclick="answerDefiOpen()">Valider ma réponse</button>
+        </div>`}
+    </div>`;
+}
+
+function answerDefi(choiceIdx) {
+  const defi = userData.lastDefi;
+  if (!defi || defi.answered) return;
+  defi.answered = true; defi.userAnswer = choiceIdx;
+  saveUserData();
+  const correct = choiceIdx === defi.correct;
+  if (correct) toast('🎉 Bravo, bonne réponse !');
+  else toast('❌ Pas tout à fait…');
+  // Highlight
+  ['A','B','C','D'].forEach((_,i) => {
+    const btn = document.getElementById(`defi-choice-${i}`);
+    if (!btn) return;
+    btn.disabled = true;
+    if (i === defi.correct) btn.classList.add('correct');
+    else if (i === choiceIdx) btn.classList.add('wrong');
+  });
+  // Show explanation
+  const choices = document.getElementById('defi-choices');
+  if (choices) choices.insertAdjacentHTML('afterend', `
+    <div style="margin-top:14px;padding:12px 16px;background:rgba(124,109,250,0.07);border:1px solid rgba(124,109,250,0.2);border-radius:var(--r2);font-size:13px;color:var(--muted);line-height:1.6">
+      💡 ${defi.explanation}
+    </div>
+    <button class="btn btn-primary" style="margin-top:14px;width:100%" onclick="showPage('qcm')">Faire un QCM complet →</button>`);
+}
+
+function answerDefiOpen() {
+  const defi = userData.lastDefi;
+  if (!defi || defi.answered) return;
+  const answer = document.getElementById('defi-open-answer')?.value.trim();
+  if (!answer) { toast('⚠️ Écris ta réponse'); return; }
+  defi.answered = true; defi.userOpenAnswer = answer; saveUserData();
+  document.getElementById('defi-open-answer').disabled = true;
+  document.querySelector('[onclick="answerDefiOpen()"]').remove();
+  document.getElementById('defi-content').insertAdjacentHTML('beforeend', `
+    <div class="card card-p" style="border-color:rgba(74,222,128,0.2)">
+      <div class="section-label" style="color:var(--success);margin-bottom:8px">📖 Correction</div>
+      <div style="font-size:13px;line-height:1.7">${defi.explanation}</div>
+    </div>`);
+}
+
+function renderDefiResult(defi) {
+  const el = document.getElementById('defi-content');
+  const m = getM(defi.matId||'math');
+  el.innerHTML = `
+    <div class="card card-p" style="text-align:center;margin-bottom:16px">
+      <div style="font-size:36px;margin-bottom:8px">✅</div>
+      <div style="font-size:16px;font-weight:500;margin-bottom:4px">Défi du jour complété !</div>
+      <div style="font-size:13px;color:var(--muted)">Reviens demain pour un nouveau défi</div>
+    </div>
+    <div class="card card-p">
+      <div class="section-label" style="margin-bottom:8px">${defi.emoji||m.emoji} ${defi.matiere}</div>
+      <div style="font-size:15px;font-weight:500;margin-bottom:12px">${defi.question}</div>
+      <div style="font-size:13px;padding:12px 16px;background:rgba(124,109,250,0.07);border-radius:var(--r2)">💡 ${defi.explanation}</div>
+    </div>`;
+}
+
+// ============================================================
+// V9 — LIENS ENTRE FICHES (wiki-style [[Titre]])
+// ============================================================
+// Render fiche content with wiki links
+function renderFicheContent(content, ficheId) {
+  // Replace [[Titre de fiche]] with clickable links
+  return content.replace(/\[\[([^\]]+)\]\]/g, (match, title) => {
+    const linked = (userData.fiches||[]).find(f =>
+      f.title.toLowerCase().trim() === title.toLowerCase().trim() && f.id !== ficheId
+    );
+    if (linked) {
+      return `<a href="#" onclick="openFiche('${linked.id}');return false" style="color:var(--accent);text-decoration:underline;text-underline-offset:2px" title="Ouvrir : ${linked.title}">${title}</a>`;
+    }
+    return `<span style="color:var(--danger);text-decoration:underline dotted" title="Fiche introuvable">[[${title}]]</span>`;
+  });
+}
+
+// Patch openFiche to apply wiki link rendering
+const _origOpenFiche = openFiche;
+function openFiche(id) {
+  _origOpenFiche(id);
+  // After modal opens, apply wiki links to rendered content
+  setTimeout(() => {
+    const bodyEl = document.getElementById('mv-body');
+    if (bodyEl && currentFicheId) {
+      const f = (userData.fiches||[]).find(f=>f.id===currentFicheId);
+      if (!f) return;
+      let html = typeof marked !== 'undefined' ? marked.parse(f.content||'') : escHtml(f.content||'');
+      html = renderFicheContent(html, currentFicheId);
+      bodyEl.innerHTML = html;
+      if (typeof renderMathInElement !== 'undefined') {
+        renderMathInElement(bodyEl, { delimiters:[
+          {left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}
+        ], throwOnError:false });
+      }
+    }
+  }, 50);
+}
+
+
   const accId = pageToAccordion[pageId];
   if (accId) {
     const el = document.getElementById(accId);

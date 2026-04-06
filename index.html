@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0b0c10">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1032,13 +1032,6 @@ body {
 
 /* ============================================================
    MOBILE & RESPONSIVE — version finale
-   ============================================================ */
-
-
-
-/* ============================================================
-   MOBILE CSS — classes used by HTML: mob-bar, btm-nav, btm-btn,
-   drawer-overlay, accordion
    ============================================================ */
 
 /* ── TOP BAR ── */
@@ -4805,7 +4798,7 @@ const EXTRA_TROPHIES = [
 
 // Merge with existing TROPHIES array — done at runtime
 function getAllTrophies() {
-  const base = typeof TROPHIES !== 'undefined' ? TROPHIES : [];
+  const base = typeof TROPHEES !== 'undefined' ? TROPHEES : [];
   const extra = EXTRA_TROPHIES;
   const ids = new Set(base.map(t => t.id));
   return [...base, ...extra.filter(t => !ids.has(t.id))];

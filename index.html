@@ -2402,8 +2402,8 @@ document.querySelector('.main').insertAdjacentHTML('beforeend', `
       </div>
     </div>
   </div>
-  <div class="content" style="display:flex;flex-direction:column;height:calc(100vh - 180px);min-height:400px">
-    <div id="prof-chat" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-bottom:12px;min-height:200px"></div>
+  <div class="content" style="display:flex;flex-direction:column;gap:12px">
+    <div id="prof-chat" style="display:flex;flex-direction:column;gap:12px;min-height:300px;padding-bottom:8px"></div>
     <div style="margin-top:auto;padding-top:12px;border-top:1px solid var(--border)">
       <div style="display:flex;gap:8px">
         <input type="text" class="form-input" id="prof-input" placeholder="Pose ta question…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendProfMessage()}" style="flex:1">
@@ -3653,6 +3653,9 @@ function showPage(id) {
   const page = document.getElementById('page-'+id);
   if (!page) return;
   page.classList.add('active');
+  // Always scroll to top when changing page
+  const main = document.querySelector('.main');
+  if (main) main.scrollTop = 0;
   document.querySelectorAll('.nav-btn').forEach(b => {
     const t = b.textContent.trim().toLowerCase();
     if ((id==='dashboard'&&t.includes('tableau'))||(id==='fiches'&&t==='fiches')||
@@ -6061,7 +6064,9 @@ const PAGE_TITLES = {
   qcm:'QCM IA', notes:'Notes', stats:'Statistiques',
   pronote:'Pronote', elea:'Éléa', pomodoro:'Pomodoro',
   calendrier:'Calendrier', examen:'Mode Examen', trophees:'Trophées',
-  outils:'Outils', erreurs:'Mur des Erreurs', victoire:'Victoires'
+  outils:'Outils', erreurs:'Mur des Erreurs', victoire:'Victoires',
+  defi:'Défi du jour', photo:'Photo → Fiche', prof:'Prof virtuel',
+  correction:'Correction', bac:'Prédiction Bac', temps:'Temps de révision'
 };
 function setTopTitle(id) {
   const el = document.getElementById('mob-bar-title');
@@ -6395,7 +6400,7 @@ function addProfMessage(role, text) {
   }
   div.appendChild(avatar); div.appendChild(bubble);
   chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
+  document.querySelector(".main").scrollTo({top:99999,behavior:"smooth"});
 }
 
 async function sendProfMessage() {
@@ -6419,7 +6424,7 @@ async function sendProfWithText(text) {
   thinking.id = 'prof-thinking';
   thinking.style.cssText = 'display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px';
   thinking.innerHTML = '🧑‍🏫 <span style="animation:pulse 1s infinite">En train de réfléchir…</span>';
-  chat.appendChild(thinking); chat.scrollTop = chat.scrollHeight;
+  chat.appendChild(thinking); document.querySelector(".main").scrollTo({top:99999,behavior:"smooth"});
 
   const systemPrompt = `Tu es un excellent professeur de ${m.label} pour un élève de Première Générale en France (programme 2026). 
 Tu expliques clairement, avec des exemples concrets et des analogies. 

@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" type="image/png" href="icon.png">
-<title>StudyFlow v10.0.1 — Première Générale</title>
+<title>StudyFlow v10.1 — Première Générale</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
@@ -1434,7 +1434,24 @@ body {
     bottom: calc(64px + env(safe-area-inset-bottom) + 8px) !important;
   }
 }
-
+.spes-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    margin: 15px 0;
+    background: rgba(255,255,255,0.03);
+    padding: 15px;
+    border-radius: 10px;
+}
+.spes-selection label {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--text);
+}
+.spes-selection input { accent-color: var(--primary); }
 </style>
 </head>
 <body>
@@ -1444,7 +1461,7 @@ body {
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-name">StudyFlow</div>
-      <div class="auth-logo-sub">Première Générale 2026 · v10.0.1</div>
+      <div class="auth-logo-sub">Première Générale 2026 · v10.1</div>
     </div>
 
     <!-- ÉTAPE 1 : Config Supabase (première ouverture seulement) -->
@@ -1551,12 +1568,25 @@ body {
             <button class="pin-key pin-key-del" onclick="pinDelete('reg')">⌫</button>
           </div>
         </div>
+		<div style="margin-top:15px; text-align:left;">
+			<label style="display:block; margin-bottom:8px; font-size:12px; color:var(--muted); font-weight:600;">TES 3 SPÉCIALITÉS :</label>
+			<div id="spes-container" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:rgba(255,255,255,0.03); padding:12px; border-radius:10px; border:1px solid var(--border);">
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="Maths"> Maths</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="Physique"> Physique</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="SVT"> SVT</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="NSI"> NSI</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="SES"> SES</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="HGGSP"> HGGSP</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="HLP"> HLP</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="LLCE"> LLCE</label>
+			</div>
+		</div>
         <button class="btn btn-primary btn-full" id="reg-submit-btn" onclick="doRegister()" disabled>Créer mon profil →</button>
         <div style="text-align:center;margin-top:10px">
           <button class="btn btn-ghost btn-sm" onclick="showProfiles()">← Annuler</button>
         </div>
       </div>
-
+	  
     </div>
   </div>
 </div>
@@ -2739,8 +2769,6 @@ document.querySelector('.main').insertAdjacentHTML('beforeend', `
 
 `);
 </script>
-
-
 
 <!-- FOCUS OVERLAY -->
 <div class="focus-overlay" id="focus-overlay">
@@ -6152,17 +6180,46 @@ function doRegister() {
   const username = document.getElementById('reg-username').value.trim();
   if (!username) { toast('⚠️ Entre ton prénom'); return; }
   if (pinBuffers.reg.length !== 4) { toast('⚠️ Entre un PIN à 4 chiffres'); return; }
+  
+  // --- AJOUT : Vérification des Spécialités ---
+  const selectedSpes = Array.from(document.querySelectorAll('#spes-container input:checked'))
+                            .map(el => el.value);
+  if (selectedSpes.length !== 3) {
+    toast('⚠️ Choisis exactement 3 spécialités');
+    return;
+  }
+  // --------------------------------------------
+
   if (profiles.find(p => p.username.toLowerCase() === username.toLowerCase())) {
     toast('❌ Ce nom est déjà pris'); return;
   }
+
   const p = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2,5),
     username,
     avatar: selectedAvatarForReg,
-    pinHash: hashPin(pinBuffers.reg)
+    pinHash: hashPin(pinBuffers.reg),
+    spes: selectedSpes // On enregistre les spés dans le profil
   };
+
   profiles.push(p);
   saveProfiles();
+
+  // --- AJOUT : Création automatique des dossiers basés sur les spés ---
+  // On prépare les données initiales pour ce profil
+  const initialData = {
+    fiches: [],
+    // On crée les dossiers : Général + les 3 Spés + Tronc commun
+    folders: ['Général', ...selectedSpes, 'Français', 'Hist-Géo', 'Enseign. Sci.'],
+    tasks: [],
+    inventory: [],
+    coins: 100,
+    streak: 0
+  };
+  // On sauvegarde ces données immédiatement pour le nouveau profil
+  localStorage.setItem('sf_data_' + p.id, JSON.stringify(initialData));
+  // ------------------------------------------------------------------
+
   toast('✅ Profil créé !');
   loginAs(p);
 }
@@ -8066,6 +8123,23 @@ function checkStreakCoins() {
   if (supabaseEnabled) pushMyScore('streak');
 }
 
+// --- SCRIPT BONUS : Limiter la sélection des spécialités ---
+document.addEventListener('change', function(e) {
+  // On vérifie si l'élément cliqué est une checkbox à l'intérieur de notre conteneur
+  if (e.target.type === 'checkbox' && e.target.closest('#spes-container')) {
+    const container = document.getElementById('spes-container');
+    const checked = container.querySelectorAll('input[type="checkbox"]:checked');
+    
+    if (checked.length > 3) {
+      e.target.checked = false; // On décoche la 4ème case
+      if (typeof toast === 'function') {
+        toast('⚠️ 3 spécialités maximum !');
+      } else {
+        alert('⚠️ Tu ne peux choisir que 3 spécialités.');
+      }
+    }
+  }
+});
 </script>
 <!-- PWA Install Banner -->
 <div id="install-banner">

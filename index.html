@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" type="image/png" href="icon.png">
-<title>StudyFlow v10 — Première Générale</title>
+<title>StudyFlow v10.0.1 — Première Générale</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
@@ -1444,7 +1444,7 @@ body {
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-name">StudyFlow</div>
-      <div class="auth-logo-sub">Première Générale 2026 · v10</div>
+      <div class="auth-logo-sub">Première Générale 2026 · v10.0.1</div>
     </div>
 
     <!-- ÉTAPE 1 : Config Supabase (première ouverture seulement) -->
@@ -3324,7 +3324,7 @@ function saveFiche() {
     userData.fiches.unshift({ id:getId(), title, content, matiere, tags, chapitre, maitrise, difficulte, createdAt:Date.now() });
   }
   saveUserData(); closeOv('ov-new-fiche'); renderFiches(); renderDashboard();
-  toast('✅ Fiche sauvegardée');
+  toast('✅ Fiche sauvegardée'); document.dispatchEvent(new Event('studyflow:fiche_saved'));
 }
 
 function openFiche(id) {
@@ -3506,7 +3506,7 @@ function saveCard() {
   if (!userData.cards) userData.cards = [];
   userData.cards.push({ id:getId(), front, back, matiere, chapitre, difficulte, createdAt:Date.now() });
   saveUserData(); closeOv('ov-new-card'); renderFlashcards(); renderDashboard();
-  toast('🃏 Carte ajoutée');
+  toast('🃏 Carte ajoutée'); document.dispatchEvent(new Event('studyflow:card_saved'));
 }
 
 // ============================================================
@@ -6218,6 +6218,13 @@ function finishLogin(p) {
   }
   switchAI(userData.aiProvider || 'groq', true);
   checkTrophies();
+  // v10 social
+  setTimeout(() => {
+    if (typeof applyEquipment === 'function') applyEquipment();
+    if (typeof updateCoinsBadge === 'function') updateCoinsBadge();
+    if (typeof checkStreakCoins === 'function') checkStreakCoins();
+  }, 200);
+  if (supabaseEnabled) setTimeout(pushAllScores, 2000);
 }
 
 async function logout() {
@@ -7246,15 +7253,11 @@ function updateCoinsBadge() {
     (document.getElementById('shop-coins').textContent = c);
 }
 
-// Hook into existing actions to grant coins
-const _origSaveFiche_coins = saveFiche;
-function saveFiche() { _origSaveFiche_coins(); addCoins('fiche_created'); }
-
-const _origRateCard_coins = rateCard;
-function rateCard(q) {
-  _origRateCard_coins(q);
-  addCoins('card_created');
-}
+// V10 coin hooks — called safely after login
+// (fiche/card coins are added via event listener on saveUserData, not by redefining functions)
+document.addEventListener('studyflow:fiche_saved',   () => addCoins('fiche_created'));
+document.addEventListener('studyflow:card_saved',    () => addCoins('card_created'));
+document.addEventListener('studyflow:streak_checked',() => checkStreakCoins());
 
 // ============================================================
 // V10 — LEADERBOARD (Supabase public table)
@@ -8020,45 +8023,44 @@ function applyEquipment() {
 // ============================================================
 // V10 — HOOK COINS INTO EXISTING ACTIONS
 // ============================================================
-// Grant coins when Pomodoro completes
-const _origPomoComplete = window.pomoComplete;
+// V10 — COIN HOOKS (safe, event-driven, no recursive patching)
+// ============================================================
 window.addEventListener('pomodoroComplete', () => addCoins('pomodoro'));
 
-// Patch pomodoro done handler
-const _origPomoSession = typeof pomoSessionDone !== 'undefined' ? pomoSessionDone : null;
+// QCM coins: hook via answerQ without redefining renderQcm
+(function() {
+  const _orig = window.answerQ || (typeof answerQ !== 'undefined' ? answerQ : null);
+  if (!_orig) return;
+  window.answerQ = function(qi, ci) {
+    _orig(qi, ci);
+    if (typeof qcmAnswered !== 'undefined' && typeof currentQcm !== 'undefined') {
+      const all = qcmAnswered.filter(a=>a!==null).length;
+      if (all === currentQcm.length && all > 0 && !window._coinsGrantedThisQcm) {
+        window._coinsGrantedThisQcm = true;
+        const correct = qcmAnswered.filter((a,i)=>a===currentQcm[i]?.correct).length;
+        addCoins('qcm_done');
+        if (Math.round(correct/all*100) === 100) addCoins('qcm_perfect');
+        setTimeout(pushAllScores, 500);
+      }
+    }
+  };
+})();
 
-// Grant coins when QCM is done
-const _origRenderQcm = renderQcm;
-function renderQcm() {
-  _origRenderQcm();
-  const answered = (typeof qcmAnswered !== 'undefined') ? qcmAnswered.filter(a=>a!==null).length : 0;
-  if (answered === (typeof currentQcm !== 'undefined' ? currentQcm.length : 0) && answered > 0) {
-    const correct = (typeof qcmAnswered !== 'undefined') ?
-      qcmAnswered.filter((a,i)=>a===currentQcm[i]?.correct).length : 0;
-    const score = Math.round(correct/answered*100);
-    addCoins('qcm_done');
-    if (score === 100) addCoins('qcm_perfect');
-    pushAllScores(); // Update leaderboard
-  }
-}
+// Reset QCM coins flag on new generation
+(function() {
+  const _orig = typeof generateQCM !== 'undefined' ? generateQCM : null;
+  if (!_orig) return;
+  window.generateQCM = async function() {
+    window._coinsGrantedThisQcm = false;
+    return _orig();
+  };
+})();
 
-// Patch updateStreak to push streak leaderboard
-const _origUpdateStreak = updateStreak;
-function updateStreak() {
-  _origUpdateStreak();
-  if ((userData.streak||0) === 7) addCoins('streak_7');
-  if ((userData.streak||0) === 30) addCoins('streak_30');
+// Streak coins: called once after login, safe
+function checkStreakCoins() {
+  const s = userData.streak || 0;
+  if (s === 7 || s === 30) addCoins(s === 7 ? 'streak_7' : 'streak_30');
   if (supabaseEnabled) pushMyScore('streak');
-}
-
-// Apply equipment on login
-const _origFinishLogin = finishLogin;
-function finishLogin(p) {
-  _origFinishLogin(p);
-  setTimeout(applyEquipment, 200);
-  setTimeout(updateCoinsBadge, 300);
-  // Push scores after login
-  if (supabaseEnabled) setTimeout(pushAllScores, 2000);
 }
 
 </script>

@@ -1611,10 +1611,11 @@ body {
       <div class="sidebar-avatar" id="sb-avatar"></div>
       <div>
         <div class="sidebar-user-name" id="sb-name"></div>
-        <div class="sidebar-user-sub">Première Générale</div>
+        <div class="sidebar-user-sub" id="sb-spes-sub" style="font-size:10px;color:var(--accent)"></div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <button class="sidebar-logout" onclick="logout()" title="Déconnexion">⏻</button>
+        <button class="sidebar-logout" onclick="openEditSpes()" title="Modifier mes spécialités" style="font-size:12px">✏️</button>
         <div class="sync-badge offline" id="sync-badge" title="État de la synchronisation">
           <div class="sync-dot" id="sync-dot"></div>
           <span id="sync-label">Local</span>
@@ -3000,7 +3001,27 @@ document.querySelector('.main').insertAdjacentHTML('beforeend', `
   </div>
 </div>
 
+<!-- Modal modifier spécialités -->
+<div class="overlay" id="ov-edit-spes">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head">
+      <div class="modal-title">✏️ Mes spécialités</div>
+      <button class="modal-close" onclick="closeOv('ov-edit-spes')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Choisis exactement 3 spécialités. Le changement met à jour immédiatement ta sidebar et ton tableau de bord.</div>
+      <div id="edit-spes-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px"></div>
+      <div style="font-size:11px;color:var(--muted2);margin-bottom:14px" id="edit-spes-counter">0 / 3 sélectionnée(s)</div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-ghost" onclick="closeOv('ov-edit-spes')">Annuler</button>
+        <button class="btn btn-primary" id="edit-spes-save-btn" onclick="saveEditSpes()" disabled>Sauvegarder</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal nouvelle erreur -->
+
 <div class="overlay" id="ov-new-erreur">
   <div class="modal" style="max-width:520px">
     <div class="modal-head">
@@ -3161,8 +3182,17 @@ function buildFilterRow() {
 }
 
 function buildQcmMatSelector() {
+  const userSpes = currentUser?.spes || [];
+  const userSpeIds = new Set(userSpes.map(s => SPE_TO_MATIERE[s]).filter(Boolean));
+  const sorted = [
+    ...MATIERES.filter(m => userSpeIds.has(m.id)),
+    ...MATIERES.filter(m => !userSpeIds.has(m.id)),
+  ];
   document.getElementById('qcm-mat-selector').innerHTML =
-    MATIERES.map(m => `<button class="mat-pill" data-id="${m.id}" onclick="selQcmMat(this)">${m.emoji} ${m.short}</button>`).join('');
+    sorted.map(m => {
+      const isSpe = userSpeIds.has(m.id);
+      return `<button class="mat-pill${isSpe?' spe-pill':''}" data-id="${m.id}" onclick="selQcmMat(this)" style="${isSpe?'border-color:'+m.color+'44;color:'+m.color:''}">${m.emoji} ${m.short}${isSpe?' ★':''}</button>`;
+    }).join('');
 }
 
 // ============================================================
@@ -3222,13 +3252,24 @@ function renderDashboard() {
 
   // Matières chips
   const scroll = document.getElementById('matieres-scroll');
-  scroll.innerHTML = MATIERES.map(m => {
+  // Get user's spés to put them first and highlight them
+  const userSpes = currentUser?.spes || [];
+  const userSpeIds = new Set(userSpes.map(s => SPE_TO_MATIERE[s]).filter(Boolean));
+
+  // Sort: spés first, then tronc commun
+  const sorted = [
+    ...MATIERES.filter(m => userSpeIds.has(m.id)),
+    ...MATIERES.filter(m => !userSpeIds.has(m.id)),
+  ];
+
+  scroll.innerHTML = sorted.map(m => {
     const fCount = (userData.fiches||[]).filter(f=>f.matiere===m.id).length;
     const cCount = (userData.cards||[]).filter(c=>c.matiere===m.id).length;
     const total = fCount + cCount;
     const pct = Math.min(100, total * 8);
-    return `<div class="matiere-chip" style="background:${m.bg};border-color:${m.mid}" onclick="goFichesMat('${m.id}')">
-      <div class="matiere-chip-name" style="color:${m.color}">${m.emoji} ${m.short}</div>
+    const isSpe = userSpeIds.has(m.id);
+    return `<div class="matiere-chip" style="background:${m.bg};border-color:${isSpe ? m.color+'66' : m.mid};${isSpe ? 'box-shadow:0 0 0 1px '+m.color+'33' : ''}" onclick="goFichesMat('${m.id}')">
+      <div class="matiere-chip-name" style="color:${m.color}">${m.emoji} ${m.short}${isSpe ? ' <span style="font-size:9px;opacity:.7">★ Spé</span>' : ''}</div>
       <div class="matiere-chip-count" style="color:${m.color}">${fCount} fiche${fCount!==1?'s':''} · ${cCount} carte${cCount!==1?'s':''}</div>
       <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${m.color}"></div></div>
     </div>`;
@@ -6268,6 +6309,7 @@ function finishLogin(p) {
   buildSelects();
   buildFilterRow();
   buildQcmMatSelector();
+  buildSpeSidebar(p.spes || []);  // ← v10.2 : sidebar dynamique
   updateStreak();
   renderDashboard();
   updatePet();
@@ -6286,6 +6328,143 @@ function finishLogin(p) {
   }, 200);
   if (supabaseEnabled) setTimeout(pushAllScores, 2000);
 }
+
+// Mapping des valeurs checkbox → ID MATIERES
+const SPE_TO_MATIERE = {
+  'Maths':    'math',
+  'Physique': 'pc',
+  'SVT':      'svt',
+  'NSI':      'nsi',
+  'SES':      'hg',    // Sciences Économiques → Histoire-Géo section (le plus proche)
+  'HGGSP':    'hg',
+  'HLP':      'fr',    // Humanités Littérature → Français section
+  'LLCE':     'en',    // Langues → Anglais section
+};
+
+// Toutes les matières du tronc commun (toujours affichées)
+const TRONC_IDS = ['fr','en','es','emc','es-sci','svt','hg'];
+
+function buildSpeSidebar(userSpes) {
+  // Convertir les noms de spés en IDs MATIERES
+  const speIds = userSpes.length > 0
+    ? [...new Set(userSpes.map(s => SPE_TO_MATIERE[s]).filter(Boolean))]
+    : ['math','pc','nsi']; // fallback par défaut
+
+  // Reconstruire le contenu de l'accordéon Spécialités
+  const speBody = document.querySelector('#acc-spe .nav-accordion-body');
+  if (speBody) {
+    speBody.innerHTML = speIds.map(id => {
+      const m = getM(id);
+      return `<button class="nav-btn" onclick="goFichesMat('${id}')">
+        <span class="matiere-dot" style="background:${m.color}"></span> ${m.label}
+      </button>`;
+    }).join('');
+  }
+
+  // Mettre à jour le titre de la section avec les spés
+  const speLabel = document.querySelector('#acc-spe .nav-label');
+  if (speLabel) {
+    speLabel.textContent = userSpes.slice(0,3).join(' · ') || 'Spécialités';
+  }
+
+  // Mettre à jour le sous-titre dans le header sidebar
+  const sub = document.getElementById('sb-spes-sub');
+  if (sub && userSpes.length) {
+    sub.textContent = userSpes.slice(0,3).join(' · ');
+  }
+}
+
+// ============================================================
+// MODIFIER LES SPÉCIALITÉS
+// ============================================================
+const ALL_SPES = [
+  { value:'Maths',   label:'📐 Maths' },
+  { value:'Physique',label:'⚗️ Physique' },
+  { value:'SVT',     label:'🌿 SVT' },
+  { value:'NSI',     label:'💻 NSI' },
+  { value:'SES',     label:'📊 SES' },
+  { value:'HGGSP',   label:'🗺️ HGGSP' },
+  { value:'HLP',     label:'📖 HLP' },
+  { value:'LLCE',    label:'🇬🇧 LLCE' },
+  { value:'Arts',    label:'🎨 Arts' },
+  { value:'EPS',     label:'⚽ EPS' },
+];
+
+function openEditSpes() {
+  const current = currentUser?.spes || [];
+  const grid = document.getElementById('edit-spes-grid');
+
+  grid.innerHTML = ALL_SPES.map(s => {
+    const checked = current.includes(s.value);
+    return `<label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:var(--r2);border:1px solid ${checked ? 'var(--accent)' : 'var(--border)'};background:${checked ? 'rgba(124,109,250,.08)' : 'var(--s2)'};cursor:pointer;font-size:13px;transition:all .15s" id="spe-lbl-${s.value}">
+      <input type="checkbox" value="${s.value}" ${checked ? 'checked' : ''} onchange="onEditSpeChange()" style="accent-color:var(--accent)">
+      ${s.label}
+    </label>`;
+  }).join('');
+
+  updateEditSpesCounter();
+  document.getElementById('ov-edit-spes').classList.add('open');
+}
+
+function onEditSpeChange() {
+  const checked = document.querySelectorAll('#edit-spes-grid input:checked');
+  const count = checked.length;
+
+  // Update label styles
+  ALL_SPES.forEach(s => {
+    const lbl = document.getElementById('spe-lbl-' + s.value);
+    const cb = lbl?.querySelector('input');
+    if (!lbl || !cb) return;
+    const isChecked = cb.checked;
+    lbl.style.borderColor = isChecked ? 'var(--accent)' : 'var(--border)';
+    lbl.style.background = isChecked ? 'rgba(124,109,250,.08)' : 'var(--s2)';
+    // Disable unchecked if already 3 selected
+    if (!isChecked && count >= 3) {
+      cb.disabled = true;
+      lbl.style.opacity = '0.4';
+    } else {
+      cb.disabled = false;
+      lbl.style.opacity = '1';
+    }
+  });
+
+  updateEditSpesCounter();
+}
+
+function updateEditSpesCounter() {
+  const count = document.querySelectorAll('#edit-spes-grid input:checked').length;
+  const counter = document.getElementById('edit-spes-counter');
+  const saveBtn = document.getElementById('edit-spes-save-btn');
+  if (counter) {
+    counter.textContent = `${count} / 3 sélectionnée(s)`;
+    counter.style.color = count === 3 ? 'var(--success)' : 'var(--muted2)';
+  }
+  if (saveBtn) saveBtn.disabled = count !== 3;
+}
+
+function saveEditSpes() {
+  const selected = Array.from(document.querySelectorAll('#edit-spes-grid input:checked'))
+    .map(cb => cb.value);
+
+  if (selected.length !== 3) { toast('⚠️ Choisis exactement 3 spécialités'); return; }
+
+  // Update profile
+  const idx = profiles.findIndex(p => p.id === currentUser?.id);
+  if (idx !== -1) {
+    profiles[idx].spes = selected;
+    currentUser.spes = selected;
+    saveProfiles();
+  }
+
+  // Rebuild sidebar and dashboard immediately
+  buildSpeSidebar(selected);
+  buildQcmMatSelector();
+  renderDashboard();
+
+  closeOv('ov-edit-spes');
+  toast('✅ Spécialités mises à jour : ' + selected.join(', '));
+}
+
 
 async function logout() {
   saveUserData();

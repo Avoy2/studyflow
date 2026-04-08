@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" type="image/png" href="icon.png">
-<title>StudyFlow v10.1 — Première Générale</title>
+<title>StudyFlow v10.1.2 — Première Générale</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
@@ -1461,7 +1461,7 @@ body {
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-name">StudyFlow</div>
-      <div class="auth-logo-sub">Première Générale 2026 · v10.1</div>
+      <div class="auth-logo-sub">Première Générale 2026 · v10.1.2</div>
     </div>
 
     <!-- ÉTAPE 1 : Config Supabase (première ouverture seulement) -->
@@ -1571,14 +1571,14 @@ body {
 		<div style="margin-top:15px; text-align:left;">
 			<label style="display:block; margin-bottom:8px; font-size:12px; color:var(--muted); font-weight:600;">TES 3 SPÉCIALITÉS :</label>
 			<div id="spes-container" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:rgba(255,255,255,0.03); padding:12px; border-radius:10px; border:1px solid var(--border);">
-				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="Maths"> Maths</label>
-				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="Physique"> Physique</label>
-				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="SVT"> SVT</label>
-				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="NSI"> NSI</label>
-				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="SES"> SES</label>
-				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="HGGSP"> HGGSP</label>
-				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="HLP"> HLP</label>
-				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="LLCE"> LLCE</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="math"> Maths</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="pc"> Physique</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="svt"> SVT</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="nsi"> NSI</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="ses"> SES</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="hggsp"> HGGSP</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="hlp"> HLP</label>
+				<label style="font-size:11px; display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" value="en"> Anglais</label>
 			</div>
 		</div>
         <button class="btn btn-primary btn-full" id="reg-submit-btn" onclick="doRegister()" disabled>Créer mon profil →</button>
@@ -3074,6 +3074,19 @@ const MATIERES = [
 
 function getM(id) { return MATIERES.find(m=>m.id===id) || MATIERES[0]; }
 
+function getMyMatieres() {
+  const p = profiles.find(prof => prof.id === currentProfileId);
+  // Liste des IDs du tronc commun (toujours visibles)
+  const troncIds = ['fr', 'en', 'es', 'emc', 'es-sci', 'svt', 'hg'];
+  
+  if (!p || !p.spes) return MATIERES;
+
+  return MATIERES.filter(m => {
+    // Garder si c'est Tronc Commun OU si l'ID est dans les spés du profil
+    return troncIds.includes(m.id) || p.spes.includes(m.id);
+  });
+}
+
 // ============================================================
 // MULTI-PROFILE STORAGE
 // ============================================================
@@ -3234,6 +3247,18 @@ function updateStreak() {
 // ============================================================
 // DASHBOARD
 // ============================================================
+function getFilteredMatieres() {
+  const p = profiles.find(prof => prof.id === currentProfileId);
+  if (!p || !p.spes) return MATIERES; // Si bug, on affiche tout
+
+  // On garde le tronc commun + les 3 spés du profil
+  return MATIERES.filter(m => {
+    // Si c'est une matière générale (toujours affichée)
+    if (['Français', 'Hist-Géo', 'Enseign. Sci.', 'LVA', 'LVB'].includes(m.name)) return true;
+    // Sinon, on ne garde que si c'est dans les spés du profil
+    return p.spes.includes(m.name);
+  });
+}
 function renderDashboard() {
   const h = new Date().getHours();
   const greet = h < 12 ? 'Bonjour' : h < 18 ? 'Bon après-midi' : 'Bonsoir';
@@ -7645,7 +7670,7 @@ async function renderMarketplace() {
   // Build matiere filter if not built
   const matSel = document.getElementById('market-filter-mat');
   if (matSel && matSel.options.length === 1) {
-    MATIERES.forEach(m => {
+    getMyMatieres().forEach(m => {
       const opt = document.createElement('option');
       opt.value = m.id; opt.textContent = m.emoji + ' ' + m.label;
       matSel.appendChild(opt);

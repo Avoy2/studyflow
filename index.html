@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" type="image/png" href="icon.png">
-<title>StudyFlow v10.2 — Première Générale</title>
+<title>StudyFlow v10.2.0— Première Générale</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
@@ -1629,7 +1629,7 @@ body {
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-name">StudyFlow</div>
-      <div class="auth-logo-sub">Première Générale 2026 · v10.2</div>
+      <div class="auth-logo-sub">Première Générale 2026 · v10.2.0</div>
     </div>
 
     <!-- ÉTAPE 1 : Config Supabase (première ouverture seulement) -->
@@ -4439,6 +4439,13 @@ function pomoAdvance() {
     userData.pomodoroLog.push({ date: Date.now(), mat, dur: pomoSettings.work });
     saveUserData();
     checkTrophees();
+    // Pet journal
+    if (typeof addPetJournalEntry === 'function') {
+      const m = typeof getM === 'function' ? getM(mat) : { emoji:'⏱️', label:'révision' };
+      addPetJournalEntry('⏱️', `Session Pomodoro de ${pomoSettings.work}min en ${m.emoji} ${m.label} — +2 XP !`);
+      if (typeof updatePetWithJournal === 'function') updatePetWithJournal();
+    }
+    window.dispatchEvent(new Event('pomodoroComplete'));
     if (pomoState.sessNum % 4 === 0) {
       pomoState.mode = 'long';
       pomoState.seconds = pomoSettings.long * 60;
@@ -5744,6 +5751,10 @@ function saveVictoire() {
   } else {
     userData.victoires.push({ id:getId(), text, matiere, date:Date.now(), streak:userData.streak||1 });
     toast('🌟 Victoire enregistrée ! Bravo !');
+    if (typeof addPetJournalEntry === 'function') {
+      addPetJournalEntry('🌟', `Victoire du jour : "${text.slice(0,40)}" — ton compagnon est fier (+5 XP) !`);
+      if (typeof updatePetWithJournal === 'function') updatePetWithJournal();
+    }
   }
   saveUserData();
   document.getElementById('victoire-input').value='';
@@ -5780,10 +5791,22 @@ function updatePet() {
   const nextStage = PET_STAGES[PET_STAGES.indexOf(stage)+1];
   const pct = nextStage ? Math.min(100, Math.round((xp - stage.minXp) / (nextStage.minXp - stage.minXp) * 100)) : 100;
   const isHappy = (userData.lastActive === new Date().toDateString());
-  document.getElementById('sb-pet').textContent = stage.sprite;
-  document.getElementById('sb-pet-name').textContent = stage.name;
+  const equipped = userData.shopEquipped || {};
+  const petSkin  = (userData.shopOwned||[]).includes(equipped.pet)
+    ? (window.SHOP_ITEMS||[]).find(i=>i.id===equipped.pet) : null;
+  const hatItem  = (userData.shopOwned||[]).includes(equipped.hat)
+    ? (window.SHOP_ITEMS||[]).find(i=>i.id===equipped.hat) : null;
+  const auraItem = (userData.shopOwned||[]).includes(equipped.aura)
+    ? (window.SHOP_ITEMS||[]).find(i=>i.id===equipped.aura) : null;
+  const sprite = (auraItem?.icon||'') + (petSkin?.icon||stage.sprite) + (hatItem?.icon||'');
+  document.getElementById('sb-pet').textContent = sprite;
+  document.getElementById('sb-pet-name').textContent = userData.petName || stage.name;
   document.getElementById('sb-pet-mood').textContent = isHappy ? stage.mood : '😴 Nourris-moi !';
   document.getElementById('sb-pet-xp').style.width = pct + '%';
+  // Live-refresh pet page if open
+  if (document.getElementById('page-pet')?.classList.contains('active')) {
+    if (typeof renderPetPage === 'function') renderPetPage();
+  }
 }
 
 // ============================================================
@@ -6604,7 +6627,7 @@ function finishLogin(p) {
   buildSelects();
   buildFilterRow();
   buildQcmMatSelector();
-  buildSpeSidebar(p.spes || []);  // ← v10.2 : sidebar dynamique
+  buildSpeSidebar(p.spes || []);  // ← v10.2.0 : sidebar dynamique
   updateStreak();
   renderDashboard();
   updatePet();
@@ -8861,16 +8884,6 @@ function updatePetWithJournal() {
   updatePet();
 }
 
-// Override updatePet to use journal version
-window._origUpdatePet = updatePet;
-function updatePet() {
-  window._origUpdatePet();
-  // Re-render pet page if it's open
-  if (document.getElementById('page-pet')?.classList.contains('active')) {
-    renderPetPage();
-  }
-}
-
 // Name the pet
 function openPetRename() {
   const current = userData.petName || '';
@@ -8882,20 +8895,14 @@ function openPetRename() {
     addPetJournalEntry('✏️', `Son prénom est maintenant : ${userData.petName}`);
     toast(`✅ Prénom enregistré : ${userData.petName}`);
   }
-}
-
-// Add rename button to pet arena (injected dynamically when page renders)
-const _origRenderPetPage = renderPetPage;
-function renderPetPage() {
-  _origRenderPetPage();
-  // Add rename button under name if not present
+  // Rename button (inject once)
   const nameEl = document.getElementById('pet-big-name');
   if (nameEl && !document.getElementById('pet-rename-btn')) {
     const btn = document.createElement('button');
     btn.id = 'pet-rename-btn';
     btn.textContent = '✏️';
     btn.title = 'Renommer';
-    btn.style.cssText = 'background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;margin-left:6px;';
+    btn.style.cssText = 'background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;margin-left:6px;vertical-align:middle';
     btn.onclick = openPetRename;
     nameEl.appendChild(btn);
   }

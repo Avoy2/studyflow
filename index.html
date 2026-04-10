@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" type="image/png" href="icon.png">
-<title>StudyFlow v10.2.0— Première Générale</title>
+<title>StudyFlow v10.1.2.4 — Première Générale</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
@@ -1629,7 +1629,7 @@ body {
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-name">StudyFlow</div>
-      <div class="auth-logo-sub">Première Générale 2026 · v10.2.0</div>
+      <div class="auth-logo-sub">Première Générale 2026 · v10.1.2.4</div>
     </div>
 
     <!-- ÉTAPE 1 : Config Supabase (première ouverture seulement) -->
@@ -2943,106 +2943,110 @@ document.querySelector('.main').insertAdjacentHTML('beforeend', `
 <!-- PAGE COMPAGNON -->
 <div class="page" id="page-pet">
   <div class="page-header">
-    <div class="page-title">🐾 Mon Compagnon</div>
-    <div class="page-sub">Prends soin de lui en révisant — il grandit avec toi</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+      <div>
+        <div class="page-title">🐾 Mon Compagnon</div>
+        <div class="page-sub">Prends-en soin — il grandit avec toi</div>
+      </div>
+      <div class="coins-badge"><span class="coin-icon">🪙</span><span id="pet-coins-hdr">0</span></div>
+    </div>
   </div>
   <div class="content">
 
-    <!-- ARÈNE PRINCIPALE -->
-    <div class="pet-arena">
-      <span class="pet-big-sprite pet-floating" id="pet-big-sprite" onclick="petTap()">🥚</span>
-      <div class="pet-big-name" id="pet-big-name">Compagnon</div>
-      <div class="pet-big-level" id="pet-big-level">Niveau 1 · 0 XP</div>
-      <div class="pet-xp-bar-big">
-        <div class="pet-xp-fill-big" id="pet-xp-fill-big" style="width:0%"></div>
+    <!-- ARÈNE -->
+    <div class="pet-arena" id="pet-arena-wrap">
+      <!-- Aura layer -->
+      <div id="pet-aura-layer" style="position:absolute;inset:0;border-radius:20px;pointer-events:none;transition:all .4s"></div>
+
+      <span class="pet-big-sprite pet-floating" id="pet-big-sprite" onclick="PetSystem.tap()">🥚</span>
+
+      <div class="pet-big-name">
+        <span id="pet-big-name">Compagnon</span>
+        <button onclick="PetSystem.rename()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;margin-left:6px;vertical-align:middle" title="Renommer">✏️</button>
       </div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="pet-xp-label">0 / 5 XP</div>
-      <div class="pet-speech-bubble" id="pet-speech">Crée ta première fiche pour me faire grandir ! 📄</div>
+      <div class="pet-big-level" id="pet-big-level">Niv. 1 — Œuf</div>
+
+      <!-- XP bar -->
+      <div class="pet-xp-bar-big"><div class="pet-xp-fill-big" id="pet-xp-fill-big" style="width:0%"></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px" id="pet-xp-label">0 XP</div>
+
+      <!-- Énergie -->
+      <div style="max-width:320px;margin:0 auto 4px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;color:var(--muted);flex-shrink:0">⚡ Énergie</span>
+        <div style="flex:1;height:6px;background:var(--s3);border-radius:3px;overflow:hidden">
+          <div id="pet-energy-bar" style="height:100%;border-radius:3px;background:linear-gradient(90deg,#4ade80,#86efac);transition:width .5s ease;width:100%"></div>
+        </div>
+        <span id="pet-energy-pct" style="font-size:11px;color:var(--success);flex-shrink:0;min-width:30px">100%</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="pet-energy-status"></div>
+
+      <div class="pet-speech-bubble" id="pet-speech">Salut ! Crée des fiches pour me faire grandir 📄</div>
     </div>
 
-    <!-- STATS -->
-    <div class="pet-stats-grid">
-      <div class="pet-stat">
-        <div class="pet-stat-val" id="ps-xp" style="color:var(--accent)">0</div>
-        <div class="pet-stat-label">XP Total</div>
-      </div>
-      <div class="pet-stat">
-        <div class="pet-stat-val" id="ps-level" style="color:var(--gold)">1</div>
-        <div class="pet-stat-label">Niveau</div>
-      </div>
-      <div class="pet-stat">
-        <div class="pet-stat-val" id="ps-happiness" style="color:var(--success)">😊</div>
-        <div class="pet-stat-label">Humeur</div>
-      </div>
-      <div class="pet-stat">
-        <div class="pet-stat-val" id="ps-fiches" style="color:var(--math)">0</div>
-        <div class="pet-stat-label">Fiches (+2 XP)</div>
-      </div>
-      <div class="pet-stat">
-        <div class="pet-stat-val" id="ps-streak" style="color:var(--danger)">0</div>
-        <div class="pet-stat-label">Série (+10 XP)</div>
-      </div>
-      <div class="pet-stat">
-        <div class="pet-stat-val" id="ps-qcm" style="color:var(--pc)">0</div>
-        <div class="pet-stat-label">QCM (+3 XP)</div>
-      </div>
+    <!-- KPI STATS -->
+    <div class="pet-stats-grid" style="margin-bottom:16px">
+      <div class="pet-stat"><div class="pet-stat-val" id="ps-xp" style="color:var(--accent)">0</div><div class="pet-stat-label">XP Total</div></div>
+      <div class="pet-stat"><div class="pet-stat-val" id="ps-level" style="color:var(--gold)">1</div><div class="pet-stat-label">Niveau</div></div>
+      <div class="pet-stat"><div class="pet-stat-val" id="ps-streak" style="color:var(--danger)">🔥 0</div><div class="pet-stat-label">Série</div></div>
     </div>
 
-    <!-- SOINS -->
+    <!-- BUFFS PASSIFS -->
+    <div id="pet-buffs-section" style="display:none;margin-bottom:16px">
+      <div class="section-label" style="margin-bottom:8px">✨ Compétences passives débloquées</div>
+      <div id="pet-buffs-list" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+
+    <!-- ACTIONS -->
     <div class="section-label" style="margin-bottom:10px">🎮 Actions</div>
-    <div class="pet-care-grid" id="pet-care-grid">
-      <div class="pet-care-btn" onclick="petAction('fiche')">
+    <div class="pet-care-grid">
+      <div class="pet-care-btn" onclick="PetSystem.feed()">
+        <div class="pet-care-ico">🍖</div>
+        <div class="pet-care-name">Nourrir</div>
+        <div class="pet-care-desc">Recharge l'énergie</div>
+        <div class="pet-care-reward" style="color:var(--gold)">10 🪙 → +50% ⚡</div>
+      </div>
+      <div class="pet-care-btn" id="pet-tap-btn" onclick="PetSystem.tap()">
+        <div class="pet-care-ico">🤝</div>
+        <div class="pet-care-name">Caresser</div>
+        <div class="pet-care-desc" id="pet-tap-desc">1× par jour</div>
+        <div class="pet-care-reward" id="pet-tap-reward">+5 XP</div>
+      </div>
+      <div class="pet-care-btn" onclick="showPage('fiches')">
         <div class="pet-care-ico">📄</div>
         <div class="pet-care-name">Créer une fiche</div>
-        <div class="pet-care-desc">Nourris-le de connaissance</div>
+        <div class="pet-care-desc">Nourris-le de savoir</div>
         <div class="pet-care-reward">+2 XP</div>
       </div>
-      <div class="pet-care-btn" onclick="petAction('flashcard')">
+      <div class="pet-care-btn" onclick="showPage('flashcards')">
         <div class="pet-care-ico">🃏</div>
         <div class="pet-care-name">Réviser des cartes</div>
         <div class="pet-care-desc">Entraîne sa mémoire</div>
         <div class="pet-care-reward">+1 XP / carte</div>
       </div>
-      <div class="pet-care-btn" onclick="petAction('qcm')">
+      <div class="pet-care-btn" onclick="showPage('qcm')">
         <div class="pet-care-ico">✦</div>
         <div class="pet-care-name">Faire un QCM</div>
         <div class="pet-care-desc">Teste son intelligence</div>
         <div class="pet-care-reward">+3 XP</div>
       </div>
-      <div class="pet-care-btn" onclick="petAction('pomodoro')">
+      <div class="pet-care-btn" onclick="showPage('pomodoro')">
         <div class="pet-care-ico">⏱️</div>
-        <div class="pet-care-name">Session Pomodoro</div>
+        <div class="pet-care-name">Pomodoro</div>
         <div class="pet-care-desc">Concentre-le</div>
         <div class="pet-care-reward">+2 XP</div>
       </div>
-      <div class="pet-care-btn" onclick="petAction('victoire')">
-        <div class="pet-care-ico">🌟</div>
-        <div class="pet-care-name">Victoire du jour</div>
-        <div class="pet-care-desc">Rend-le fier</div>
-        <div class="pet-care-reward">+5 XP</div>
-      </div>
-      <div class="pet-care-btn" id="pet-tap-btn" onclick="petTap()">
-        <div class="pet-care-ico">🤝</div>
-        <div class="pet-care-name">Le caresser</div>
-        <div class="pet-care-desc" id="pet-tap-desc">Clique sur lui !</div>
-        <div class="pet-care-reward" id="pet-tap-reward">1× par jour</div>
-      </div>
     </div>
 
-    <!-- ACCESSOIRES ÉQUIPÉS -->
-    <div class="section-label" style="margin-bottom:10px">👒 Accessoires</div>
-    <div class="pet-accessories-grid" id="pet-accessories">
-      <div class="pet-acc-chip" onclick="showPage('social');showSocialTab('shop')">
-        <span>🛒</span> Voir la boutique
-      </div>
-    </div>
+    <!-- BOUTIQUE AURAS -->
+    <div class="section-label" style="margin-bottom:10px">💫 Auras cosmétiques</div>
+    <div id="pet-aura-shop" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px"></div>
 
     <!-- ÉVOLUTION -->
-    <div class="section-label" style="margin:16px 0 10px">📈 Chemin d'évolution</div>
+    <div class="section-label" style="margin-bottom:10px">📈 Chemin d'évolution</div>
     <div id="pet-evolution-track"></div>
 
     <!-- JOURNAL -->
-    <div class="section-label" style="margin:16px 0 10px">📓 Journal</div>
+    <div class="section-label" style="margin:16px 0 10px">📓 Journal interactif</div>
     <div id="pet-journal"></div>
 
   </div>
@@ -4440,10 +4444,9 @@ function pomoAdvance() {
     saveUserData();
     checkTrophees();
     // Pet journal
-    if (typeof addPetJournalEntry === 'function') {
+    if (typeof PetSystem !== 'undefined') {
       const m = typeof getM === 'function' ? getM(mat) : { emoji:'⏱️', label:'révision' };
-      addPetJournalEntry('⏱️', `Session Pomodoro de ${pomoSettings.work}min en ${m.emoji} ${m.label} — +2 XP !`);
-      if (typeof updatePetWithJournal === 'function') updatePetWithJournal();
+      PetSystem.onPomodoro(`${m.emoji} ${m.label}`);
     }
     window.dispatchEvent(new Event('pomodoroComplete'));
     if (pomoState.sessNum % 4 === 0) {
@@ -5751,10 +5754,7 @@ function saveVictoire() {
   } else {
     userData.victoires.push({ id:getId(), text, matiere, date:Date.now(), streak:userData.streak||1 });
     toast('🌟 Victoire enregistrée ! Bravo !');
-    if (typeof addPetJournalEntry === 'function') {
-      addPetJournalEntry('🌟', `Victoire du jour : "${text.slice(0,40)}" — ton compagnon est fier (+5 XP) !`);
-      if (typeof updatePetWithJournal === 'function') updatePetWithJournal();
-    }
+    if (typeof PetSystem !== 'undefined') PetSystem.onVictoire(text);
   }
   saveUserData();
   document.getElementById('victoire-input').value='';
@@ -5766,48 +5766,548 @@ function saveVictoire() {
 // ============================================================
 // PET COMPAGNON
 // ============================================================
+// ============================================================
+// PET SYSTEM v2 — Centralized in PetSystem object
+// All pet data stored in userData.petStats
+// ============================================================
+
+const PetSystem = {
+
+  // ── DATA SCHEMA ───────────────────────────────────────────
+  defaults() {
+    return {
+      xp: 0, level: 1, energy: 100, lastEnergyTick: Date.now(),
+      lastTap: null, petName: 'Compagnon',
+      equippedAura: null, journal: [],
+      buffsUnlocked: [],
+    };
+  },
+
+  get stats() {
+    if (!userData.petStats) userData.petStats = this.defaults();
+    return userData.petStats;
+  },
+
+  save() { saveUserData(); },
+
+  // ── LEVEL & XP ────────────────────────────────────────────
+  XP_PER_LEVEL: 20,  // XP needed scales: level * XP_PER_LEVEL
+
+  computeXp() {
+    return (userData.fiches||[]).length * 2 +
+           (userData.cards||[]).length +
+           (userData.qcmHistory||[]).filter(q=>q.done).length * 3 +
+           (userData.pomodoroLog||[]).length * 2 +
+           (userData.victoires||[]).length * 5 +
+           (userData.streak||0) * 10;
+  },
+
+  levelFromXp(xp) {
+    let lv = 1, threshold = 0;
+    while (xp >= threshold + lv * this.XP_PER_LEVEL) {
+      threshold += lv * this.XP_PER_LEVEL;
+      lv++;
+    }
+    return { level: lv, xpInLevel: xp - threshold, xpNeeded: lv * this.XP_PER_LEVEL };
+  },
+
+  // ── AVATAR ────────────────────────────────────────────────
+  getPetAvatar(level) {
+    if (level >= 30) return { sprite:'🦅', name:'Phénix',      aura:'rgba(255,140,0,.15)' };
+    if (level >= 16) return { sprite:'🐥', name:'Adolescent',  aura:'rgba(255,200,0,.12)' };
+    if (level >= 6)  return { sprite:'🐣', name:'Bébé',        aura:'rgba(124,200,100,.1)' };
+    return              { sprite:'🥚', name:'Œuf',          aura:'rgba(200,180,255,.08)' };
+  },
+
+  getDisplaySprite(level) {
+    const equipped = userData.shopEquipped || {};
+    const skinOverride = (userData.shopOwned||[]).includes(equipped.pet)
+      ? (window.SHOP_ITEMS||[]).find(i=>i.id===equipped.pet) : null;
+    const hat  = (userData.shopOwned||[]).includes(equipped.hat)
+      ? (window.SHOP_ITEMS||[]).find(i=>i.id===equipped.hat) : null;
+    const base = this.getPetAvatar(level);
+    const auraItem = this.AURAS.find(a=>a.id===this.stats.equippedAura);
+    return (auraItem?.prefix||'') + (skinOverride?.icon||base.sprite) + (hat?.icon||'');
+  },
+
+  // ── ENERGY ────────────────────────────────────────────────
+  ENERGY_DRAIN_PER_HOUR: 5,
+  FEED_COST: 10,
+  FEED_RESTORE: 50,
+
+  computeEnergy() {
+    const s = this.stats;
+    const hoursElapsed = (Date.now() - (s.lastEnergyTick||Date.now())) / 3600000;
+    const drained = Math.floor(hoursElapsed * this.ENERGY_DRAIN_PER_HOUR);
+    return Math.max(0, Math.min(100, (s.energy||100) - drained));
+  },
+
+  tickEnergy() {
+    const current = this.computeEnergy();
+    this.stats.energy = current;
+    this.stats.lastEnergyTick = Date.now();
+    this.save();
+    return current;
+  },
+
+  isAsleep() { return this.computeEnergy() <= 0; },
+
+  feed() {
+    const cost = this.FEED_COST;
+    if (getCoins() < cost) {
+      toast(`⚠️ Pas assez de coins (${cost} 🪙 requis)`);
+      return;
+    }
+    userData.coins = (userData.coins||0) - cost;
+    this.stats.energy = Math.min(100, (this.stats.energy||0) + this.FEED_RESTORE);
+    this.stats.lastEnergyTick = Date.now();
+    this.save();
+    this.addJournal('🍖', `Nourri avec amour — énergie +${this.FEED_RESTORE}% !`);
+    toast(`🍖 ${this.stats.petName||'Compagnon'} est rechargé ! (−${cost} 🪙)`);
+    updateCoinsBadge?.();
+    this.render();
+  },
+
+  // ── TAP ───────────────────────────────────────────────────
+  tap() {
+    const today = new Date().toDateString();
+    // Bounce animation
+    const sp = document.getElementById('pet-big-sprite');
+    if (sp) {
+      sp.classList.remove('pet-floating','pet-bounce');
+      void sp.offsetWidth;
+      sp.classList.add('pet-bounce');
+      setTimeout(() => { sp.classList.remove('pet-bounce'); sp.classList.add('pet-floating'); }, 600);
+    }
+    this.randomSpeech();
+    this.spawnParticles(['❤️','💕','✨']);
+
+    if (this.stats.lastTap !== today) {
+      this.stats.lastTap = today;
+      if (!this.isAsleep()) {
+        addCoins?.(undefined, 5);
+        this.addJournal('🤝', `Caressé aujourd'hui — il adore ça ! (+5 🪙)`);
+        toast('❤️ +5 StudyCoins !');
+      } else {
+        this.addJournal('😴', `Il dormait trop profondément pour sentir ta caresse… nourris-le !`);
+        toast('😴 Il dort… Nourris-le pour le réveiller !');
+      }
+      this.save();
+      this.render();
+    }
+  },
+
+  // ── RENAME ────────────────────────────────────────────────
+  rename() {
+    const current = this.stats.petName || '';
+    const name = prompt('Prénom de ton compagnon :', current);
+    if (name?.trim()) {
+      this.stats.petName = name.trim().slice(0,20);
+      this.save();
+      this.addJournal('✏️', `Son prénom est maintenant : ${this.stats.petName}`);
+      toast(`✅ Renommé : ${this.stats.petName}`);
+      this.render();
+    }
+  },
+
+  // ── BUFFS ─────────────────────────────────────────────────
+  BUFFS: [
+    { id:'researcher', minLevel:10, icon:'🔍', name:'Instinct de chercheur',
+      desc:'+5% de chance de trouver des pièces bonus en QCM' },
+    { id:'zen', minLevel:20, icon:'🧘', name:'Zen',
+      desc:'Le temps des défis IA est augmenté de 10 secondes' },
+    { id:'memory', minLevel:30, icon:'🧠', name:'Mémoire photographique',
+      desc:'+1 XP supplémentaire par flashcard révisée' },
+  ],
+
+  getActiveBuffs(level) {
+    return this.BUFFS.filter(b => level >= b.minLevel);
+  },
+
+  hasBuffActive(buffId) {
+    const xp = this.computeXp();
+    const { level } = this.levelFromXp(xp);
+    return this.getActiveBuffs(level).some(b => b.id === buffId);
+  },
+
+  // ── AURAS (boutique cosmétique intégrée à la page) ────────
+  AURAS: [
+    { id:'aura_fire',  name:'Aura de Feu',   icon:'🔥', price:80,
+      css:'0 0 30px rgba(255,80,0,.4), 0 0 60px rgba(255,80,0,.2)',
+      prefix:'🔥', color:'rgba(255,80,0,.2)' },
+    { id:'aura_ice',   name:'Aura de Glace', icon:'❄️', price:80,
+      css:'0 0 30px rgba(100,200,255,.4), 0 0 60px rgba(100,200,255,.2)',
+      prefix:'❄️', color:'rgba(100,200,255,.2)' },
+    { id:'aura_gold',  name:'Aura Dorée',    icon:'✨', price:120,
+      css:'0 0 30px rgba(255,200,0,.5), 0 0 60px rgba(255,200,0,.25)',
+      prefix:'✨', color:'rgba(255,200,0,.2)' },
+    { id:'aura_purple',name:'Aura Mystique', icon:'💜', price:150,
+      css:'0 0 30px rgba(160,80,255,.5), 0 0 60px rgba(160,80,255,.3)',
+      prefix:'💜', color:'rgba(160,80,255,.2)' },
+    { id:'aura_rainbow',name:'Arc-en-ciel',  icon:'🌈', price:200,
+      css:'0 0 30px rgba(255,100,200,.4), 0 0 60px rgba(100,200,255,.3)',
+      prefix:'🌈', color:'rgba(255,100,200,.15)' },
+  ],
+
+  buyOrEquipAura(auraId) {
+    const aura = this.AURAS.find(a=>a.id===auraId);
+    if (!aura) return;
+    if (!userData.ownedAuras) userData.ownedAuras = [];
+    if (userData.ownedAuras.includes(auraId)) {
+      // Toggle equip
+      if (this.stats.equippedAura === auraId) {
+        this.stats.equippedAura = null;
+        toast(`${aura.icon} Aura retirée`);
+      } else {
+        this.stats.equippedAura = auraId;
+        toast(`${aura.icon} ${aura.name} équipée !`);
+      }
+    } else {
+      if (getCoins() < aura.price) { toast(`⚠️ ${aura.price} 🪙 requis`); return; }
+      userData.coins = (userData.coins||0) - aura.price;
+      userData.ownedAuras.push(auraId);
+      this.stats.equippedAura = auraId;
+      this.addJournal('💫', `Nouvelle aura achetée : ${aura.name} !`);
+      toast(`💫 ${aura.name} achetée et équipée !`);
+      updateCoinsBadge?.();
+    }
+    this.save();
+    this.applyAura();
+    this.render();
+  },
+
+  applyAura() {
+    const layer = document.getElementById('pet-aura-layer');
+    const sprite = document.getElementById('pet-big-sprite');
+    if (!layer || !sprite) return;
+    const aura = this.AURAS.find(a=>a.id===this.stats.equippedAura);
+    if (aura) {
+      layer.style.background = aura.color;
+      sprite.style.filter = `drop-shadow(${aura.css})`;
+    } else {
+      layer.style.background = '';
+      sprite.style.filter = '';
+    }
+  },
+
+  // ── JOURNAL ───────────────────────────────────────────────
+  addJournal(ico, text) {
+    if (!this.stats.journal) this.stats.journal = [];
+    this.stats.journal.push({ ico, text, date: Date.now() });
+    if (this.stats.journal.length > 30) this.stats.journal = this.stats.journal.slice(-30);
+    this.save();
+  },
+
+  // Reactive journal — responds to mistakes/events
+  encourage(userName, context) {
+    const messages = [
+      `C'est pas grave ${userName}, on revoit ça ensemble ? 💪`,
+      `Tout le monde fait des erreurs ${userName} — l'important c'est de recommencer !`,
+      `${userName}, je crois en toi ! Réessaie, tu vas y arriver 🌟`,
+      `Une erreur = une leçon. Tu progresses ${userName} ! 🧠`,
+    ];
+    const msg = messages[Math.floor(Math.random()*messages.length)];
+    this.addJournal('💬', msg);
+    // Also show in speech bubble if on pet page
+    const sp = document.getElementById('pet-speech');
+    if (sp) sp.textContent = msg;
+    return msg;
+  },
+
+  // ── SPEECHES ──────────────────────────────────────────────
+  SPEECHES: {
+    0:  ['Tap tap… quelqu'un est là ? 🥚', 'Chauffe-moi avec tes révisions !', 'Je vais éclore bientôt…'],
+    6:  ['Piou piou ! Je grandis 🐣', 'Encore des flashcards !', 'Je suis tout petit mais courageux !'],
+    16: ['Je commence à voler ! 🐥', 'Tes révisions me rendent fort !', 'Continue, je grandis !'],
+    30: ['Je suis un PHÉNIX ! 🦅', 'Indestructible grâce à toi !', 'On va tout déchirer !'],
+  },
+
+  randomSpeech(level) {
+    if (!level) { const xp=this.computeXp(); level=this.levelFromXp(xp).level; }
+    if (this.isAsleep()) {
+      const sp = document.getElementById('pet-speech');
+      if (sp) sp.textContent = '😴 Zzz… je dors. Nourris-moi pour me réveiller !';
+      return;
+    }
+    const tiers = [30,16,6,0];
+    const tier = tiers.find(t=>level>=t) ?? 0;
+    const pool = this.SPEECHES[tier];
+    const text = pool[Math.floor(Math.random()*pool.length)];
+    const sp = document.getElementById('pet-speech');
+    if (sp) sp.textContent = text;
+  },
+
+  // ── PARTICLES ─────────────────────────────────────────────
+  spawnParticles(emojis=['⭐','✨','💫']) {
+    const el = document.getElementById('pet-big-sprite');
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    for (let i=0; i<6; i++) {
+      const p = document.createElement('div');
+      p.className = 'pet-particle';
+      p.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      p.style.cssText = `position:fixed;font-size:20px;pointer-events:none;z-index:9999;
+        left:${rect.left+rect.width/2+(Math.random()-.5)*80}px;
+        top:${rect.top+rect.height/2}px;
+        animation:particleRise 1.2s ease forwards;
+        animation-delay:${i*0.1}s`;
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(), 1500);
+    }
+  },
+
+  // ── EVOLUTION CHECK ───────────────────────────────────────
+  _prevLevel: 0,
+  checkLevelUp(newLevel) {
+    if (newLevel > this._prevLevel && this._prevLevel > 0) {
+      const avatar = this.getPetAvatar(newLevel);
+      this.addJournal('🎉', `Niveau ${newLevel} atteint ! Il est devenu : ${avatar.sprite} ${avatar.name} !`);
+      toast(`🎉 Niveau ${newLevel} ! Ton compagnon est maintenant ${avatar.name} ${avatar.sprite}`, 4000);
+      this.spawnParticles(['🎉','⭐','✨','🌟','🎊']);
+    }
+    this._prevLevel = newLevel;
+  },
+
+  // ── MAIN RENDER ───────────────────────────────────────────
+  render() {
+    const xp = this.computeXp();
+    const { level, xpInLevel, xpNeeded } = this.levelFromXp(xp);
+    this.checkLevelUp(level);
+
+    const energy = this.tickEnergy();
+    const avatar = this.getPetAvatar(level);
+    const asleep = energy <= 0;
+    const sprite = this.getDisplaySprite(level);
+    const name = this.stats.petName || avatar.name;
+
+    // Arena
+    const spriteEl = document.getElementById('pet-big-sprite');
+    if (spriteEl) spriteEl.textContent = asleep ? '😴' : sprite;
+    const nameEl = document.getElementById('pet-big-name');
+    if (nameEl) nameEl.textContent = name;
+    const lvlEl = document.getElementById('pet-big-level');
+    if (lvlEl) lvlEl.textContent = `Niv. ${level} — ${avatar.name}`;
+    const fillEl = document.getElementById('pet-xp-fill-big');
+    if (fillEl) fillEl.style.width = Math.round(xpInLevel/xpNeeded*100)+'%';
+    const labelEl = document.getElementById('pet-xp-label');
+    if (labelEl) labelEl.textContent = `${xpInLevel} / ${xpNeeded} XP vers le niveau ${level+1}`;
+
+    // Energy bar
+    const energyBar = document.getElementById('pet-energy-bar');
+    const energyPct = document.getElementById('pet-energy-pct');
+    const energySt  = document.getElementById('pet-energy-status');
+    if (energyBar) {
+      energyBar.style.width = energy + '%';
+      energyBar.style.background = energy > 50
+        ? 'linear-gradient(90deg,#4ade80,#86efac)'
+        : energy > 20
+          ? 'linear-gradient(90deg,#fbbf24,#fde68a)'
+          : 'linear-gradient(90deg,#f87171,#fca5a5)';
+    }
+    if (energyPct) {
+      energyPct.textContent = energy + '%';
+      energyPct.style.color = energy > 50 ? 'var(--success)' : energy > 20 ? 'var(--gold)' : 'var(--danger)';
+    }
+    if (energySt) energySt.textContent = asleep
+      ? '😴 Endormi — plus d'XP gagné ! Nourris-le pour le réveiller.'
+      : energy < 30 ? '⚠️ Fatigué — nourris-le bientôt !' : '';
+
+    // Speech
+    this.randomSpeech(level);
+
+    // Stats
+    document.getElementById('ps-xp')?.textContent !== undefined && (document.getElementById('ps-xp').textContent = xp);
+    document.getElementById('ps-level')?.textContent !== undefined && (document.getElementById('ps-level').textContent = level);
+    document.getElementById('ps-streak')?.textContent !== undefined && (document.getElementById('ps-streak').textContent = '🔥 '+(userData.streak||0));
+
+    // Coins header
+    const ch = document.getElementById('pet-coins-hdr');
+    if (ch) ch.textContent = getCoins?.() ?? (userData.coins||0);
+
+    // Tap button state
+    const tappedToday = this.stats.lastTap === new Date().toDateString();
+    document.getElementById('pet-tap-btn')?.classList.toggle('disabled', tappedToday);
+    const td = document.getElementById('pet-tap-desc');
+    const tr = document.getElementById('pet-tap-reward');
+    if (td) td.textContent = tappedToday ? '✅ Fait aujourd'hui' : 'Clique sur lui !';
+    if (tr) tr.textContent = tappedToday ? 'Reviens demain' : '+5 🪙';
+
+    // Buffs
+    this.renderBuffs(level);
+
+    // Aura shop
+    this.renderAuraShop();
+
+    // Evolution track
+    this.renderEvolution(level, xp);
+
+    // Journal
+    this.renderJournal();
+
+    // Apply aura CSS
+    this.applyAura();
+
+    // Sync sidebar
+    this.syncSidebar(sprite, name, xpInLevel, xpNeeded, level, asleep, avatar);
+  },
+
+  syncSidebar(sprite, name, xpInLevel, xpNeeded, level, asleep, avatar) {
+    const pct = Math.round(xpInLevel/xpNeeded*100);
+    const sbPet = document.getElementById('sb-pet');
+    if (sbPet) sbPet.textContent = asleep ? '😴' : sprite;
+    const sbName = document.getElementById('sb-pet-name');
+    if (sbName) sbName.textContent = name;
+    const sbMood = document.getElementById('sb-pet-mood');
+    if (sbMood) sbMood.textContent = asleep ? '😴 Endormi' : `Niv.${level} ${avatar.name}`;
+    const sbXp = document.getElementById('sb-pet-xp');
+    if (sbXp) sbXp.style.width = pct + '%';
+  },
+
+  renderBuffs(level) {
+    const active = this.getActiveBuffs(level);
+    const section = document.getElementById('pet-buffs-section');
+    const list    = document.getElementById('pet-buffs-list');
+    if (!section || !list) return;
+    section.style.display = active.length ? '' : 'none';
+    list.innerHTML = active.map(b => `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(124,109,250,.07);border:1px solid rgba(124,109,250,.2);border-radius:var(--r2)">
+        <span style="font-size:20px">${b.icon}</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--accent)">${b.name}</div>
+          <div style="font-size:11px;color:var(--muted)">${b.desc}</div>
+        </div>
+      </div>`).join('');
+  },
+
+  renderAuraShop() {
+    const el = document.getElementById('pet-aura-shop');
+    if (!el) return;
+    const owned = userData.ownedAuras || [];
+    el.innerHTML = this.AURAS.map(a => {
+      const isOwned    = owned.includes(a.id);
+      const isEquipped = this.stats.equippedAura === a.id;
+      return `<div class="pet-acc-chip ${isEquipped?'equipped':''}"
+        onclick="PetSystem.buyOrEquipAura('${a.id}')"
+        style="${isEquipped?'border-color:var(--accent);background:rgba(124,109,250,.1)':''}">
+        ${a.icon} ${a.name}
+        ${isEquipped ? ' ✓' : isOwned ? '' : ` <span style="color:var(--gold);font-size:10px">${a.price}🪙</span>`}
+      </div>`;
+    }).join('');
+  },
+
+  renderEvolution(currentLevel, xp) {
+    const el = document.getElementById('pet-evolution-track');
+    if (!el) return;
+    const milestones = [
+      { level:1,  label:'🥚 Œuf',      minLevel:1  },
+      { level:6,  label:'🐣 Bébé',     minLevel:6  },
+      { level:16, label:'🐥 Ado',      minLevel:16 },
+      { level:30, label:'🦅 Phénix',   minLevel:30 },
+    ];
+    el.innerHTML = `<div style="display:flex;align-items:center;gap:0;overflow-x:auto;padding:8px 0;scrollbar-width:none">
+      ${milestones.map((m,i) => {
+        const done   = currentLevel > m.level;
+        const active = currentLevel >= m.level && (i===milestones.length-1||currentLevel<milestones[i+1].level);
+        return `${i>0?`<div style="flex:1;height:2px;min-width:20px;background:${done||active?'var(--accent)':'var(--s3)'}"></div>`:''}
+          <div style="text-align:center;flex-shrink:0">
+            <div style="font-size:${active?'30px':'20px'};filter:${done||active?'none':'grayscale(1) opacity(.35)'};transition:all .3s">${m.label.split(' ')[0]}</div>
+            <div style="font-size:9px;color:${active?'var(--accent)':done?'var(--muted)':'var(--muted2)'};margin-top:2px">${m.label.split(' ').slice(1).join(' ')}</div>
+            <div style="font-size:9px;color:var(--muted2)">Niv.${m.level}</div>
+          </div>`;
+      }).join('')}
+    </div>`;
+  },
+
+  renderJournal() {
+    const el = document.getElementById('pet-journal');
+    if (!el) return;
+    const journal = (this.stats.journal||[]).slice(-10).reverse();
+    if (!journal.length) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px 0">Le journal se remplira au fil de vos aventures !</div>';
+      return;
+    }
+    el.innerHTML = journal.map(e => `
+      <div class="pet-journal-item">
+        <div class="pet-journal-ico">${e.ico}</div>
+        <div>
+          <div class="pet-journal-text">${e.text}</div>
+          <div class="pet-journal-time">${new Date(e.date).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+      </div>`).join('');
+  },
+
+  // ── PUBLIC HOOKS (called from outside) ────────────────────
+  onFicheCreated() {
+    if (this.isAsleep()) return;
+    this.addJournal('📄', 'Nouvelle fiche créée — +2 XP !');
+    this.render();
+  },
+  onCardCreated() {
+    if (this.isAsleep()) return;
+    this.addJournal('🃏', 'Flashcard ajoutée — +1 XP !');
+    this.render();
+  },
+  onPomodoro(matLabel) {
+    if (this.isAsleep()) {
+      toast('😴 Ton compagnon dort… nourris-le !');
+      return;
+    }
+    this.addJournal('⏱️', `Session Pomodoro en ${matLabel} — +2 XP !`);
+    this.render();
+  },
+  onQcmDone(score) {
+    if (this.isAsleep()) return;
+    const hasResearcher = this.hasBuffActive('researcher');
+    const bonusTrigger  = hasResearcher && Math.random() < 0.05;
+    if (bonusTrigger) {
+      addCoins?.(undefined, 10);
+      this.addJournal('🔍', `Instinct de chercheur déclenché ! +10 🪙 bonus (score: ${score}%)`);
+      toast('🔍 Instinct de chercheur ! +10 🪙 bonus !');
+    } else {
+      this.addJournal('✦', `QCM terminé — score ${score}% — +3 XP !`);
+    }
+    this.render();
+  },
+  onVictoire(text) {
+    if (this.isAsleep()) return;
+    this.addJournal('🌟', `Victoire : "${text.slice(0,40)}" — +5 XP !`);
+    this.render();
+  },
+  onMistake() {
+    const name = this.stats.petName || (currentUser?.username||'');
+    this.encourage(name, 'mistake');
+    if (document.getElementById('page-pet')?.classList.contains('active')) this.render();
+  },
+};
+
+// ── LEGACY SHIMS (keep old calls working) ──────────────────
+function getPetXp()       { return PetSystem.computeXp(); }
+function updatePet()      {
+  PetSystem.render();
+}
+function updatePetWithJournal() { PetSystem.render(); }
+function addPetJournalEntry(ico, text) { PetSystem.addJournal(ico, text); }
+function renderPetPage()  { PetSystem.render(); }
+function petTap()         { PetSystem.tap(); }
+function petAction(a)     {
+  const m={fiche:'fiches',flashcard:'flashcards',qcm:'qcm',pomodoro:'pomodoro',victoire:'victoire'};
+  if(m[a]) showPage(m[a]);
+}
+function spawnParticles(el, emojis) { PetSystem.spawnParticles(emojis); }
+
+// ── EVENT LISTENERS ────────────────────────────────────────
+document.addEventListener('studyflow:fiche_saved', () => PetSystem.onFicheCreated());
+document.addEventListener('studyflow:card_saved',  () => PetSystem.onCardCreated());
+
+// ── KEEP PET_STAGES for trophy/leaderboard compat ──────────
 const PET_STAGES = [
-  { minXp:0,   sprite:'🥚', name:'Œuf',          mood:'En attente…' },
-  { minXp:5,   sprite:'🐣', name:'Poussin',       mood:'Je m\'éveille !' },
-  { minXp:20,  sprite:'🐥', name:'Petit oiseau',  mood:'Je grandis !' },
-  { minXp:50,  sprite:'🦅', name:'Aigle studieux', mood:'On révise !' },
-  { minXp:100, sprite:'🦁', name:'Lion savant',   mood:'Je suis fort !' },
-  { minXp:200, sprite:'🐉', name:'Dragon érudit', mood:'Je domine !' },
+  { minXp:0,   sprite:'🥚', name:'Œuf',     mood:'En attente…' },
+  { minXp:5,   sprite:'🐣', name:'Poussin', mood:'Je m\'éveille !' },
+  { minXp:20,  sprite:'🐥', name:'Ado',     mood:'Je grandis !' },
+  { minXp:50,  sprite:'🦅', name:'Phénix',  mood:'On révise !' },
+  { minXp:100, sprite:'🦁', name:'Lion',    mood:'Je suis fort !' },
+  { minXp:200, sprite:'🐉', name:'Dragon',  mood:'Je domine !' },
 ];
-
-function getPetXp() {
-  return (userData.fiches||[]).length * 2 +
-         (userData.cards||[]).length +
-         (userData.qcmHistory||[]).filter(q=>q.done).length * 3 +
-         (userData.pomoCycles||0) * 2 +
-         (userData.victoires||[]).length * 5 +
-         (userData.streak||0) * 10;
-}
-
-function updatePet() {
-  const xp = getPetXp();
-  let stage = PET_STAGES[0];
-  for (const s of PET_STAGES) { if (xp >= s.minXp) stage = s; }
-  const nextStage = PET_STAGES[PET_STAGES.indexOf(stage)+1];
-  const pct = nextStage ? Math.min(100, Math.round((xp - stage.minXp) / (nextStage.minXp - stage.minXp) * 100)) : 100;
-  const isHappy = (userData.lastActive === new Date().toDateString());
-  const equipped = userData.shopEquipped || {};
-  const petSkin  = (userData.shopOwned||[]).includes(equipped.pet)
-    ? (window.SHOP_ITEMS||[]).find(i=>i.id===equipped.pet) : null;
-  const hatItem  = (userData.shopOwned||[]).includes(equipped.hat)
-    ? (window.SHOP_ITEMS||[]).find(i=>i.id===equipped.hat) : null;
-  const auraItem = (userData.shopOwned||[]).includes(equipped.aura)
-    ? (window.SHOP_ITEMS||[]).find(i=>i.id===equipped.aura) : null;
-  const sprite = (auraItem?.icon||'') + (petSkin?.icon||stage.sprite) + (hatItem?.icon||'');
-  document.getElementById('sb-pet').textContent = sprite;
-  document.getElementById('sb-pet-name').textContent = userData.petName || stage.name;
-  document.getElementById('sb-pet-mood').textContent = isHappy ? stage.mood : '😴 Nourris-moi !';
-  document.getElementById('sb-pet-xp').style.width = pct + '%';
-  // Live-refresh pet page if open
-  if (document.getElementById('page-pet')?.classList.contains('active')) {
-    if (typeof renderPetPage === 'function') renderPetPage();
-  }
-}
 
 // ============================================================
 // MODE FOCUS + AMBIANCE SONORE
@@ -6148,18 +6648,20 @@ function renderConvertisseur() {
 // ============================================================
 // AUTO-LOG ERRORS FROM QCM
 // ============================================================
-// Patch answerQ to auto-log wrong answers
+// Patch answerQ to auto-log wrong answers + pet encouragement
 const _origAnswerQ = window.answerQ;
 function answerQ(qi, ci) {
   if (qcmAnswered[qi] !== null) return;
   qcmAnswered[qi] = ci;
-  // If wrong, auto-add to mur des erreurs
+  // If wrong, auto-add to mur des erreurs + pet encouragement
   if (currentQcm[qi] && ci !== currentQcm[qi].correct) {
     addErreurFromQcm(
       currentQcm[qi].question,
       currentQcm[qi].explanation,
       selectedQcmMat
     );
+    // Pet reacts with encouragement
+    if (typeof PetSystem !== 'undefined') PetSystem.onMistake();
   }
   renderQcm();
 }
@@ -6627,7 +7129,7 @@ function finishLogin(p) {
   buildSelects();
   buildFilterRow();
   buildQcmMatSelector();
-  buildSpeSidebar(p.spes || []);  // ← v10.2.0 : sidebar dynamique
+  buildSpeSidebar(p.spes || []);  // ← v10.1.2.4 : sidebar dynamique
   updateStreak();
   renderDashboard();
   updatePet();
@@ -8581,8 +9083,10 @@ window.addEventListener('pomodoroComplete', () => addCoins('pomodoro'));
       if (all === currentQcm.length && all > 0 && !window._coinsGrantedThisQcm) {
         window._coinsGrantedThisQcm = true;
         const correct = qcmAnswered.filter((a,i)=>a===currentQcm[i]?.correct).length;
+        const score = Math.round(correct/all*100);
         addCoins('qcm_done');
-        if (Math.round(correct/all*100) === 100) addCoins('qcm_perfect');
+        if (score === 100) addCoins('qcm_perfect');
+        if (typeof PetSystem !== 'undefined') PetSystem.onQcmDone(score);
         setTimeout(pushAllScores, 500);
       }
     }
@@ -8628,15 +9132,6 @@ document.addEventListener('change', function(e) {
 // PAGE COMPAGNON — renderPetPage & interactions
 // ============================================================
 
-const PET_SPEECHES = {
-  egg:   ['Tap tap… quelqu\'un est là ? 🥚', 'Je sens que je vais éclore bientôt !', 'Fais des fiches pour moi !'],
-  chick: ['Piou piou ! Je grandis !🐣', 'Encore des flashcards s\'il te plaît !', 'Je suis tout petit mais courageux !'],
-  bird:  ['Je commence à voler ! ✨', 'Tes révisions me rendent fort !', 'Continue, je vais devenir immense !'],
-  eagle: ['Je surveille tes révisions 🦅', 'Tu m\'as bien entraîné !', 'Ensemble on va tout déchirer !'],
-  lion:  ['ROAR ! Je suis puissant ! 🦁', 'Grâce à toi je domine les maths !', 'Tu es le meilleur maître !'],
-  dragon:['Je CRACHE DU FEU ! 🐉', 'Niveau maximum atteint — LÉGENDAIRE !', 'Plus rien ne peut nous arrêter !'],
-};
-
 const PET_HAPPINESS = [
   { min: 0,   emoji: '😴', label: 'Endormi', color: 'var(--muted)' },
   { min: 1,   emoji: '😐', label: 'Neutre',  color: 'var(--gold)' },
@@ -8644,150 +9139,6 @@ const PET_HAPPINESS = [
   { min: 7,   emoji: '😄', label: 'Heureux', color: 'var(--math)' },
   { min: 14,  emoji: '🥰', label: 'Au top !', color: 'var(--accent)' },
 ];
-
-function getPetStageKey(stage) {
-  const keys = ['egg','chick','bird','eagle','lion','dragon'];
-  const idx = PET_STAGES.indexOf(stage);
-  return keys[Math.min(idx, keys.length - 1)] || 'egg';
-}
-
-function getPetHappiness() {
-  const streak = userData.streak || 0;
-  let h = PET_HAPPINESS[0];
-  for (const lvl of PET_HAPPINESS) { if (streak >= lvl.min) h = lvl; }
-  return h;
-}
-
-function getRandomSpeech(stageKey) {
-  const pool = PET_SPEECHES[stageKey] || PET_SPEECHES.egg;
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-
-function renderPetPage() {
-  const xp = getPetXp();
-  let stage = PET_STAGES[0];
-  for (const s of PET_STAGES) { if (xp >= s.minXp) stage = s; }
-  const stageIdx = PET_STAGES.indexOf(stage);
-  const nextStage = PET_STAGES[stageIdx + 1];
-  const pct = nextStage
-    ? Math.min(100, Math.round((xp - stage.minXp) / (nextStage.minXp - stage.minXp) * 100))
-    : 100;
-
-  const equipped = userData.shopEquipped || {};
-  const hatItem  = (userData.shopOwned||[]).includes(equipped.hat)
-    ? (window.SHOP_ITEMS||[]).find(i=>i.id===equipped.hat) : null;
-  const auraItem = (userData.shopOwned||[]).includes(equipped.aura)
-    ? (window.SHOP_ITEMS||[]).find(i=>i.id===equipped.aura) : null;
-  const petSkin  = (userData.shopOwned||[]).includes(equipped.pet)
-    ? (window.SHOP_ITEMS||[]).find(i=>i.id===equipped.pet) : null;
-
-  const sprite = (auraItem?.icon||'') + (petSkin?.icon||stage.sprite) + (hatItem?.icon||'');
-  const happiness = getPetHappiness();
-  const stageKey = getPetStageKey(stage);
-
-  // Update arena
-  const spriteEl = document.getElementById('pet-big-sprite');
-  if (spriteEl) spriteEl.textContent = sprite;
-  document.getElementById('pet-big-name').textContent = userData.petName || stage.name;
-  document.getElementById('pet-big-level').textContent =
-    `Niveau ${stageIdx + 1} · ${stage.name}${nextStage ? ' → ' + nextStage.name : ' · MAX'}`;
-  document.getElementById('pet-xp-fill-big').style.width = pct + '%';
-  document.getElementById('pet-xp-label').textContent =
-    nextStage ? `${xp - stage.minXp} / ${nextStage.minXp - stage.minXp} XP` : `${xp} XP — Niveau MAX 🏆`;
-  document.getElementById('pet-speech').textContent = getRandomSpeech(stageKey);
-
-  // Stats
-  document.getElementById('ps-xp').textContent = xp;
-  document.getElementById('ps-level').textContent = stageIdx + 1;
-  document.getElementById('ps-happiness').textContent = happiness.emoji;
-  document.getElementById('ps-happiness').style.fontSize = '24px';
-  document.getElementById('ps-fiches').textContent = (userData.fiches||[]).length;
-  document.getElementById('ps-streak').textContent = userData.streak || 0;
-  document.getElementById('ps-qcm').textContent = (userData.qcmHistory||[]).filter(q=>q.done).length;
-
-  // Pet tap status
-  const tappedToday = userData.petLastTap === new Date().toDateString();
-  const tapBtn = document.getElementById('pet-tap-btn');
-  const tapDesc = document.getElementById('pet-tap-desc');
-  const tapReward = document.getElementById('pet-tap-reward');
-  if (tapBtn) tapBtn.classList.toggle('disabled', tappedToday);
-  if (tapDesc) tapDesc.textContent = tappedToday ? '✅ Fait aujourd\'hui' : 'Clique sur lui !';
-  if (tapReward) tapReward.textContent = tappedToday ? 'Reviens demain' : '+5 XP';
-
-  // Accessories
-  renderPetAccessories(equipped, hatItem, auraItem, petSkin);
-
-  // Evolution track
-  renderPetEvolution(stageIdx);
-
-  // Journal
-  renderPetJournal();
-}
-
-function renderPetAccessories(equipped, hatItem, auraItem, petSkin) {
-  const el = document.getElementById('pet-accessories');
-  if (!el) return;
-  const owned = userData.shopOwned || [];
-  const allPetItems = (window.SHOP_ITEMS||[]).filter(i =>
-    ['hat','aura','pet'].includes(i.type) && owned.includes(i.id)
-  );
-  if (!allPetItems.length) {
-    el.innerHTML = `<div class="pet-acc-chip" onclick="showPage('social');showSocialTab('shop')">
-      <span>🛒</span> Acheter des accessoires
-    </div>`;
-    return;
-  }
-  el.innerHTML = allPetItems.map(item => {
-    const isEquipped = equipped[item.type] === item.id;
-    return `<div class="pet-acc-chip ${isEquipped?'equipped':''}" onclick="togglePetAccessory('${item.id}')">
-      ${item.icon} ${item.name}${isEquipped ? ' ✓' : ''}
-    </div>`;
-  }).join('') + `<div class="pet-acc-chip" onclick="showPage('social');showSocialTab('shop')">
-    <span>🛒</span> +
-  </div>`;
-}
-
-function togglePetAccessory(itemId) {
-  if (typeof buyOrEquip === 'function') buyOrEquip(itemId);
-  setTimeout(renderPetPage, 100);
-}
-
-function renderPetEvolution(currentIdx) {
-  const el = document.getElementById('pet-evolution-track');
-  if (!el) return;
-  el.innerHTML = `<div style="display:flex;align-items:center;gap:0;overflow-x:auto;padding:8px 0;scrollbar-width:none">
-    ${PET_STAGES.map((s, i) => {
-      const done = i < currentIdx;
-      const active = i === currentIdx;
-      const next = i === currentIdx + 1;
-      return `
-        ${i > 0 ? `<div style="flex:1;height:2px;min-width:16px;background:${done||active?'var(--accent)':'var(--s3)'}"></div>` : ''}
-        <div style="text-align:center;flex-shrink:0">
-          <div style="font-size:${active?'32px':'22px'};filter:${done||active?'none':'grayscale(1) opacity(.4)'};transition:all .3s">${s.sprite}</div>
-          <div style="font-size:9px;color:${active?'var(--accent)':done?'var(--muted)':'var(--muted2)'};margin-top:2px;white-space:nowrap">${s.name}</div>
-          <div style="font-size:9px;color:var(--muted2)">${s.minXp} XP</div>
-        </div>`;
-    }).join('')}
-  </div>`;
-}
-
-function renderPetJournal() {
-  const el = document.getElementById('pet-journal');
-  if (!el) return;
-  const journal = (userData.petJournal || []).slice(-8).reverse();
-  if (!journal.length) {
-    el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px 0">Le journal sera rempli au fil de vos aventures !</div>';
-    return;
-  }
-  el.innerHTML = journal.map(entry => `
-    <div class="pet-journal-item">
-      <div class="pet-journal-ico">${entry.ico}</div>
-      <div>
-        <div class="pet-journal-text">${entry.text}</div>
-        <div class="pet-journal-time">${new Date(entry.date).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
-      </div>
-    </div>`).join('');
-}
 
 function addPetJournalEntry(ico, text) {
   if (!userData.petJournal) userData.petJournal = [];
@@ -8814,109 +9165,15 @@ function spawnParticles(targetEl, emojis = ['⭐','✨','💫']) {
 }
 
 // Tap the pet
-function petTap() {
-  const today = new Date().toDateString();
-  const spriteEl = document.getElementById('pet-big-sprite');
-
-  // Bounce animation
-  if (spriteEl) {
-    spriteEl.classList.remove('pet-floating', 'pet-bounce');
-    void spriteEl.offsetWidth; // force reflow
-    spriteEl.classList.add('pet-bounce');
-    setTimeout(() => {
-      spriteEl.classList.remove('pet-bounce');
-      spriteEl.classList.add('pet-floating');
-    }, 600);
-    spawnParticles(spriteEl, ['❤️','💕','✨']);
-  }
-
-  // Change speech
-  const xp = getPetXp();
-  let stage = PET_STAGES[0];
-  for (const s of PET_STAGES) { if (xp >= s.minXp) stage = s; }
-  const key = getPetStageKey(stage);
-  const speechEl = document.getElementById('pet-speech');
-  if (speechEl) speechEl.textContent = getRandomSpeech(key);
-
-  // Daily tap reward
-  if (userData.petLastTap !== today) {
-    userData.petLastTap = today;
-    saveUserData();
-    addPetJournalEntry('🤝', 'Tu l\'as caressé aujourd\'hui — il est tout content !');
-    toast('❤️ +5 XP — il t\'aime !');
-    if (typeof addCoins === 'function') addCoins(undefined, 5);
-    // Refresh tap button
-    const tapDesc = document.getElementById('pet-tap-desc');
-    const tapReward = document.getElementById('pet-tap-reward');
-    const tapBtn = document.getElementById('pet-tap-btn');
-    if (tapDesc) tapDesc.textContent = '✅ Fait aujourd\'hui';
-    if (tapReward) tapReward.textContent = 'Reviens demain';
-    if (tapBtn) tapBtn.classList.add('disabled');
-  }
-}
 
 // Redirect to relevant page for each action
-function petAction(action) {
-  const map = {
-    fiche: 'fiches',
-    flashcard: 'flashcards',
-    qcm: 'qcm',
-    pomodoro: 'pomodoro',
-    victoire: 'victoire',
-  };
-  const page = map[action];
-  if (page) showPage(page);
-}
 
 // Called from updatePet — also add journal entry on level-up
-const _petPrevXp = { val: 0 };
-function updatePetWithJournal() {
-  const xp = getPetXp();
-  let prevStage = PET_STAGES[0], newStage = PET_STAGES[0];
-  for (const s of PET_STAGES) { if (_petPrevXp.val >= s.minXp) prevStage = s; }
-  for (const s of PET_STAGES) { if (xp >= s.minXp) newStage = s; }
-  if (newStage !== prevStage) {
-    addPetJournalEntry('🎉', `Il a évolué en ${newStage.sprite} ${newStage.name} ! (${xp} XP)`);
-    toast(`🎉 Ton compagnon a évolué en ${newStage.name} ${newStage.sprite} !`, 4000);
-    spawnParticles(document.getElementById('sb-pet'), ['🎉','⭐','✨','🌟']);
-  }
-  _petPrevXp.val = xp;
-  updatePet();
-}
 
 // Name the pet
-function openPetRename() {
-  const current = userData.petName || '';
-  const name = prompt('Donne un prénom à ton compagnon :', current);
-  if (name && name.trim()) {
-    userData.petName = name.trim().slice(0, 20);
-    saveUserData();
-    document.getElementById('pet-big-name').textContent = userData.petName;
-    addPetJournalEntry('✏️', `Son prénom est maintenant : ${userData.petName}`);
-    toast(`✅ Prénom enregistré : ${userData.petName}`);
-  }
-  // Rename button (inject once)
-  const nameEl = document.getElementById('pet-big-name');
-  if (nameEl && !document.getElementById('pet-rename-btn')) {
-    const btn = document.createElement('button');
-    btn.id = 'pet-rename-btn';
-    btn.textContent = '✏️';
-    btn.title = 'Renommer';
-    btn.style.cssText = 'background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;margin-left:6px;vertical-align:middle';
-    btn.onclick = openPetRename;
-    nameEl.appendChild(btn);
-  }
-}
 
 // Add XP source journal entries when actions are completed
-document.addEventListener('studyflow:fiche_saved', () => {
-  addPetJournalEntry('📄', 'Tu as créé une fiche — ton compagnon a gagné 2 XP !');
-  updatePetWithJournal();
-});
-document.addEventListener('studyflow:card_saved', () => {
-  addPetJournalEntry('🃏', 'Nouvelle flashcard — +1 XP pour le compagnon !');
-  updatePetWithJournal();
-});
+// Pet events handled by PetSystem listeners above
 </script>
 <!-- PWA Install Banner -->
 <div id="install-banner">

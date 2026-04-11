@@ -8673,21 +8673,37 @@ async function createGroup() {
   userData.groups.push(group);
 
   if (sbClient && supabaseEnabled) {
-    await sbClient.from('study_groups').upsert({
-      id: group.id, name, desc, code,
-      owner_id: currentUser?.id, created_at: new Date().toISOString()
-    }, { onConflict:'id' });
-    await sbClient.from('group_members').upsert({
-      group_id: group.id, profile_id: currentUser?.id,
-      username: currentUser?.username, avatar: currentUser?.avatar
-    }, { onConflict:'group_id,profile_id' });
+    // 'desc' est un mot réservé PostgreSQL — on utilise 'description'
+    const { error: grpErr } = await sbClient.from('study_groups').insert({
+      id: group.id,
+      name,
+      description: desc,
+      code,
+      owner_id: currentUser?.id,
+      created_at: new Date().toISOString()
+    });
+    if (grpErr) {
+      console.error('study_groups error:', grpErr.message, grpErr.code);
+      toast('❌ Erreur création groupe : ' + (grpErr.message || grpErr.code));
+    }
+
+    // insert + ignoreDuplicates évite le 409
+    const { error: memErr } = await sbClient.from('group_members').insert({
+      group_id: group.id,
+      profile_id: currentUser?.id,
+      username: currentUser?.username,
+      avatar: currentUser?.avatar
+    });
+    if (memErr && memErr.code !== '23505') {
+      console.warn('group_members warning:', memErr.message);
+    }
   }
 
   saveUserData();
   closeOv('ov-create-group');
   document.getElementById('grp-name').value = '';
   document.getElementById('grp-desc').value = '';
-  toast(`✅ Groupe créé ! Code: ${code}`);
+  toast('✅ Groupe créé ! Code : ' + code);
   renderGroups();
   document.getElementById('soc-groups').textContent = userData.groups.length;
 }
@@ -8712,10 +8728,15 @@ async function joinGroup() {
   if (!userData.groups) userData.groups = [];
   userData.groups.push(group);
 
-  await sbClient.from('group_members').upsert({
-    group_id: data.id, profile_id: currentUser?.id,
-    username: currentUser?.username, avatar: currentUser?.avatar
-  }, { onConflict:'group_id,profile_id' });
+  const { error: joinMemErr } = await sbClient.from('group_members').insert({
+    group_id: data.id,
+    profile_id: currentUser?.id,
+    username: currentUser?.username,
+    avatar: currentUser?.avatar
+  });
+  if (joinMemErr && joinMemErr.code !== '23505') {
+    console.warn('joinGroup members warning:', joinMemErr.message);
+  }
 
   saveUserData();
   closeOv('ov-join-group');

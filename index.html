@@ -3356,7 +3356,7 @@ const MATIERES = [
 function getM(id) { return MATIERES.find(m=>m.id===id) || MATIERES[0]; }
 
 function getMyMatieres() {
-  const p = profiles.find(prof => prof.id === currentProfileId);
+  const p = profiles.find(prof => prof.id === currentUser?.id);
   const troncIds = ['fr', 'en', 'es', 'emc', 'es-sci', 'svt', 'hg']; // Tronc commun
   if (!p || !p.spes) return MATIERES;
   return MATIERES.filter(m => troncIds.includes(m.id) || p.spes.includes(m.id));
@@ -3523,7 +3523,7 @@ function updateStreak() {
 // DASHBOARD
 // ============================================================
 function getFilteredMatieres() {
-  const p = profiles.find(prof => prof.id === currentProfileId);
+  const p = profiles.find(prof => prof.id === currentUser?.id);
   if (!p || !p.spes) return MATIERES; // Si bug, on affiche tout
 
   // On garde le tronc commun + les 3 spés du profil

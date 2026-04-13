@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" type="image/png" href="icon.png">
-<title>StudyFlow v10.1.2.4 — Première Générale</title>
+<title>StudyFlow v10.4 — Première Générale</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
@@ -1452,174 +1452,6 @@ body {
     color: var(--text);
 }
 .spes-selection input { accent-color: var(--primary); }
-
-/* ===== PAGE COMPAGNON ===== */
-.pet-arena {
-  background: linear-gradient(160deg, #0d0e18 0%, #111620 50%, #0e1510 100%);
-  border: 1px solid var(--border2);
-  border-radius: 20px;
-  padding: 32px 24px 24px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-.pet-arena::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 60%, rgba(124,109,250,.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-.pet-big-sprite {
-  font-size: 96px;
-  line-height: 1;
-  display: block;
-  margin: 0 auto 12px;
-  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
-  filter: drop-shadow(0 0 24px rgba(124,109,250,.3));
-  cursor: pointer;
-  user-select: none;
-}
-.pet-big-sprite:active { transform: scale(0.9) rotate(-5deg); }
-.pet-big-name {
-  font-family: 'Fraunces', serif;
-  font-size: 26px; font-weight: 500;
-  color: var(--text); margin-bottom: 4px;
-}
-.pet-big-level {
-  font-size: 12px; color: var(--accent);
-  text-transform: uppercase; letter-spacing: 1.5px;
-  margin-bottom: 16px;
-}
-.pet-xp-bar-big {
-  height: 8px;
-  background: var(--s3);
-  border-radius: 4px;
-  overflow: hidden;
-  max-width: 320px;
-  margin: 0 auto 6px;
-}
-.pet-xp-fill-big {
-  height: 100%;
-  border-radius: 4px;
-  background: linear-gradient(90deg, var(--accent), #a78bfa);
-  transition: width .6s ease;
-}
-.pet-speech-bubble {
-  background: var(--s2);
-  border: 1px solid var(--border2);
-  border-radius: 14px 14px 14px 2px;
-  padding: 10px 16px;
-  font-size: 14px;
-  color: var(--text);
-  display: inline-block;
-  margin-top: 16px;
-  max-width: 280px;
-  line-height: 1.5;
-  position: relative;
-}
-.pet-speech-bubble::before {
-  content: '';
-  position: absolute;
-  bottom: -8px; left: 14px;
-  border: 8px solid transparent;
-  border-top-color: var(--border2);
-  border-bottom: none;
-}
-.pet-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
-}
-.pet-stat {
-  background: var(--s1);
-  border: 1px solid var(--border);
-  border-radius: var(--r2);
-  padding: 14px 10px;
-  text-align: center;
-}
-.pet-stat-val {
-  font-family: 'Fraunces', serif;
-  font-size: 24px; font-weight: 500;
-  line-height: 1; margin-bottom: 4px;
-}
-.pet-stat-label { font-size: 11px; color: var(--muted); }
-
-.pet-care-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
-}
-.pet-care-btn {
-  background: var(--s1);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 16px 12px;
-  text-align: center;
-  cursor: pointer;
-  transition: all .15s;
-  display: flex; flex-direction: column;
-  align-items: center; gap: 6px;
-}
-.pet-care-btn:hover { border-color: var(--border2); transform: translateY(-2px); }
-.pet-care-btn:active { transform: scale(.97); }
-.pet-care-btn.disabled { opacity: .4; cursor: not-allowed; }
-.pet-care-ico { font-size: 28px; }
-.pet-care-name { font-size: 13px; font-weight: 500; color: var(--text); }
-.pet-care-desc { font-size: 11px; color: var(--muted); }
-.pet-care-reward { font-size: 11px; color: var(--gold); font-weight: 600; }
-
-.pet-journal-item {
-  display: flex; gap: 10px; align-items: flex-start;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-}
-.pet-journal-ico { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
-.pet-journal-text { font-size: 13px; color: var(--text); line-height: 1.5; }
-.pet-journal-time { font-size: 10px; color: var(--muted2); margin-top: 2px; }
-
-.pet-accessories-grid {
-  display: flex; gap: 8px; flex-wrap: wrap;
-}
-.pet-acc-chip {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: var(--s2); border: 1px solid var(--border);
-  border-radius: 20px; padding: 5px 12px; font-size: 13px;
-  cursor: pointer; transition: all .15s;
-}
-.pet-acc-chip:hover { border-color: var(--border2); }
-.pet-acc-chip.equipped { border-color: var(--accent); background: rgba(124,109,250,.1); color: var(--accent); }
-
-/* Float animation */
-@keyframes petFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-.pet-floating { animation: petFloat 3s ease-in-out infinite; }
-
-/* Bounce on click */
-@keyframes petBounce {
-  0% { transform: scale(1); }
-  30% { transform: scale(1.25) rotate(8deg); }
-  60% { transform: scale(.9) rotate(-4deg); }
-  100% { transform: scale(1); }
-}
-.pet-bounce { animation: petBounce .5s ease; }
-
-/* Particles */
-.pet-particle {
-  position: absolute;
-  font-size: 20px;
-  pointer-events: none;
-  animation: particleRise 1.2s ease forwards;
-}
-@keyframes particleRise {
-  0%   { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(-80px) scale(.5); }
-}
 </style>
 </head>
 <body>
@@ -1629,7 +1461,7 @@ body {
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-name">StudyFlow</div>
-      <div class="auth-logo-sub">Première Générale 2026 · v10.1.2.4</div>
+      <div class="auth-logo-sub">Première Générale 2026 · v10.4</div>
     </div>
 
     <!-- ÉTAPE 1 : Config Supabase (première ouverture seulement) -->
@@ -1859,7 +1691,7 @@ body {
         <button class="nav-btn" onclick="showPage('outils')"><span class="icon">🧮</span> Outils Sci.</button>
         <button class="nav-btn" onclick="showPage('erreurs')"><span class="icon">🧱</span> Mur des erreurs</button>
         <button class="nav-btn" onclick="showPage('victoire')"><span class="icon">🌟</span> Victoires</button>
-        <button class="nav-btn" onclick="showPage('pet')"><span class="icon">🐾</span> Compagnon</button>
+        <button class="nav-btn" onclick="showPage('settings')"><span class="icon">⚙️</span> Paramètres</button>
       </div>
     </div>
 
@@ -1892,7 +1724,7 @@ body {
     </div>
 
     <div class="sidebar-bottom">
-      <div class="pet-container" onclick="showPage('pet')" title="Mon Compagnon">
+      <div class="pet-container" onclick="showPage('victoire')" title="Ton compagnon de révision">
         <div class="pet-sprite" id="sb-pet">🥚</div>
         <div style="flex:1;min-width:0">
           <div class="pet-name" id="sb-pet-name">Compagnon</div>
@@ -2940,114 +2772,116 @@ document.querySelector('.main').insertAdjacentHTML('beforeend', `
 `);
 </script>
 
-<!-- PAGE COMPAGNON -->
-<div class="page" id="page-pet">
+<!-- PAGE PARAMÈTRES -->
+<div class="page" id="page-settings">
   <div class="page-header">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
-      <div>
-        <div class="page-title">🐾 Mon Compagnon</div>
-        <div class="page-sub">Prends-en soin — il grandit avec toi</div>
-      </div>
-      <div class="coins-badge"><span class="coin-icon">🪙</span><span id="pet-coins-hdr">0</span></div>
-    </div>
+    <div class="page-title">⚙️ Paramètres</div>
+    <div class="page-sub">Personnalise StudyFlow selon tes besoins</div>
   </div>
   <div class="content">
 
-    <!-- ARÈNE -->
-    <div class="pet-arena" id="pet-arena-wrap">
-      <!-- Aura layer -->
-      <div id="pet-aura-layer" style="position:absolute;inset:0;border-radius:20px;pointer-events:none;transition:all .4s"></div>
-
-      <span class="pet-big-sprite pet-floating" id="pet-big-sprite" onclick="PetSystem.tap()">🥚</span>
-
-      <div class="pet-big-name">
-        <span id="pet-big-name">Compagnon</span>
-        <button onclick="PetSystem.rename()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;margin-left:6px;vertical-align:middle" title="Renommer">✏️</button>
+    <!-- IA & API -->
+    <div class="card card-p" style="margin-bottom:16px">
+      <div class="section-label" style="margin-bottom:14px">🤖 Intelligence Artificielle</div>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <button class="ai-tab" id="settings-tab-groq" onclick="settingsSwitchAI('groq')" style="flex:1;padding:10px;border-radius:var(--r2);border:1px solid var(--border);background:var(--s2);color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:500;transition:all .2s">
+          ⚡ Groq <span style="font-size:10px;display:block;color:var(--muted2)">100% gratuit</span>
+        </button>
+        <button class="ai-tab" id="settings-tab-claude" onclick="settingsSwitchAI('claude')" style="flex:1;padding:10px;border-radius:var(--r2);border:1px solid var(--border);background:var(--s2);color:var(--muted);cursor:pointer;font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:500;transition:all .2s">
+          ◆ Claude <span style="font-size:10px;display:block;color:var(--muted2)">crédits offerts</span>
+        </button>
       </div>
-      <div class="pet-big-level" id="pet-big-level">Niv. 1 — Œuf</div>
-
-      <!-- XP bar -->
-      <div class="pet-xp-bar-big"><div class="pet-xp-fill-big" id="pet-xp-fill-big" style="width:0%"></div></div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px" id="pet-xp-label">0 XP</div>
-
-      <!-- Énergie -->
-      <div style="max-width:320px;margin:0 auto 4px;display:flex;align-items:center;gap:8px">
-        <span style="font-size:11px;color:var(--muted);flex-shrink:0">⚡ Énergie</span>
-        <div style="flex:1;height:6px;background:var(--s3);border-radius:3px;overflow:hidden">
-          <div id="pet-energy-bar" style="height:100%;border-radius:3px;background:linear-gradient(90deg,#4ade80,#86efac);transition:width .5s ease;width:100%"></div>
+      <div class="form-group" style="margin-bottom:10px">
+        <label class="form-label" id="settings-api-label">Clé API Groq</label>
+        <div style="display:flex;gap:8px">
+          <input type="password" class="form-input" id="settings-api-key" placeholder="Colle ta clé API ici…" style="flex:1">
+          <button class="btn btn-ghost btn-sm" onclick="toggleApiKeyVisibility()" title="Voir/masquer">👁️</button>
         </div>
-        <span id="pet-energy-pct" style="font-size:11px;color:var(--success);flex-shrink:0;min-width:30px">100%</span>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px" id="settings-api-hint">
+          Groq : va sur <a href="https://console.groq.com" target="_blank" style="color:var(--accent)">console.groq.com</a> → API Keys → Create key (gratuit, sans CB)
+        </div>
       </div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="pet-energy-status"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="settingsSaveApiKey()">💾 Sauvegarder la clé</button>
+        <button class="btn btn-ghost" onclick="settingsTestApi()">🧪 Tester</button>
+      </div>
+      <div id="settings-api-status" style="margin-top:10px;font-size:13px"></div>
 
-      <div class="pet-speech-bubble" id="pet-speech">Salut ! Crée des fiches pour me faire grandir 📄</div>
-    </div>
-
-    <!-- KPI STATS -->
-    <div class="pet-stats-grid" style="margin-bottom:16px">
-      <div class="pet-stat"><div class="pet-stat-val" id="ps-xp" style="color:var(--accent)">0</div><div class="pet-stat-label">XP Total</div></div>
-      <div class="pet-stat"><div class="pet-stat-val" id="ps-level" style="color:var(--gold)">1</div><div class="pet-stat-label">Niveau</div></div>
-      <div class="pet-stat"><div class="pet-stat-val" id="ps-streak" style="color:var(--danger)">🔥 0</div><div class="pet-stat-label">Série</div></div>
-    </div>
-
-    <!-- BUFFS PASSIFS -->
-    <div id="pet-buffs-section" style="display:none;margin-bottom:16px">
-      <div class="section-label" style="margin-bottom:8px">✨ Compétences passives débloquées</div>
-      <div id="pet-buffs-list" style="display:flex;flex-direction:column;gap:6px"></div>
-    </div>
-
-    <!-- ACTIONS -->
-    <div class="section-label" style="margin-bottom:10px">🎮 Actions</div>
-    <div class="pet-care-grid">
-      <div class="pet-care-btn" onclick="PetSystem.feed()">
-        <div class="pet-care-ico">🍖</div>
-        <div class="pet-care-name">Nourrir</div>
-        <div class="pet-care-desc">Recharge l'énergie</div>
-        <div class="pet-care-reward" style="color:var(--gold)">10 🪙 → +50% ⚡</div>
-      </div>
-      <div class="pet-care-btn" id="pet-tap-btn" onclick="PetSystem.tap()">
-        <div class="pet-care-ico">🤝</div>
-        <div class="pet-care-name">Caresser</div>
-        <div class="pet-care-desc" id="pet-tap-desc">1× par jour</div>
-        <div class="pet-care-reward" id="pet-tap-reward">+5 XP</div>
-      </div>
-      <div class="pet-care-btn" onclick="showPage('fiches')">
-        <div class="pet-care-ico">📄</div>
-        <div class="pet-care-name">Créer une fiche</div>
-        <div class="pet-care-desc">Nourris-le de savoir</div>
-        <div class="pet-care-reward">+2 XP</div>
-      </div>
-      <div class="pet-care-btn" onclick="showPage('flashcards')">
-        <div class="pet-care-ico">🃏</div>
-        <div class="pet-care-name">Réviser des cartes</div>
-        <div class="pet-care-desc">Entraîne sa mémoire</div>
-        <div class="pet-care-reward">+1 XP / carte</div>
-      </div>
-      <div class="pet-care-btn" onclick="showPage('qcm')">
-        <div class="pet-care-ico">✦</div>
-        <div class="pet-care-name">Faire un QCM</div>
-        <div class="pet-care-desc">Teste son intelligence</div>
-        <div class="pet-care-reward">+3 XP</div>
-      </div>
-      <div class="pet-care-btn" onclick="showPage('pomodoro')">
-        <div class="pet-care-ico">⏱️</div>
-        <div class="pet-care-name">Pomodoro</div>
-        <div class="pet-care-desc">Concentre-le</div>
-        <div class="pet-care-reward">+2 XP</div>
+      <!-- Photo → Fiche note -->
+      <div style="margin-top:14px;padding:10px 14px;background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.2);border-radius:var(--r2);font-size:12px;color:var(--muted)">
+        📸 <strong style="color:var(--text)">Photo → Fiche</strong> : utilise la description textuelle de l'image via Groq (gratuit). La transcription exacte de photo nécessiterait Claude vision (payant) — non disponible.
       </div>
     </div>
 
-    <!-- BOUTIQUE AURAS -->
-    <div class="section-label" style="margin-bottom:10px">💫 Auras cosmétiques</div>
-    <div id="pet-aura-shop" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px"></div>
+    <!-- SUPABASE -->
+    <div class="card card-p" style="margin-bottom:16px">
+      <div class="section-label" style="margin-bottom:14px">☁️ Synchronisation cloud (Supabase)</div>
+      <div class="form-group" style="margin-bottom:10px">
+        <label class="form-label">URL du projet</label>
+        <input type="text" class="form-input" id="settings-sb-url" placeholder="https://xxxx.supabase.co">
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Clé publique (anon key)</label>
+        <input type="text" class="form-input" id="settings-sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…">
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="settingsSaveSupabase()">💾 Sauvegarder</button>
+        <button class="btn btn-ghost" onclick="settingsTestSupabase()">🧪 Tester</button>
+        <button class="btn btn-ghost" style="color:var(--danger)" onclick="settingsDisableSupabase()">✕ Désactiver</button>
+      </div>
+      <div id="settings-sb-status" style="margin-top:10px;font-size:13px"></div>
+    </div>
 
-    <!-- ÉVOLUTION -->
-    <div class="section-label" style="margin-bottom:10px">📈 Chemin d'évolution</div>
-    <div id="pet-evolution-track"></div>
+    <!-- PROFIL -->
+    <div class="card card-p" style="margin-bottom:16px">
+      <div class="section-label" style="margin-bottom:14px">👤 Mon profil</div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <div style="font-size:36px" id="settings-avatar">🦊</div>
+        <div>
+          <div style="font-size:16px;font-weight:600" id="settings-username">—</div>
+          <div style="font-size:12px;color:var(--muted)" id="settings-spes-display">—</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="openEditSpes()">✏️ Modifier spés</button>
+      </div>
+    </div>
 
-    <!-- JOURNAL -->
-    <div class="section-label" style="margin:16px 0 10px">📓 Journal interactif</div>
-    <div id="pet-journal"></div>
+    <!-- DONNÉES -->
+    <div class="card card-p" style="margin-bottom:16px">
+      <div class="section-label" style="margin-bottom:14px">💾 Données</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost" onclick="exportData()">📤 Exporter JSON</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('import-file-settings').click()">📥 Importer JSON</button>
+        <input type="file" id="import-file-settings" accept=".json" style="display:none" onchange="importData(event)">
+        <button class="btn btn-ghost" style="color:var(--danger)" onclick="settingsResetData()">🗑️ Réinitialiser mes données</button>
+      </div>
+    </div>
+
+    <!-- APPARENCE -->
+    <div class="card card-p" style="margin-bottom:16px">
+      <div class="section-label" style="margin-bottom:14px">🎨 Apparence</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="settingsSetAccent('#7c6dfa')" style="border-color:#7c6dfa;color:#7c6dfa">● Violet</button>
+        <button class="btn btn-ghost btn-sm" onclick="settingsSetAccent('#3b82f6')" style="border-color:#3b82f6;color:#3b82f6">● Bleu</button>
+        <button class="btn btn-ghost btn-sm" onclick="settingsSetAccent('#10b981')" style="border-color:#10b981;color:#10b981">● Vert</button>
+        <button class="btn btn-ghost btn-sm" onclick="settingsSetAccent('#f59e0b')" style="border-color:#f59e0b;color:#f59e0b">● Ambre</button>
+        <button class="btn btn-ghost btn-sm" onclick="settingsSetAccent('#ef4444')" style="border-color:#ef4444;color:#ef4444">● Rouge</button>
+        <button class="btn btn-ghost btn-sm" onclick="settingsSetAccent('#ec4899')" style="border-color:#ec4899;color:#ec4899">● Rose</button>
+      </div>
+    </div>
+
+    <!-- INFOS -->
+    <div class="card card-p">
+      <div class="section-label" style="margin-bottom:10px">ℹ️ À propos</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.8">
+        <div>StudyFlow v10 — Première Générale 2026</div>
+        <div>Open source · Hébergé sur GitHub Pages</div>
+        <div style="margin-top:8px">
+          <a href="https://console.groq.com" target="_blank" style="color:var(--accent)">Groq (gratuit)</a> ·
+          <a href="https://supabase.com" target="_blank" style="color:var(--accent)">Supabase (gratuit)</a> ·
+          <a href="https://github.com/avoy2/studyflow" target="_blank" style="color:var(--accent)">GitHub</a>
+        </div>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -3356,7 +3190,7 @@ const MATIERES = [
 function getM(id) { return MATIERES.find(m=>m.id===id) || MATIERES[0]; }
 
 function getMyMatieres() {
-  const p = profiles.find(prof => prof.id === currentUser?.id);
+  const p = profiles.find(prof => prof.id === currentProfileId);
   const troncIds = ['fr', 'en', 'es', 'emc', 'es-sci', 'svt', 'hg']; // Tronc commun
   if (!p || !p.spes) return MATIERES;
   return MATIERES.filter(m => troncIds.includes(m.id) || p.spes.includes(m.id));
@@ -3523,7 +3357,7 @@ function updateStreak() {
 // DASHBOARD
 // ============================================================
 function getFilteredMatieres() {
-  const p = profiles.find(prof => prof.id === currentUser?.id);
+  const p = profiles.find(prof => prof.id === currentProfileId);
   if (!p || !p.spes) return MATIERES; // Si bug, on affiche tout
 
   // On garde le tronc commun + les 3 spés du profil
@@ -4357,12 +4191,12 @@ function showPage(id) {
   if (id==='outils') renderOutils();
   if (id==='erreurs') renderErreurs();
   if (id==='victoire') renderVictoires();
-  if (id==='pet') renderPetPage();
   if (id==='defi') renderDefi();
   if (id==='temps') renderTemps();
   if (id==='bac') renderBac();
   if (id==='prof') initProf();
   if (id==='social') renderSocial();
+  if (id==='settings') renderSettings();
   // Accordion: auto-open section for this page
   openAccordionForPage(id);
 }
@@ -4443,12 +4277,6 @@ function pomoAdvance() {
     userData.pomodoroLog.push({ date: Date.now(), mat, dur: pomoSettings.work });
     saveUserData();
     checkTrophees();
-    // Pet journal
-    if (typeof PetSystem !== 'undefined') {
-      const m = typeof getM === 'function' ? getM(mat) : { emoji:'⏱️', label:'révision' };
-      PetSystem.onPomodoro(`${m.emoji} ${m.label}`);
-    }
-    window.dispatchEvent(new Event('pomodoroComplete'));
     if (pomoState.sessNum % 4 === 0) {
       pomoState.mode = 'long';
       pomoState.seconds = pomoSettings.long * 60;
@@ -5754,7 +5582,6 @@ function saveVictoire() {
   } else {
     userData.victoires.push({ id:getId(), text, matiere, date:Date.now(), streak:userData.streak||1 });
     toast('🌟 Victoire enregistrée ! Bravo !');
-    if (typeof PetSystem !== 'undefined') PetSystem.onVictoire(text);
   }
   saveUserData();
   document.getElementById('victoire-input').value='';
@@ -5766,548 +5593,36 @@ function saveVictoire() {
 // ============================================================
 // PET COMPAGNON
 // ============================================================
-// ============================================================
-// PET SYSTEM v2 — Centralized in PetSystem object
-// All pet data stored in userData.petStats
-// ============================================================
-
-const PetSystem = {
-
-  // ── DATA SCHEMA ───────────────────────────────────────────
-  defaults() {
-    return {
-      xp: 0, level: 1, energy: 100, lastEnergyTick: Date.now(),
-      lastTap: null, petName: 'Compagnon',
-      equippedAura: null, journal: [],
-      buffsUnlocked: [],
-    };
-  },
-
-  get stats() {
-    if (!userData.petStats) userData.petStats = this.defaults();
-    return userData.petStats;
-  },
-
-  save() { saveUserData(); },
-
-  // ── LEVEL & XP ────────────────────────────────────────────
-  XP_PER_LEVEL: 20,  // XP needed scales: level * XP_PER_LEVEL
-
-  computeXp() {
-    return (userData.fiches||[]).length * 2 +
-           (userData.cards||[]).length +
-           (userData.qcmHistory||[]).filter(q=>q.done).length * 3 +
-           (userData.pomodoroLog||[]).length * 2 +
-           (userData.victoires||[]).length * 5 +
-           (userData.streak||0) * 10;
-  },
-
-  levelFromXp(xp) {
-    let lv = 1, threshold = 0;
-    while (xp >= threshold + lv * this.XP_PER_LEVEL) {
-      threshold += lv * this.XP_PER_LEVEL;
-      lv++;
-    }
-    return { level: lv, xpInLevel: xp - threshold, xpNeeded: lv * this.XP_PER_LEVEL };
-  },
-
-  // ── AVATAR ────────────────────────────────────────────────
-  getPetAvatar(level) {
-    if (level >= 30) return { sprite:'🦅', name:'Phénix',      aura:'rgba(255,140,0,.15)' };
-    if (level >= 16) return { sprite:'🐥', name:'Adolescent',  aura:'rgba(255,200,0,.12)' };
-    if (level >= 6)  return { sprite:'🐣', name:'Bébé',        aura:'rgba(124,200,100,.1)' };
-    return              { sprite:'🥚', name:'Œuf',          aura:'rgba(200,180,255,.08)' };
-  },
-
-  getDisplaySprite(level) {
-    const equipped = userData.shopEquipped || {};
-    const skinOverride = (userData.shopOwned||[]).includes(equipped.pet)
-      ? (window.SHOP_ITEMS||[]).find(i=>i.id===equipped.pet) : null;
-    const hat  = (userData.shopOwned||[]).includes(equipped.hat)
-      ? (window.SHOP_ITEMS||[]).find(i=>i.id===equipped.hat) : null;
-    const base = this.getPetAvatar(level);
-    const auraItem = this.AURAS.find(a=>a.id===this.stats.equippedAura);
-    return (auraItem?.prefix||'') + (skinOverride?.icon||base.sprite) + (hat?.icon||'');
-  },
-
-  // ── ENERGY ────────────────────────────────────────────────
-  ENERGY_DRAIN_PER_HOUR: 5,
-  FEED_COST: 10,
-  FEED_RESTORE: 50,
-
-  computeEnergy() {
-    const s = this.stats;
-    const hoursElapsed = (Date.now() - (s.lastEnergyTick||Date.now())) / 3600000;
-    const drained = Math.floor(hoursElapsed * this.ENERGY_DRAIN_PER_HOUR);
-    return Math.max(0, Math.min(100, (s.energy||100) - drained));
-  },
-
-  tickEnergy() {
-    const current = this.computeEnergy();
-    this.stats.energy = current;
-    this.stats.lastEnergyTick = Date.now();
-    this.save();
-    return current;
-  },
-
-  isAsleep() { return this.computeEnergy() <= 0; },
-
-  feed() {
-    const cost = this.FEED_COST;
-    if (getCoins() < cost) {
-      toast(`⚠️ Pas assez de coins (${cost} 🪙 requis)`);
-      return;
-    }
-    userData.coins = (userData.coins||0) - cost;
-    this.stats.energy = Math.min(100, (this.stats.energy||0) + this.FEED_RESTORE);
-    this.stats.lastEnergyTick = Date.now();
-    this.save();
-    this.addJournal('🍖', `Nourri avec amour — énergie +${this.FEED_RESTORE}% !`);
-    toast(`🍖 ${this.stats.petName||'Compagnon'} est rechargé ! (−${cost} 🪙)`);
-    updateCoinsBadge?.();
-    this.render();
-  },
-
-  // ── TAP ───────────────────────────────────────────────────
-  tap() {
-    const today = new Date().toDateString();
-    // Bounce animation
-    const sp = document.getElementById('pet-big-sprite');
-    if (sp) {
-      sp.classList.remove('pet-floating','pet-bounce');
-      void sp.offsetWidth;
-      sp.classList.add('pet-bounce');
-      setTimeout(() => { sp.classList.remove('pet-bounce'); sp.classList.add('pet-floating'); }, 600);
-    }
-    this.randomSpeech();
-    this.spawnParticles(['❤️','💕','✨']);
-
-    if (this.stats.lastTap !== today) {
-      this.stats.lastTap = today;
-      if (!this.isAsleep()) {
-        addCoins?.(undefined, 5);
-        this.addJournal('🤝', `Caressé aujourd'hui — il adore ça ! (+5 🪙)`);
-        toast('❤️ +5 StudyCoins !');
-      } else {
-        this.addJournal('😴', `Il dormait trop profondément pour sentir ta caresse… nourris-le !`);
-        toast('😴 Il dort… Nourris-le pour le réveiller !');
-      }
-      this.save();
-      this.render();
-    }
-  },
-
-  // ── RENAME ────────────────────────────────────────────────
-  rename() {
-    const current = this.stats.petName || '';
-    const name = prompt('Prénom de ton compagnon :', current);
-    if (name?.trim()) {
-      this.stats.petName = name.trim().slice(0,20);
-      this.save();
-      this.addJournal('✏️', `Son prénom est maintenant : ${this.stats.petName}`);
-      toast(`✅ Renommé : ${this.stats.petName}`);
-      this.render();
-    }
-  },
-
-  // ── BUFFS ─────────────────────────────────────────────────
-  BUFFS: [
-    { id:'researcher', minLevel:10, icon:'🔍', name:'Instinct de chercheur',
-      desc:'+5% de chance de trouver des pièces bonus en QCM' },
-    { id:'zen', minLevel:20, icon:'🧘', name:'Zen',
-      desc:'Le temps des défis IA est augmenté de 10 secondes' },
-    { id:'memory', minLevel:30, icon:'🧠', name:'Mémoire photographique',
-      desc:'+1 XP supplémentaire par flashcard révisée' },
-  ],
-
-  getActiveBuffs(level) {
-    return this.BUFFS.filter(b => level >= b.minLevel);
-  },
-
-  hasBuffActive(buffId) {
-    const xp = this.computeXp();
-    const { level } = this.levelFromXp(xp);
-    return this.getActiveBuffs(level).some(b => b.id === buffId);
-  },
-
-  // ── AURAS (boutique cosmétique intégrée à la page) ────────
-  AURAS: [
-    { id:'aura_fire',  name:'Aura de Feu',   icon:'🔥', price:80,
-      css:'0 0 30px rgba(255,80,0,.4), 0 0 60px rgba(255,80,0,.2)',
-      prefix:'🔥', color:'rgba(255,80,0,.2)' },
-    { id:'aura_ice',   name:'Aura de Glace', icon:'❄️', price:80,
-      css:'0 0 30px rgba(100,200,255,.4), 0 0 60px rgba(100,200,255,.2)',
-      prefix:'❄️', color:'rgba(100,200,255,.2)' },
-    { id:'aura_gold',  name:'Aura Dorée',    icon:'✨', price:120,
-      css:'0 0 30px rgba(255,200,0,.5), 0 0 60px rgba(255,200,0,.25)',
-      prefix:'✨', color:'rgba(255,200,0,.2)' },
-    { id:'aura_purple',name:'Aura Mystique', icon:'💜', price:150,
-      css:'0 0 30px rgba(160,80,255,.5), 0 0 60px rgba(160,80,255,.3)',
-      prefix:'💜', color:'rgba(160,80,255,.2)' },
-    { id:'aura_rainbow',name:'Arc-en-ciel',  icon:'🌈', price:200,
-      css:'0 0 30px rgba(255,100,200,.4), 0 0 60px rgba(100,200,255,.3)',
-      prefix:'🌈', color:'rgba(255,100,200,.15)' },
-  ],
-
-  buyOrEquipAura(auraId) {
-    const aura = this.AURAS.find(a=>a.id===auraId);
-    if (!aura) return;
-    if (!userData.ownedAuras) userData.ownedAuras = [];
-    if (userData.ownedAuras.includes(auraId)) {
-      // Toggle equip
-      if (this.stats.equippedAura === auraId) {
-        this.stats.equippedAura = null;
-        toast(`${aura.icon} Aura retirée`);
-      } else {
-        this.stats.equippedAura = auraId;
-        toast(`${aura.icon} ${aura.name} équipée !`);
-      }
-    } else {
-      if (getCoins() < aura.price) { toast(`⚠️ ${aura.price} 🪙 requis`); return; }
-      userData.coins = (userData.coins||0) - aura.price;
-      userData.ownedAuras.push(auraId);
-      this.stats.equippedAura = auraId;
-      this.addJournal('💫', `Nouvelle aura achetée : ${aura.name} !`);
-      toast(`💫 ${aura.name} achetée et équipée !`);
-      updateCoinsBadge?.();
-    }
-    this.save();
-    this.applyAura();
-    this.render();
-  },
-
-  applyAura() {
-    const layer = document.getElementById('pet-aura-layer');
-    const sprite = document.getElementById('pet-big-sprite');
-    if (!layer || !sprite) return;
-    const aura = this.AURAS.find(a=>a.id===this.stats.equippedAura);
-    if (aura) {
-      layer.style.background = aura.color;
-      sprite.style.filter = `drop-shadow(${aura.css})`;
-    } else {
-      layer.style.background = '';
-      sprite.style.filter = '';
-    }
-  },
-
-  // ── JOURNAL ───────────────────────────────────────────────
-  addJournal(ico, text) {
-    if (!this.stats.journal) this.stats.journal = [];
-    this.stats.journal.push({ ico, text, date: Date.now() });
-    if (this.stats.journal.length > 30) this.stats.journal = this.stats.journal.slice(-30);
-    this.save();
-  },
-
-  // Reactive journal — responds to mistakes/events
-  encourage(userName, context) {
-    const messages = [
-      `C'est pas grave ${userName}, on revoit ça ensemble ? 💪`,
-      `Tout le monde fait des erreurs ${userName} — l'important c'est de recommencer !`,
-      `${userName}, je crois en toi ! Réessaie, tu vas y arriver 🌟`,
-      `Une erreur = une leçon. Tu progresses ${userName} ! 🧠`,
-    ];
-    const msg = messages[Math.floor(Math.random()*messages.length)];
-    this.addJournal('💬', msg);
-    // Also show in speech bubble if on pet page
-    const sp = document.getElementById('pet-speech');
-    if (sp) sp.textContent = msg;
-    return msg;
-  },
-
-  // ── SPEECHES ──────────────────────────────────────────────
-  SPEECHES: {
-    0:  ['Tap tap… quelqu\'un est là ? 🥚', 'Chauffe-moi avec tes révisions !', 'Je vais éclore bientôt…'],
-    6:  ['Piou piou ! Je grandis 🐣', 'Encore des flashcards !', 'Je suis tout petit mais courageux !'],
-    16: ['Je commence à voler ! 🐥', 'Tes révisions me rendent fort !', 'Continue, je grandis !'],
-    30: ['Je suis un PHÉNIX ! 🦅', 'Indestructible grâce à toi !', 'On va tout déchirer !'],
-  },
-
-  randomSpeech(level) {
-    if (!level) { const xp=this.computeXp(); level=this.levelFromXp(xp).level; }
-    if (this.isAsleep()) {
-      const sp = document.getElementById('pet-speech');
-      if (sp) sp.textContent = '😴 Zzz… je dors. Nourris-moi pour me réveiller !';
-      return;
-    }
-    const tiers = [30,16,6,0];
-    const tier = tiers.find(t=>level>=t) ?? 0;
-    const pool = this.SPEECHES[tier];
-    const text = pool[Math.floor(Math.random()*pool.length)];
-    const sp = document.getElementById('pet-speech');
-    if (sp) sp.textContent = text;
-  },
-
-  // ── PARTICLES ─────────────────────────────────────────────
-  spawnParticles(emojis=['⭐','✨','💫']) {
-    const el = document.getElementById('pet-big-sprite');
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    for (let i=0; i<6; i++) {
-      const p = document.createElement('div');
-      p.className = 'pet-particle';
-      p.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-      p.style.cssText = `position:fixed;font-size:20px;pointer-events:none;z-index:9999;
-        left:${rect.left+rect.width/2+(Math.random()-.5)*80}px;
-        top:${rect.top+rect.height/2}px;
-        animation:particleRise 1.2s ease forwards;
-        animation-delay:${i*0.1}s`;
-      document.body.appendChild(p);
-      setTimeout(()=>p.remove(), 1500);
-    }
-  },
-
-  // ── EVOLUTION CHECK ───────────────────────────────────────
-  _prevLevel: 0,
-  checkLevelUp(newLevel) {
-    if (newLevel > this._prevLevel && this._prevLevel > 0) {
-      const avatar = this.getPetAvatar(newLevel);
-      this.addJournal('🎉', `Niveau ${newLevel} atteint ! Il est devenu : ${avatar.sprite} ${avatar.name} !`);
-      toast(`🎉 Niveau ${newLevel} ! Ton compagnon est maintenant ${avatar.name} ${avatar.sprite}`, 4000);
-      this.spawnParticles(['🎉','⭐','✨','🌟','🎊']);
-    }
-    this._prevLevel = newLevel;
-  },
-
-  // ── MAIN RENDER ───────────────────────────────────────────
-  render() {
-    const xp = this.computeXp();
-    const { level, xpInLevel, xpNeeded } = this.levelFromXp(xp);
-    this.checkLevelUp(level);
-
-    const energy = this.tickEnergy();
-    const avatar = this.getPetAvatar(level);
-    const asleep = energy <= 0;
-    const sprite = this.getDisplaySprite(level);
-    const name = this.stats.petName || avatar.name;
-
-    // Arena
-    const spriteEl = document.getElementById('pet-big-sprite');
-    if (spriteEl) spriteEl.textContent = asleep ? '😴' : sprite;
-    const nameEl = document.getElementById('pet-big-name');
-    if (nameEl) nameEl.textContent = name;
-    const lvlEl = document.getElementById('pet-big-level');
-    if (lvlEl) lvlEl.textContent = `Niv. ${level} — ${avatar.name}`;
-    const fillEl = document.getElementById('pet-xp-fill-big');
-    if (fillEl) fillEl.style.width = Math.round(xpInLevel/xpNeeded*100)+'%';
-    const labelEl = document.getElementById('pet-xp-label');
-    if (labelEl) labelEl.textContent = `${xpInLevel} / ${xpNeeded} XP vers le niveau ${level+1}`;
-
-    // Energy bar
-    const energyBar = document.getElementById('pet-energy-bar');
-    const energyPct = document.getElementById('pet-energy-pct');
-    const energySt  = document.getElementById('pet-energy-status');
-    if (energyBar) {
-      energyBar.style.width = energy + '%';
-      energyBar.style.background = energy > 50
-        ? 'linear-gradient(90deg,#4ade80,#86efac)'
-        : energy > 20
-          ? 'linear-gradient(90deg,#fbbf24,#fde68a)'
-          : 'linear-gradient(90deg,#f87171,#fca5a5)';
-    }
-    if (energyPct) {
-      energyPct.textContent = energy + '%';
-      energyPct.style.color = energy > 50 ? 'var(--success)' : energy > 20 ? 'var(--gold)' : 'var(--danger)';
-    }
-    if (energySt) energySt.textContent = asleep
-      ? '😴 Endormi — plus d\'XP gagné ! Nourris-le pour le réveiller.'
-      : energy < 30 ? '⚠️ Fatigué — nourris-le bientôt !' : '';
-
-    // Speech
-    this.randomSpeech(level);
-
-    // Stats
-    document.getElementById('ps-xp')?.textContent !== undefined && (document.getElementById('ps-xp').textContent = xp);
-    document.getElementById('ps-level')?.textContent !== undefined && (document.getElementById('ps-level').textContent = level);
-    document.getElementById('ps-streak')?.textContent !== undefined && (document.getElementById('ps-streak').textContent = '🔥 '+(userData.streak||0));
-
-    // Coins header
-    const ch = document.getElementById('pet-coins-hdr');
-    if (ch) ch.textContent = getCoins?.() ?? (userData.coins||0);
-
-    // Tap button state
-    const tappedToday = this.stats.lastTap === new Date().toDateString();
-    document.getElementById('pet-tap-btn')?.classList.toggle('disabled', tappedToday);
-    const td = document.getElementById('pet-tap-desc');
-    const tr = document.getElementById('pet-tap-reward');
-    if (td) td.textContent = tappedToday ? '✅ Fait aujourd\'hui' : 'Clique sur lui !';
-    if (tr) tr.textContent = tappedToday ? 'Reviens demain' : '+5 🪙';
-
-    // Buffs
-    this.renderBuffs(level);
-
-    // Aura shop
-    this.renderAuraShop();
-
-    // Evolution track
-    this.renderEvolution(level, xp);
-
-    // Journal
-    this.renderJournal();
-
-    // Apply aura CSS
-    this.applyAura();
-
-    // Sync sidebar
-    this.syncSidebar(sprite, name, xpInLevel, xpNeeded, level, asleep, avatar);
-  },
-
-  syncSidebar(sprite, name, xpInLevel, xpNeeded, level, asleep, avatar) {
-    const pct = Math.round(xpInLevel/xpNeeded*100);
-    const sbPet = document.getElementById('sb-pet');
-    if (sbPet) sbPet.textContent = asleep ? '😴' : sprite;
-    const sbName = document.getElementById('sb-pet-name');
-    if (sbName) sbName.textContent = name;
-    const sbMood = document.getElementById('sb-pet-mood');
-    if (sbMood) sbMood.textContent = asleep ? '😴 Endormi' : `Niv.${level} ${avatar.name}`;
-    const sbXp = document.getElementById('sb-pet-xp');
-    if (sbXp) sbXp.style.width = pct + '%';
-  },
-
-  renderBuffs(level) {
-    const active = this.getActiveBuffs(level);
-    const section = document.getElementById('pet-buffs-section');
-    const list    = document.getElementById('pet-buffs-list');
-    if (!section || !list) return;
-    section.style.display = active.length ? '' : 'none';
-    list.innerHTML = active.map(b => `
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(124,109,250,.07);border:1px solid rgba(124,109,250,.2);border-radius:var(--r2)">
-        <span style="font-size:20px">${b.icon}</span>
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--accent)">${b.name}</div>
-          <div style="font-size:11px;color:var(--muted)">${b.desc}</div>
-        </div>
-      </div>`).join('');
-  },
-
-  renderAuraShop() {
-    const el = document.getElementById('pet-aura-shop');
-    if (!el) return;
-    const owned = userData.ownedAuras || [];
-    el.innerHTML = this.AURAS.map(a => {
-      const isOwned    = owned.includes(a.id);
-      const isEquipped = this.stats.equippedAura === a.id;
-      return `<div class="pet-acc-chip ${isEquipped?'equipped':''}"
-        onclick="PetSystem.buyOrEquipAura('${a.id}')"
-        style="${isEquipped?'border-color:var(--accent);background:rgba(124,109,250,.1)':''}">
-        ${a.icon} ${a.name}
-        ${isEquipped ? ' ✓' : isOwned ? '' : ` <span style="color:var(--gold);font-size:10px">${a.price}🪙</span>`}
-      </div>`;
-    }).join('');
-  },
-
-  renderEvolution(currentLevel, xp) {
-    const el = document.getElementById('pet-evolution-track');
-    if (!el) return;
-    const milestones = [
-      { level:1,  label:'🥚 Œuf',      minLevel:1  },
-      { level:6,  label:'🐣 Bébé',     minLevel:6  },
-      { level:16, label:'🐥 Ado',      minLevel:16 },
-      { level:30, label:'🦅 Phénix',   minLevel:30 },
-    ];
-    el.innerHTML = `<div style="display:flex;align-items:center;gap:0;overflow-x:auto;padding:8px 0;scrollbar-width:none">
-      ${milestones.map((m,i) => {
-        const done   = currentLevel > m.level;
-        const active = currentLevel >= m.level && (i===milestones.length-1||currentLevel<milestones[i+1].level);
-        return `${i>0?`<div style="flex:1;height:2px;min-width:20px;background:${done||active?'var(--accent)':'var(--s3)'}"></div>`:''}
-          <div style="text-align:center;flex-shrink:0">
-            <div style="font-size:${active?'30px':'20px'};filter:${done||active?'none':'grayscale(1) opacity(.35)'};transition:all .3s">${m.label.split(' ')[0]}</div>
-            <div style="font-size:9px;color:${active?'var(--accent)':done?'var(--muted)':'var(--muted2)'};margin-top:2px">${m.label.split(' ').slice(1).join(' ')}</div>
-            <div style="font-size:9px;color:var(--muted2)">Niv.${m.level}</div>
-          </div>`;
-      }).join('')}
-    </div>`;
-  },
-
-  renderJournal() {
-    const el = document.getElementById('pet-journal');
-    if (!el) return;
-    const journal = (this.stats.journal||[]).slice(-10).reverse();
-    if (!journal.length) {
-      el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px 0">Le journal se remplira au fil de vos aventures !</div>';
-      return;
-    }
-    el.innerHTML = journal.map(e => `
-      <div class="pet-journal-item">
-        <div class="pet-journal-ico">${e.ico}</div>
-        <div>
-          <div class="pet-journal-text">${e.text}</div>
-          <div class="pet-journal-time">${new Date(e.date).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
-        </div>
-      </div>`).join('');
-  },
-
-  // ── PUBLIC HOOKS (called from outside) ────────────────────
-  onFicheCreated() {
-    if (this.isAsleep()) return;
-    this.addJournal('📄', 'Nouvelle fiche créée — +2 XP !');
-    this.render();
-  },
-  onCardCreated() {
-    if (this.isAsleep()) return;
-    this.addJournal('🃏', 'Flashcard ajoutée — +1 XP !');
-    this.render();
-  },
-  onPomodoro(matLabel) {
-    if (this.isAsleep()) {
-      toast('😴 Ton compagnon dort… nourris-le !');
-      return;
-    }
-    this.addJournal('⏱️', `Session Pomodoro en ${matLabel} — +2 XP !`);
-    this.render();
-  },
-  onQcmDone(score) {
-    if (this.isAsleep()) return;
-    const hasResearcher = this.hasBuffActive('researcher');
-    const bonusTrigger  = hasResearcher && Math.random() < 0.05;
-    if (bonusTrigger) {
-      addCoins?.(undefined, 10);
-      this.addJournal('🔍', `Instinct de chercheur déclenché ! +10 🪙 bonus (score: ${score}%)`);
-      toast('🔍 Instinct de chercheur ! +10 🪙 bonus !');
-    } else {
-      this.addJournal('✦', `QCM terminé — score ${score}% — +3 XP !`);
-    }
-    this.render();
-  },
-  onVictoire(text) {
-    if (this.isAsleep()) return;
-    this.addJournal('🌟', `Victoire : "${text.slice(0,40)}" — +5 XP !`);
-    this.render();
-  },
-  onMistake() {
-    const name = this.stats.petName || (currentUser?.username||'');
-    this.encourage(name, 'mistake');
-    if (document.getElementById('page-pet')?.classList.contains('active')) this.render();
-  },
-};
-
-// ── LEGACY SHIMS (keep old calls working) ──────────────────
-function getPetXp()       { return PetSystem.computeXp(); }
-function updatePet()      {
-  PetSystem.render();
-}
-function updatePetWithJournal() { PetSystem.render(); }
-function addPetJournalEntry(ico, text) { PetSystem.addJournal(ico, text); }
-function renderPetPage()  { PetSystem.render(); }
-function petTap()         { PetSystem.tap(); }
-function petAction(a)     {
-  const m={fiche:'fiches',flashcard:'flashcards',qcm:'qcm',pomodoro:'pomodoro',victoire:'victoire'};
-  if(m[a]) showPage(m[a]);
-}
-function spawnParticles(el, emojis) { PetSystem.spawnParticles(emojis); }
-
-// ── EVENT LISTENERS ────────────────────────────────────────
-document.addEventListener('studyflow:fiche_saved', () => PetSystem.onFicheCreated());
-document.addEventListener('studyflow:card_saved',  () => PetSystem.onCardCreated());
-
-// ── KEEP PET_STAGES for trophy/leaderboard compat ──────────
 const PET_STAGES = [
-  { minXp:0,   sprite:'🥚', name:'Œuf',     mood:'En attente…' },
-  { minXp:5,   sprite:'🐣', name:'Poussin', mood:'Je m\'éveille !' },
-  { minXp:20,  sprite:'🐥', name:'Ado',     mood:'Je grandis !' },
-  { minXp:50,  sprite:'🦅', name:'Phénix',  mood:'On révise !' },
-  { minXp:100, sprite:'🦁', name:'Lion',    mood:'Je suis fort !' },
-  { minXp:200, sprite:'🐉', name:'Dragon',  mood:'Je domine !' },
+  { minXp:0,   sprite:'🥚', name:'Œuf',          mood:'En attente…' },
+  { minXp:5,   sprite:'🐣', name:'Poussin',       mood:'Je m\'éveille !' },
+  { minXp:20,  sprite:'🐥', name:'Petit oiseau',  mood:'Je grandis !' },
+  { minXp:50,  sprite:'🦅', name:'Aigle studieux', mood:'On révise !' },
+  { minXp:100, sprite:'🦁', name:'Lion savant',   mood:'Je suis fort !' },
+  { minXp:200, sprite:'🐉', name:'Dragon érudit', mood:'Je domine !' },
 ];
+
+function getPetXp() {
+  return (userData.fiches||[]).length * 2 +
+         (userData.cards||[]).length +
+         (userData.qcmHistory||[]).filter(q=>q.done).length * 3 +
+         (userData.pomoCycles||0) * 2 +
+         (userData.victoires||[]).length * 5 +
+         (userData.streak||0) * 10;
+}
+
+function updatePet() {
+  const xp = getPetXp();
+  let stage = PET_STAGES[0];
+  for (const s of PET_STAGES) { if (xp >= s.minXp) stage = s; }
+  const nextStage = PET_STAGES[PET_STAGES.indexOf(stage)+1];
+  const pct = nextStage ? Math.min(100, Math.round((xp - stage.minXp) / (nextStage.minXp - stage.minXp) * 100)) : 100;
+  const isHappy = (userData.lastActive === new Date().toDateString());
+  document.getElementById('sb-pet').textContent = stage.sprite;
+  document.getElementById('sb-pet-name').textContent = stage.name;
+  document.getElementById('sb-pet-mood').textContent = isHappy ? stage.mood : '😴 Nourris-moi !';
+  document.getElementById('sb-pet-xp').style.width = pct + '%';
+}
 
 // ============================================================
 // MODE FOCUS + AMBIANCE SONORE
@@ -6648,20 +5963,18 @@ function renderConvertisseur() {
 // ============================================================
 // AUTO-LOG ERRORS FROM QCM
 // ============================================================
-// Patch answerQ to auto-log wrong answers + pet encouragement
+// Patch answerQ to auto-log wrong answers
 const _origAnswerQ = window.answerQ;
 function answerQ(qi, ci) {
   if (qcmAnswered[qi] !== null) return;
   qcmAnswered[qi] = ci;
-  // If wrong, auto-add to mur des erreurs + pet encouragement
+  // If wrong, auto-add to mur des erreurs
   if (currentQcm[qi] && ci !== currentQcm[qi].correct) {
     addErreurFromQcm(
       currentQcm[qi].question,
       currentQcm[qi].explanation,
       selectedQcmMat
     );
-    // Pet reacts with encouragement
-    if (typeof PetSystem !== 'undefined') PetSystem.onMistake();
   }
   renderQcm();
 }
@@ -7129,7 +6442,7 @@ function finishLogin(p) {
   buildSelects();
   buildFilterRow();
   buildQcmMatSelector();
-  buildSpeSidebar(p.spes || []);  // ← v10.1.2.4 : sidebar dynamique
+  buildSpeSidebar(p.spes || []);  // ← v10.4 : sidebar dynamique
   updateStreak();
   renderDashboard();
   updatePet();
@@ -7428,10 +6741,10 @@ const PAGE_TITLES = {
   qcm:'QCM IA', notes:'Notes', stats:'Statistiques',
   pronote:'Pronote', elea:'Éléa', pomodoro:'Pomodoro',
   calendrier:'Calendrier', examen:'Mode Examen', trophees:'Trophées',
-  outils:'Outils', erreurs:'Mur des Erreurs', victoire:'Victoires', pet:'Mon Compagnon',
+  outils:'Outils', erreurs:'Mur des Erreurs', victoire:'Victoires',
   defi:'Défi du jour', photo:'Photo → Fiche', prof:'Prof virtuel',
   correction:'Correction', bac:'Prédiction Bac', temps:'Temps de révision',
-  social:'Social Hub'
+  social:'Social Hub', settings:'Paramètres'
 };
 function setTopTitle(id) {
   const el = document.getElementById('mob-bar-title');
@@ -7520,7 +6833,7 @@ function openAccordionForPage(pageId) {
     qcm:'acc-menu', notes:'acc-menu', stats:'acc-menu',
     pronote:'acc-services', elea:'acc-services',
     pomodoro:'acc-outils', calendrier:'acc-outils', examen:'acc-outils',
-    trophees:'acc-outils', outils:'acc-outils', erreurs:'acc-outils', victoire:'acc-outils', pet:'acc-outils',
+    trophees:'acc-outils', outils:'acc-outils', erreurs:'acc-outils', victoire:'acc-outils', pet:'acc-outils', settings:'acc-outils',
     defi:'acc-ia', photo:'acc-ia', prof:'acc-ia', correction:'acc-ia',
     bac:'acc-ia', temps:'acc-ia', social:'acc-ia',
   };
@@ -8673,37 +7986,21 @@ async function createGroup() {
   userData.groups.push(group);
 
   if (sbClient && supabaseEnabled) {
-    // 'desc' est un mot réservé PostgreSQL — on utilise 'description'
-    const { error: grpErr } = await sbClient.from('study_groups').insert({
-      id: group.id,
-      name,
-      description: desc,
-      code,
-      owner_id: currentUser?.id,
-      created_at: new Date().toISOString()
-    });
-    if (grpErr) {
-      console.error('study_groups error:', grpErr.message, grpErr.code);
-      toast('❌ Erreur création groupe : ' + (grpErr.message || grpErr.code));
-    }
-
-    // insert + ignoreDuplicates évite le 409
-    const { error: memErr } = await sbClient.from('group_members').insert({
-      group_id: group.id,
-      profile_id: currentUser?.id,
-      username: currentUser?.username,
-      avatar: currentUser?.avatar
-    });
-    if (memErr && memErr.code !== '23505') {
-      console.warn('group_members warning:', memErr.message);
-    }
+    await sbClient.from('study_groups').upsert({
+      id: group.id, name, desc, code,
+      owner_id: currentUser?.id, created_at: new Date().toISOString()
+    }, { onConflict:'id' });
+    await sbClient.from('group_members').upsert({
+      group_id: group.id, profile_id: currentUser?.id,
+      username: currentUser?.username, avatar: currentUser?.avatar
+    }, { onConflict:'group_id,profile_id' });
   }
 
   saveUserData();
   closeOv('ov-create-group');
   document.getElementById('grp-name').value = '';
   document.getElementById('grp-desc').value = '';
-  toast('✅ Groupe créé ! Code : ' + code);
+  toast(`✅ Groupe créé ! Code: ${code}`);
   renderGroups();
   document.getElementById('soc-groups').textContent = userData.groups.length;
 }
@@ -8728,15 +8025,10 @@ async function joinGroup() {
   if (!userData.groups) userData.groups = [];
   userData.groups.push(group);
 
-  const { error: joinMemErr } = await sbClient.from('group_members').insert({
-    group_id: data.id,
-    profile_id: currentUser?.id,
-    username: currentUser?.username,
-    avatar: currentUser?.avatar
-  });
-  if (joinMemErr && joinMemErr.code !== '23505') {
-    console.warn('joinGroup members warning:', joinMemErr.message);
-  }
+  await sbClient.from('group_members').upsert({
+    group_id: data.id, profile_id: currentUser?.id,
+    username: currentUser?.username, avatar: currentUser?.avatar
+  }, { onConflict:'group_id,profile_id' });
 
   saveUserData();
   closeOv('ov-join-group');
@@ -9104,10 +8396,8 @@ window.addEventListener('pomodoroComplete', () => addCoins('pomodoro'));
       if (all === currentQcm.length && all > 0 && !window._coinsGrantedThisQcm) {
         window._coinsGrantedThisQcm = true;
         const correct = qcmAnswered.filter((a,i)=>a===currentQcm[i]?.correct).length;
-        const score = Math.round(correct/all*100);
         addCoins('qcm_done');
-        if (score === 100) addCoins('qcm_perfect');
-        if (typeof PetSystem !== 'undefined') PetSystem.onQcmDone(score);
+        if (Math.round(correct/all*100) === 100) addCoins('qcm_perfect');
         setTimeout(pushAllScores, 500);
       }
     }
@@ -9150,51 +8440,432 @@ document.addEventListener('change', function(e) {
 });
 
 // ============================================================
-// PAGE COMPAGNON — renderPetPage & interactions
+// PARAMÈTRES — renderSettings + all helpers
 // ============================================================
+function renderSettings() {
+  // Prefill API key
+  const keyInput = document.getElementById('settings-api-key');
+  if (keyInput && userData.apiKey) keyInput.value = userData.apiKey;
 
-const PET_HAPPINESS = [
-  { min: 0,   emoji: '😴', label: 'Endormi', color: 'var(--muted)' },
-  { min: 1,   emoji: '😐', label: 'Neutre',  color: 'var(--gold)' },
-  { min: 3,   emoji: '😊', label: 'Content', color: 'var(--success)' },
-  { min: 7,   emoji: '😄', label: 'Heureux', color: 'var(--math)' },
-  { min: 14,  emoji: '🥰', label: 'Au top !', color: 'var(--accent)' },
-];
+  // Provider tabs
+  settingsHighlightProvider(userData.aiProvider || 'groq');
 
-function addPetJournalEntry(ico, text) {
-  if (!userData.petJournal) userData.petJournal = [];
-  userData.petJournal.push({ ico, text, date: Date.now() });
-  if (userData.petJournal.length > 30) userData.petJournal = userData.petJournal.slice(-30);
-  saveUserData();
+  // Supabase
+  const cfg = getSbConfig();
+  const sbUrl = document.getElementById('settings-sb-url');
+  const sbKey = document.getElementById('settings-sb-key');
+  if (sbUrl && cfg.url) sbUrl.value = cfg.url;
+  if (sbKey && cfg.key) sbKey.value = cfg.key;
+
+  // Profil
+  const p = currentUser;
+  if (p) {
+    const av = document.getElementById('settings-avatar');
+    const un = document.getElementById('settings-username');
+    const sp = document.getElementById('settings-spes-display');
+    if (av) av.textContent = p.avatar || '🦊';
+    if (un) un.textContent = p.username || '—';
+    if (sp) sp.textContent = (p.spes||[]).join(' · ') || 'Aucune spécialité définie';
+  }
+
+  // Accent color
+  const savedAccent = localStorage.getItem('sf_accent') || '#7c6dfa';
+  document.querySelectorAll('#page-settings .btn-ghost.btn-sm').forEach(btn => {
+    const color = btn.getAttribute('onclick')?.match(/'(#[^']+)'/)?.[1];
+    if (color === savedAccent) btn.style.outline = '2px solid ' + color;
+    else btn.style.outline = '';
+  });
 }
 
-function spawnParticles(targetEl, emojis = ['⭐','✨','💫']) {
-  if (!targetEl) return;
-  const rect = targetEl.getBoundingClientRect();
-  for (let i = 0; i < 5; i++) {
-    const p = document.createElement('div');
-    p.className = 'pet-particle';
-    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    p.style.cssText = `
-      left: ${rect.left + rect.width/2 + (Math.random()-0.5)*60}px;
-      top: ${rect.top + rect.height/2}px;
-      animation-delay: ${i * 0.1}s;
-    `;
-    document.body.appendChild(p);
-    setTimeout(() => p.remove(), 1400);
+function settingsSwitchAI(provider) {
+  userData.aiProvider = provider;
+  saveUserData();
+  settingsHighlightProvider(provider);
+  switchAI(provider, true);
+  const hint = document.getElementById('settings-api-hint');
+  const label = document.getElementById('settings-api-label');
+  if (provider === 'groq') {
+    if (label) label.textContent = 'Clé API Groq';
+    if (hint) hint.innerHTML = 'Va sur <a href="https://console.groq.com" target="_blank" style="color:var(--accent)">console.groq.com</a> → API Keys → Create key (100% gratuit, sans CB)';
+  } else {
+    if (label) label.textContent = 'Clé API Claude (Anthropic)';
+    if (hint) hint.innerHTML = 'Va sur <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent)">console.anthropic.com</a> → API Keys (crédits offerts à l\'inscription)';
   }
 }
 
-// Tap the pet
+function settingsHighlightProvider(provider) {
+  ['groq','claude'].forEach(p => {
+    const btn = document.getElementById('settings-tab-' + p);
+    if (!btn) return;
+    if (p === provider) {
+      btn.style.background = 'var(--accent)';
+      btn.style.color = '#fff';
+      btn.style.borderColor = 'var(--accent)';
+    } else {
+      btn.style.background = 'var(--s2)';
+      btn.style.color = 'var(--muted)';
+      btn.style.borderColor = 'var(--border)';
+    }
+  });
+}
 
-// Redirect to relevant page for each action
+function toggleApiKeyVisibility() {
+  const input = document.getElementById('settings-api-key');
+  if (!input) return;
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
 
-// Called from updatePet — also add journal entry on level-up
+function settingsSaveApiKey() {
+  const key = document.getElementById('settings-api-key')?.value.trim();
+  if (!key) { toast('⚠️ Colle ta clé API'); return; }
+  userData.apiKey = key;
+  saveUserData();
+  // Sync to main QCM api-block input too
+  const qcmInput = document.getElementById('api-key-input');
+  if (qcmInput) qcmInput.value = key;
+  document.getElementById('api-block').style.display = 'none';
+  const status = document.getElementById('settings-api-status');
+  if (status) {
+    status.textContent = '✅ Clé sauvegardée';
+    status.style.color = 'var(--success)';
+    setTimeout(() => { status.textContent = ''; }, 3000);
+  }
+  toast('✅ Clé API sauvegardée !');
+}
 
-// Name the pet
+async function settingsTestApi() {
+  const key = document.getElementById('settings-api-key')?.value.trim() || userData.apiKey;
+  if (!key) { toast('⚠️ Entre ta clé d\'abord'); return; }
+  const status = document.getElementById('settings-api-status');
+  if (status) { status.textContent = '⏳ Test en cours…'; status.style.color = 'var(--muted)'; }
 
-// Add XP source journal entries when actions are completed
-// Pet events handled by PetSystem listeners above
+  const provider = userData.aiProvider || 'groq';
+  try {
+    let ok = false;
+    if (provider === 'groq') {
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'Authorization':'Bearer ' + key },
+        body: JSON.stringify({ model:'llama-3.3-70b-versatile', max_tokens:5,
+          messages:[{ role:'user', content:'1+1=' }] })
+      });
+      const d = await res.json();
+      ok = !!d.choices;
+    } else {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'x-api-key':key, 'anthropic-version':'2023-06-01' },
+        body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:5,
+          messages:[{ role:'user', content:'1+1=' }] })
+      });
+      const d = await res.json();
+      ok = !!d.content;
+    }
+    if (status) { status.textContent = ok ? '✅ Clé valide !' : '❌ Clé invalide'; status.style.color = ok ? 'var(--success)' : 'var(--danger)'; }
+  } catch(e) {
+    if (status) { status.textContent = '❌ Erreur : ' + e.message; status.style.color = 'var(--danger)'; }
+  }
+}
+
+function settingsSaveSupabase() {
+  const url = document.getElementById('settings-sb-url')?.value.trim();
+  const key = document.getElementById('settings-sb-key')?.value.trim();
+  if (!url || !key) { toast('⚠️ Remplis les deux champs'); return; }
+  localStorage.setItem('sf_sb_url', url);
+  localStorage.setItem('sf_sb_key', key);
+  const status = document.getElementById('settings-sb-status');
+  if (status) { status.textContent = '✅ Config sauvegardée — recharge la page pour activer'; status.style.color = 'var(--success)'; }
+  toast('✅ Supabase sauvegardé — recharge la page');
+}
+
+async function settingsTestSupabase() {
+  const url = document.getElementById('settings-sb-url')?.value.trim() || getSbConfig().url;
+  const key = document.getElementById('settings-sb-key')?.value.trim() || getSbConfig().key;
+  const status = document.getElementById('settings-sb-status');
+  if (!url || !key) { toast('⚠️ Configure Supabase d\'abord'); return; }
+  if (status) { status.textContent = '⏳ Test…'; status.style.color = 'var(--muted)'; }
+  try {
+    const res = await fetch(url + '/rest/v1/userdata_pin?limit=1', {
+      headers: { 'apikey': key, 'Authorization': 'Bearer ' + key }
+    });
+    const ok = res.ok || res.status === 200 || res.status === 406;
+    if (status) { status.textContent = ok ? '✅ Connexion Supabase OK !' : '❌ Erreur ' + res.status; status.style.color = ok ? 'var(--success)' : 'var(--danger)'; }
+  } catch(e) {
+    if (status) { status.textContent = '❌ ' + e.message; status.style.color = 'var(--danger)'; }
+  }
+}
+
+function settingsDisableSupabase() {
+  if (!confirm('Désactiver Supabase ? Tes données resteront locales.')) return;
+  localStorage.removeItem('sf_sb_url');
+  localStorage.removeItem('sf_sb_key');
+  toast('☁️ Supabase désactivé');
+  showPage('settings');
+}
+
+function settingsResetData() {
+  if (!confirm('⚠️ Supprimer TOUTES tes données ? (fiches, cartes, notes…)\nCette action est irréversible.')) return;
+  if (!confirm('Dernière confirmation — vraiment tout supprimer ?')) return;
+  const uid = currentUser?.id;
+  if (uid) localStorage.removeItem('sf_data_' + uid);
+  userData = { fiches:[], cards:[], qcmHistory:[], streak:0, lastActive:null, apiKey:userData.apiKey, aiProvider:userData.aiProvider };
+  saveUserData();
+  toast('🗑️ Données réinitialisées');
+  renderDashboard();
+}
+
+function settingsSetAccent(color) {
+  document.documentElement.style.setProperty('--accent', color);
+  localStorage.setItem('sf_accent', color);
+  // Update button outlines
+  document.querySelectorAll('#page-settings .btn-ghost.btn-sm').forEach(btn => {
+    const c = btn.getAttribute('onclick')?.match(/'(#[^']+)'/)?.[1];
+    btn.style.outline = c === color ? '2px solid ' + color : '';
+  });
+  toast('🎨 Couleur appliquée !');
+}
+
+// Apply saved accent on load
+(function applySavedAccent() {
+  const c = localStorage.getItem('sf_accent');
+  if (c) document.documentElement.style.setProperty('--accent', c);
+})();
+
+// ============================================================
+// PHOTO → FICHE — Sans vision (Groq compatible)
+// ============================================================
+// Override transcribePhoto to work without vision API
+async function transcribePhoto() {
+  if (!photoFile) return;
+  if (!userData.apiKey) {
+    toast('⚠️ Configure ta clé API dans Paramètres');
+    showPage('settings');
+    return;
+  }
+  const btn = document.getElementById('photo-btn');
+  btn.disabled = true; btn.textContent = '⏳ Analyse…';
+
+  const matiere = document.getElementById('photo-mat')?.value || 'math';
+  const m = getM(matiere);
+
+  // Convert image to base64 for size info
+  const b64 = await new Promise(res => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.readAsDataURL(photoFile);
+  });
+
+  // Use text-only prompt describing what to generate (no vision needed)
+  const prompt = `Tu es un assistant scolaire expert en ${m.label} pour Première Générale en France.
+L'élève a pris une photo d'un cours de ${m.label}.
+Génère une fiche de révision complète et bien structurée sur les concepts clés de ${m.label} en Première Générale.
+Utilise le Markdown : # titres, **gras**, - listes, formules LaTeX entre $ ou $$.
+Sois concis mais complet. Commence directement par le contenu.`;
+
+  try {
+    const raw = await callAI(prompt);
+    const output = document.getElementById('photo-output');
+    const title = document.getElementById('photo-title');
+    if (output) {
+      output.textContent = raw;
+      if (typeof marked !== 'undefined') output.innerHTML = marked.parse(raw);
+    }
+    if (title) title.value = `Cours ${m.label} — ${new Date().toLocaleDateString('fr-FR')}`;
+    document.getElementById('photo-result').style.display = 'block';
+  } catch(e) {
+    toast('❌ ' + (e.message || 'Erreur API — vérifie ta clé dans Paramètres'), 5000);
+  }
+  btn.disabled = false; btn.textContent = '✨ Transcrire avec l\'IA';
+}
+
+// ============================================================
+// SOCIAL HUB — Fix groupes & duels
+// ============================================================
+
+// Fix renderGroups — read desc OR description from Supabase row
+async function loadGroupMembers(groupId) {
+  if (!sbClient || !supabaseEnabled) return [];
+  try {
+    const { data } = await sbClient.from('group_members')
+      .select('profile_id, username, avatar')
+      .eq('group_id', groupId);
+    return data || [];
+  } catch { return []; }
+}
+
+// Override renderGroups with better error handling and member loading
+async function renderGroups() {
+  const el = document.getElementById('groups-list');
+  if (!el) return;
+  const myGroups = userData.groups || [];
+
+  if (!myGroups.length) {
+    el.innerHTML = `<div class="empty">
+      <div class="empty-ico">👥</div>
+      <div class="empty-title">Aucun groupe</div>
+      <div class="empty-sub">Crée un groupe et partage le code avec tes amis</div>
+    </div>`;
+    return;
+  }
+
+  // Render locally first (instant)
+  el.innerHTML = myGroups.map(g => `
+    <div class="group-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
+        <div>
+          <div class="group-name">${g.name}</div>
+          <div class="group-meta">${g.desc||g.description||''}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--accent);background:rgba(124,109,250,.1);padding:3px 10px;border-radius:20px">${g.code}</span>
+            <button class="btn btn-ghost btn-sm" style="font-size:11px;padding:4px 10px" onclick="copyGroupCode('${g.code}')">📋 Copier le code</button>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="color:var(--danger);font-size:11px" onclick="leaveGroup('${g.id}')">Quitter</button>
+      </div>
+      <div class="group-members" id="gm-${g.id}" style="margin-top:12px">
+        <div class="member-chip"><span>${currentUser?.avatar||'🦊'}</span>${currentUser?.username||'Toi'}</div>
+        <span style="font-size:11px;color:var(--muted)">Chargement des membres…</span>
+      </div>
+    </div>`).join('');
+
+  // Load members from Supabase asynchronously
+  if (sbClient && supabaseEnabled) {
+    for (const g of myGroups) {
+      const members = await loadGroupMembers(g.id);
+      const el2 = document.getElementById('gm-' + g.id);
+      if (el2 && members.length) {
+        el2.innerHTML = members.map(m =>
+          `<div class="member-chip"><span>${m.avatar||'🦊'}</span>${m.username||'?'}</div>`
+        ).join('');
+      }
+    }
+  }
+}
+
+// Fix duel — use correct question format from callAI response
+async function startSoloDuel() {
+  if (!userData.apiKey) {
+    toast('⚠️ Configure ta clé API dans Paramètres');
+    showPage('settings');
+    return;
+  }
+  const el = document.getElementById('duel-content');
+  if (el) el.innerHTML = `<div class="loading"><div class="spinner"></div>Génération du duel…</div>`;
+
+  duelState = { active:true, solo:true, myScore:0, theirScore:0, opponent:'🤖 IA', total:5, answered:0, currentQ:0 };
+
+  const matId = (getMyMatieres ? getMyMatieres() : MATIERES).slice(0,3)[Math.floor(Math.random()*3)]?.id || 'math';
+  const m = getM(matId);
+
+  const prompt = `Génère exactement 5 questions QCM courtes de ${m.label} pour un élève de Première Générale.
+Réponds UNIQUEMENT en JSON valide, sans texte avant ni après :
+[{"q":"Question ?","a":["Option A","Option B","Option C","Option D"],"c":0}]
+Le champ "c" est l'index (0-3) de la bonne réponse.`;
+
+  try {
+    const raw = await callAI(prompt);
+    const cleaned = raw.replace(/```json|```/g,'').trim();
+    const questions = JSON.parse(cleaned);
+    if (!Array.isArray(questions) || !questions.length) throw new Error('Format invalide');
+    duelState.questions = questions;
+    duelState.matiere = m.label;
+    renderActiveDuel();
+  } catch(e) {
+    duelState = null;
+    if (el) el.innerHTML = `<div class="duel-arena">
+      <div style="font-size:36px;margin-bottom:8px">❌</div>
+      <div style="color:var(--danger);margin-bottom:12px">Erreur : ${e.message}</div>
+      <button class="btn btn-ghost" onclick="renderDuelTab()">← Retour</button>
+    </div>`;
+  }
+}
+
+// Fix renderActiveDuel — handle both {q,a,c} and {question,choices,correct} formats
+function renderActiveDuel() {
+  const el = document.getElementById('duel-content');
+  if (!el || !duelState) return;
+
+  const raw = duelState.questions?.[duelState.currentQ];
+  if (!raw) { endDuel(); return; }
+
+  // Normalise question format
+  const q = {
+    text: raw.q || raw.question || '?',
+    choices: raw.a || raw.choices || [],
+    correct: raw.c ?? raw.correct ?? 0,
+  };
+
+  const letters = ['A','B','C','D'];
+  el.innerHTML = `
+    <div class="duel-arena">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:12px;color:var(--muted)">
+        <div><span class="live-dot"></span> DUEL EN COURS · ${duelState.matiere||'QCM'}</div>
+        <div>Q${(duelState.currentQ||0)+1}/${duelState.total}</div>
+      </div>
+      <div class="duel-prog-row">
+        <div class="duel-label" style="text-align:right;font-size:11px">${currentUser?.username||'Toi'}</div>
+        <div class="duel-prog-bar"><div class="duel-prog-fill duel-me" id="dp-me" style="width:${duelState.myScore/duelState.total*100}%"></div></div>
+        <div style="font-family:'Fraunces',serif;font-size:18px;color:var(--accent);min-width:20px">${duelState.myScore}</div>
+      </div>
+      <div class="duel-vs">VS</div>
+      <div class="duel-prog-row">
+        <div class="duel-label" style="text-align:right;font-size:11px">${duelState.opponent}</div>
+        <div class="duel-prog-bar"><div class="duel-prog-fill duel-them" id="dp-them" style="width:${duelState.theirScore/duelState.total*100}%"></div></div>
+        <div style="font-family:'Fraunces',serif;font-size:18px;color:var(--danger);min-width:20px">${duelState.theirScore}</div>
+      </div>
+      <div style="margin:20px 0;font-size:16px;font-weight:500;line-height:1.5;font-family:'Fraunces',serif">${q.text}</div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="duel-choices">
+        ${q.choices.map((c,i) => `
+          <button class="qcm-choice" id="dc-${i}" onclick="answerDuel(${i},${q.correct})">
+            <span class="choice-letter">${letters[i]}</span>
+            ${String(c).replace(/^[A-D]\.\s*/,'')}
+          </button>`).join('')}
+      </div>
+    </div>`;
+
+  // Solo: opponent answers after random delay
+  if (duelState.solo) {
+    const delay = 1500 + Math.random() * 3000;
+    setTimeout(() => {
+      if (!duelState?.active) return;
+      const oppCorrect = Math.random() > 0.45;
+      if (oppCorrect) duelState.theirScore++;
+      const bar = document.getElementById('dp-them');
+      if (bar) bar.style.width = duelState.theirScore/duelState.total*100 + '%';
+    }, delay);
+  }
+}
+
+// ============================================================
+// REDIRECT TO SETTINGS when API key is missing
+// ============================================================
+// Patch callAI to intercept invalid key errors and guide user
+const _origCallGroq = callGroq;
+async function callGroq(prompt) {
+  try {
+    return await _origCallGroq(prompt);
+  } catch(e) {
+    if (e.message?.includes('invalid') || e.message?.includes('401') || e.message?.includes('403')) {
+      toast('🔑 Clé API invalide — va dans Paramètres pour la corriger', 5000);
+      setTimeout(() => showPage('settings'), 1500);
+    }
+    throw e;
+  }
+}
+
+const _origCallClaude = callClaude;
+async function callClaude(prompt) {
+  try {
+    return await _origCallClaude(prompt);
+  } catch(e) {
+    if (e.message?.includes('invalid') || e.message?.includes('401') || e.message?.includes('403') || e.message?.includes('authentication')) {
+      toast('🔑 Clé API invalide — va dans Paramètres pour la corriger', 5000);
+      setTimeout(() => showPage('settings'), 1500);
+    }
+    throw e;
+  }
+}
+
 </script>
 <!-- PWA Install Banner -->
 <div id="install-banner">

@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" type="image/png" href="icon.png">
-<title>StudyFlow v10.4.1.1 — Première Générale</title>
+<title>StudyFlow v10.1.2.4 — Première Générale</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
@@ -1563,6 +1563,13 @@ body {
 }
 
 </style>
+<script>
+// Safe pet wrappers — called from HTML onclick before main JS finishes loading
+function petSafeTap()    { if (typeof PetSystem !== 'undefined') PetSystem.tap();    }
+function petSafeFeed()   { if (typeof PetSystem !== 'undefined') PetSystem.feed();   }
+function petSafeRename() { if (typeof PetSystem !== 'undefined') PetSystem.rename(); }
+function petSafeAura(id) { if (typeof PetSystem !== 'undefined') PetSystem.buyOrEquipAura(id); }
+</script>
 </head>
 <body>
 
@@ -1571,7 +1578,7 @@ body {
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-name">StudyFlow</div>
-      <div class="auth-logo-sub">Première Générale 2026 · v10.4.1.1</div>
+      <div class="auth-logo-sub">Première Générale 2026 · v10.1.2.4</div>
     </div>
 
     <!-- ÉTAPE 1 : Config Supabase (première ouverture seulement) -->
@@ -2984,7 +2991,7 @@ document.querySelector('.main').insertAdjacentHTML('beforeend', `
     <div class="card card-p">
       <div class="section-label" style="margin-bottom:10px">ℹ️ À propos</div>
       <div style="font-size:13px;color:var(--muted);line-height:1.8">
-        <div>StudyFlow v10.4.1.1 — Première Générale 2026</div>
+        <div>StudyFlow v10 — Première Générale 2026</div>
         <div>Open source · Hébergé sur GitHub Pages</div>
         <div style="margin-top:8px">
           <a href="https://console.groq.com" target="_blank" style="color:var(--accent)">Groq (gratuit)</a> ·
@@ -3013,10 +3020,10 @@ document.querySelector('.main').insertAdjacentHTML('beforeend', `
     <!-- ARÈNE -->
     <div class="pet-arena" id="pet-arena-wrap">
       <div id="pet-aura-layer" style="position:absolute;inset:0;border-radius:20px;pointer-events:none;transition:all .4s"></div>
-      <span class="pet-big-sprite pet-floating" id="pet-big-sprite" onclick="PetSystem.tap()">🥚</span>
+      <span class="pet-big-sprite pet-floating" id="pet-big-sprite" onclick="petSafeTap()">🥚</span>
       <div class="pet-big-name">
         <span id="pet-big-name">Compagnon</span>
-        <button onclick="PetSystem.rename()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;margin-left:6px;vertical-align:middle" title="Renommer">✏️</button>
+        <button onclick="petSafeRename()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;margin-left:6px;vertical-align:middle" title="Renommer">✏️</button>
       </div>
       <div class="pet-big-level" id="pet-big-level">Niv. 1 — Œuf</div>
       <div class="pet-xp-bar-big"><div class="pet-xp-fill-big" id="pet-xp-fill-big" style="width:0%"></div></div>
@@ -3048,13 +3055,13 @@ document.querySelector('.main').insertAdjacentHTML('beforeend', `
     <!-- ACTIONS -->
     <div class="section-label" style="margin-bottom:10px">🎮 Actions</div>
     <div class="pet-care-grid">
-      <div class="pet-care-btn" onclick="PetSystem.feed()">
+      <div class="pet-care-btn" onclick="petSafeFeed()">
         <div class="pet-care-ico">🍖</div>
         <div class="pet-care-name">Nourrir</div>
         <div class="pet-care-desc">Recharge l'énergie</div>
         <div class="pet-care-reward" style="color:var(--gold)">10 🪙 → +50% ⚡</div>
       </div>
-      <div class="pet-care-btn" id="pet-tap-btn" onclick="PetSystem.tap()">
+      <div class="pet-care-btn" id="pet-tap-btn" onclick="petSafeTap()">
         <div class="pet-care-ico">🤝</div>
         <div class="pet-care-name">Caresser</div>
         <div class="pet-care-desc" id="pet-tap-desc">1× par jour</div>
@@ -4412,7 +4419,7 @@ function showPage(id) {
   if (id==='prof') initProf();
   if (id==='social') renderSocial();
   if (id==='settings') renderSettings();
-  if (id==='pet') PetSystem.render();
+  if (id==='pet') { if (typeof PetSystem !== 'undefined') PetSystem.render(); }
   // Accordion: auto-open section for this page
   openAccordionForPage(id);
 }
@@ -6658,7 +6665,7 @@ function finishLogin(p) {
   buildSelects();
   buildFilterRow();
   buildQcmMatSelector();
-  buildSpeSidebar(p.spes || []);  // ← v10.4.1.1 : sidebar dynamique
+  buildSpeSidebar(p.spes || []);  // ← v10.1.2.4 : sidebar dynamique
   updateStreak();
   renderDashboard();
   updatePet();
@@ -9302,7 +9309,7 @@ const PetSystem = {
     if(bs) bs.style.display=buffs.length?'':'none';
     if(bl) bl.innerHTML=buffs.map(b=>'<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(124,109,250,.07);border:1px solid rgba(124,109,250,.2);border-radius:var(--r2)"><span style="font-size:20px">'+b.icon+'</span><div><div style="font-size:13px;font-weight:600;color:var(--accent)">'+b.name+'</div><div style="font-size:11px;color:var(--muted)">'+b.desc+'</div></div></div>').join('');
     const as2=document.getElementById('pet-aura-shop');
-    if(as2){const oa=userData.ownedAuras||[];as2.innerHTML=this.AURAS.map(a=>{const owned=oa.includes(a.id),eq=this.stats.equippedAura===a.id;return '<div class="pet-acc-chip'+(eq?' equipped':'')+'" onclick="PetSystem.buyOrEquipAura(\''+a.id+'\')" style="'+(eq?'border-color:var(--accent);background:rgba(124,109,250,.1)':'')+'">'+a.icon+' '+a.name+(eq?' ✓':owned?'':' <span style="color:var(--gold);font-size:10px">'+a.price+'🪙</span>')+'</div>';}).join('');}
+    if(as2){const oa=userData.ownedAuras||[];as2.innerHTML=this.AURAS.map(a=>{const owned=oa.includes(a.id),eq=this.stats.equippedAura===a.id;return '<div class="pet-acc-chip'+(eq?' equipped':'')+'" onclick="petSafeAura(\''+a.id+'\')" style="'+(eq?'border-color:var(--accent);background:rgba(124,109,250,.1)':'')+'">'+a.icon+' '+a.name+(eq?' ✓':owned?'':' <span style="color:var(--gold);font-size:10px">'+a.price+'🪙</span>')+'</div>';}).join('');}
     const et=document.getElementById('pet-evolution-track');
     if(et){const ms=[{l:1,s:'🥚',n:'Oeuf'},{l:6,s:'🐣',n:'Bébé'},{l:16,s:'🐥',n:'Ado'},{l:30,s:'🦅',n:'Phénix'}];et.innerHTML='<div style="display:flex;align-items:center;overflow-x:auto;padding:8px 0;scrollbar-width:none">'+ms.map((m,i)=>(i>0?'<div style="flex:1;height:2px;min-width:16px;background:'+(level>m.l||level>=m.l?'var(--accent)':'var(--s3)')+'"></div>':'')+'<div style="text-align:center;flex-shrink:0"><div style="font-size:'+(level>=m.l&&(i===ms.length-1||level<ms[i+1].l)?'30px':'20px')+';filter:'+(level>=m.l?'none':'grayscale(1) opacity(.35)')+'">'+m.s+'</div><div style="font-size:9px;color:'+(level>=m.l?'var(--accent)':'var(--muted2)')+';margin-top:2px">'+m.n+'</div><div style="font-size:9px;color:var(--muted2)">Niv.'+m.l+'</div></div>').join('')+'</div>';}
     const jel=document.getElementById('pet-journal');
@@ -9316,10 +9323,10 @@ const PetSystem = {
 };
 
 // Shims
-function updatePet(){PetSystem.render();}
-function updatePetWithJournal(){PetSystem.render();}
-function renderPetPage(){PetSystem.render();}
-function addPetJournalEntry(ico,text){PetSystem.addJournal(ico,text);}
+function updatePet(){if(typeof PetSystem!=="undefined")PetSystem.render();}
+function updatePetWithJournal(){if(typeof PetSystem!=="undefined")PetSystem.render();}
+function renderPetPage(){if(typeof PetSystem!=="undefined")PetSystem.render();}
+function addPetJournalEntry(ico,text){if(typeof PetSystem!=="undefined")PetSystem.addJournal(ico,text);}
 
 // Events
 document.addEventListener('studyflow:fiche_saved',()=>PetSystem.onFicheCreated());

@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" type="image/png" href="icon.png">
-<title>StudyFlow v10.1.2.4 — Première Générale</title>
+<title>StudyFlow v10.4.1.1 — Première Générale</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
@@ -1452,6 +1452,116 @@ body {
     color: var(--text);
 }
 .spes-selection input { accent-color: var(--primary); }
+/* ===== PAGE COMPAGNON ===== */
+.pet-arena {
+  background: linear-gradient(160deg, #0d0e18, #111620 50%, #0e1510);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 32px 24px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.pet-big-sprite {
+  font-size: 96px; line-height: 1; display: block;
+  margin: 0 auto 12px;
+  transition: transform .3s;
+  cursor: pointer; user-select: none;
+}
+.pet-big-name {
+  font-family: 'Fraunces', serif; font-size: 24px; font-weight: 500;
+  color: var(--text); margin-bottom: 4px;
+}
+.pet-big-level {
+  font-size: 12px; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px;
+}
+.pet-xp-bar-big {
+  height: 8px; background: var(--s3); border-radius: 4px;
+  overflow: hidden; max-width: 320px; margin: 0 auto 6px;
+}
+.pet-xp-fill-big {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent), #a78bfa);
+  transition: width .6s ease;
+}
+.pet-speech-bubble {
+  background: var(--s2); border: 1px solid var(--border2);
+  border-radius: 14px 14px 14px 2px;
+  padding: 10px 16px; font-size: 14px;
+  display: inline-block; margin-top: 16px;
+  max-width: 280px; line-height: 1.5;
+}
+.pet-stats-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+}
+.pet-stat {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 14px 10px; text-align: center;
+}
+.pet-stat-val {
+  font-family: 'Fraunces', serif; font-size: 24px; font-weight: 500;
+  line-height: 1; margin-bottom: 4px;
+}
+.pet-stat-label { font-size: 11px; color: var(--muted); }
+.pet-care-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 10px; margin-bottom: 16px;
+}
+.pet-care-btn {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px 12px;
+  text-align: center; cursor: pointer; transition: all .15s;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.pet-care-btn:hover { border-color: var(--border2); transform: translateY(-2px); }
+.pet-care-btn.disabled { opacity: .4; cursor: not-allowed; pointer-events: none; }
+.pet-care-ico  { font-size: 28px; }
+.pet-care-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.pet-care-desc { font-size: 11px; color: var(--muted); }
+.pet-care-reward { font-size: 11px; color: var(--gold); font-weight: 600; }
+.pet-journal-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.pet-journal-ico  { font-size: 20px; flex-shrink: 0; }
+.pet-journal-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+.pet-journal-time { font-size: 10px; color: var(--muted2); margin-top: 2px; }
+.pet-acc-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 20px; padding: 5px 12px; font-size: 13px;
+  cursor: pointer; transition: all .15s;
+}
+.pet-acc-chip:hover { border-color: var(--border2); }
+.pet-acc-chip.equipped {
+  border-color: var(--accent);
+  background: rgba(124,109,250,.1); color: var(--accent);
+}
+/* Animations */
+.pet-floating { animation: petFloat 3s ease-in-out infinite; }
+@keyframes petFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+@keyframes petBounce {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.25) rotate(8deg); }
+  60%  { transform: scale(.9) rotate(-4deg); }
+  100% { transform: scale(1); }
+}
+.pet-bounce { animation: petBounce .5s ease; }
+@keyframes particleRise {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-80px) scale(.5); }
+}
+@media (max-width: 640px) {
+  .pet-big-sprite { font-size: 72px; }
+  .pet-care-grid  { grid-template-columns: 1fr 1fr; }
+  .pet-stats-grid { grid-template-columns: repeat(3,1fr); }
+}
+
 </style>
 </head>
 <body>
@@ -1461,7 +1571,7 @@ body {
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-name">StudyFlow</div>
-      <div class="auth-logo-sub">Première Générale 2026 · v10.1.2.4</div>
+      <div class="auth-logo-sub">Première Générale 2026 · v10.4.1.1</div>
     </div>
 
     <!-- ÉTAPE 1 : Config Supabase (première ouverture seulement) -->
@@ -2874,7 +2984,7 @@ document.querySelector('.main').insertAdjacentHTML('beforeend', `
     <div class="card card-p">
       <div class="section-label" style="margin-bottom:10px">ℹ️ À propos</div>
       <div style="font-size:13px;color:var(--muted);line-height:1.8">
-        <div>StudyFlow v10 — Première Générale 2026</div>
+        <div>StudyFlow v10.4.1.1 — Première Générale 2026</div>
         <div>Open source · Hébergé sur GitHub Pages</div>
         <div style="margin-top:8px">
           <a href="https://console.groq.com" target="_blank" style="color:var(--accent)">Groq (gratuit)</a> ·
@@ -6548,7 +6658,7 @@ function finishLogin(p) {
   buildSelects();
   buildFilterRow();
   buildQcmMatSelector();
-  buildSpeSidebar(p.spes || []);  // ← v10.1.2.4 : sidebar dynamique
+  buildSpeSidebar(p.spes || []);  // ← v10.4.1.1 : sidebar dynamique
   updateStreak();
   renderDashboard();
   updatePet();
@@ -9215,12 +9325,7 @@ function addPetJournalEntry(ico,text){PetSystem.addJournal(ico,text);}
 document.addEventListener('studyflow:fiche_saved',()=>PetSystem.onFicheCreated());
 document.addEventListener('studyflow:card_saved', ()=>PetSystem.onCardCreated());
 
-// Inject pet CSS if missing
-if(!document.getElementById('pet-css')){
-  const s=document.createElement('style');s.id='pet-css';
-  s.textContent=`.pet-arena{background:linear-gradient(160deg,#0d0e18,#111620 50%,#0e1510);border:1px solid var(--border2);border-radius:20px;padding:32px 24px 24px;text-align:center;position:relative;overflow:hidden;margin-bottom:20px}.pet-big-sprite{font-size:96px;line-height:1;display:block;margin:0 auto 12px;transition:transform .3s;cursor:pointer;user-select:none}.pet-big-name{font-family:'Fraunces',serif;font-size:24px;font-weight:500;color:var(--text);margin-bottom:4px}.pet-big-level{font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px}.pet-xp-bar-big{height:8px;background:var(--s3);border-radius:4px;overflow:hidden;max-width:320px;margin:0 auto 6px}.pet-xp-fill-big{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),#a78bfa);transition:width .6s ease}.pet-speech-bubble{background:var(--s2);border:1px solid var(--border2);border-radius:14px 14px 14px 2px;padding:10px 16px;font-size:14px;display:inline-block;margin-top:16px;max-width:280px;line-height:1.5}.pet-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.pet-stat{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:14px 10px;text-align:center}.pet-stat-val{font-family:'Fraunces',serif;font-size:24px;font-weight:500;line-height:1;margin-bottom:4px}.pet-stat-label{font-size:11px;color:var(--muted)}.pet-care-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}.pet-care-btn{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px 12px;text-align:center;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px}.pet-care-btn:hover{border-color:var(--border2);transform:translateY(-2px)}.pet-care-btn.disabled{opacity:.4;cursor:not-allowed}.pet-care-ico{font-size:28px}.pet-care-name{font-size:13px;font-weight:500;color:var(--text)}.pet-care-desc{font-size:11px;color:var(--muted)}.pet-care-reward{font-size:11px;color:var(--gold);font-weight:600}.pet-journal-item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}.pet-journal-ico{font-size:20px;flex-shrink:0}.pet-journal-text{font-size:13px;color:var(--text);line-height:1.5}.pet-journal-time{font-size:10px;color:var(--muted2);margin-top:2px}.pet-acc-chip{display:inline-flex;align-items:center;gap:5px;background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:13px;cursor:pointer;transition:all .15s}.pet-acc-chip:hover{border-color:var(--border2)}.pet-acc-chip.equipped{border-color:var(--accent);background:rgba(124,109,250,.1);color:var(--accent)}.pet-floating{animation:petFloat 3s ease-in-out infinite}@keyframes petFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes petBounce{0%{transform:scale(1)}30%{transform:scale(1.25) rotate(8deg)}60%{transform:scale(.9) rotate(-4deg)}100%{transform:scale(1)}}.pet-bounce{animation:petBounce .5s ease}@keyframes particleRise{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(.5)}}`;
-  document.head.appendChild(s);
-}
+// Pet CSS is in static <style> block
 
 }
 
